@@ -13,12 +13,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/centimani/ideamark-cli.git"
+    "url": "git+https://github.com/ak2i/ideamark-cli.git"
   },
   "bugs": {
-    "url": "https://github.com/centimani/ideamark-cli/issues"
+    "url": "https://github.com/ak2i/ideamark-cli/issues"
   },
-  "homepage": "https://github.com/centimani/ideamark-cli#readme",
+  "homepage": "https://github.com/ak2i/ideamark-cli#readme",
   "license": "MIT",
   "type": "commonjs",
   "engines": {
