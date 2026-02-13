@@ -1,0 +1,43 @@
+{
+  "name": "ideamark-cli",
+  "version": "0.1.0",
+  "description": "IdeaMark CLI",
+  "private": false,
+  "keywords": [
+    "ideamark",
+    "cli",
+    "extract",
+    "compose",
+    "describe",
+    "validate"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/centimani/ideamark-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/centimani/ideamark-cli/issues"
+  },
+  "homepage": "https://github.com/centimani/ideamark-cli#readme",
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "docs/dev/v0.1.0/internal/goals/",
+    "README.md",
+    "LICENSE"
+  ],
+  "bin": {
+    "ideamark": "bin/ideamark.js"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "yaml": "^2.4.5"
+  }
+}
