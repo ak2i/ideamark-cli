@@ -1,0 +1,27 @@
+{
+  "doc_id": {
+    "pattern": "string"
+  },
+  "section_id": {
+    "pattern": "SEC-*"
+  },
+  "occurrence_id": {
+    "pattern": "OCC-*"
+  },
+  "entity_id": {
+    "pattern": "IE-*"
+  },
+  "anchorage": {
+    "view": ["background", "solution", "decision", "plan", "concept", "structural_hypothesis"],
+    "phase": ["exploration", "confirmed", "implementation", "validation", "plan", "evolving"]
+  },
+  "occurrence": {
+    "role": ["observation", "hypothesis", "decision", "plan", "note"]
+  },
+  "entity": {
+    "kind": ["observation", "decision", "goal", "metric", "hypothesis"]
+  },
+  "status": {
+    "state": ["in_progress", "paused", "completed", "published"]
+  }
+}

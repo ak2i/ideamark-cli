@@ -17,6 +17,75 @@ const { extractDocument } = require('../src/extract');
 const { composeDocuments } = require('../src/compose');
 const { publishDocument } = require('../src/publish');
 const { describe } = require('../src/describe');
+const { listDocument } = require('../src/ls');
+const pkg = require('../package.json');
+
+const VERSION = pkg.version;
+
+const HELP = {
+  root: [
+    'ideamark CLI',
+    '',
+    'Usage:',
+    '  ideamark <command> [options]',
+    '',
+    'Commands:',
+    '  validate   Validate an IdeaMark document',
+    '  format     Format an IdeaMark document',
+    '  extract    Extract a section or occurrence',
+    '  compose    Compose multiple documents',
+    '  publish    Publish a working document',
+    '  describe   Describe built-in topics',
+    '  ls         List IDs and vocab in a document',
+    '',
+    'Global options:',
+    '  -h, --help     Show help',
+    '  --version      Show version',
+    '',
+  ].join('\n'),
+  describe: [
+    'Usage:',
+    '  ideamark describe <topic> [--format json|yaml|md]',
+    '',
+    'Topics:',
+    '  capabilities',
+    '  checklist',
+    '  vocab',
+    '  ai-authoring',
+    '  params',
+    '',
+  ].join('\n'),
+  ls: [
+    'Usage:',
+    '  ideamark ls [<infile>|-] [--sections] [--occurrences] [--entities] [--vocab] [--format json|md]',
+    '',
+  ].join('\n'),
+  validate: [
+    'Usage:',
+    '  ideamark validate [<infile>|-] [--strict|--mode <mode>] [--fail-on-warn]',
+    '',
+  ].join('\n'),
+  format: [
+    'Usage:',
+    '  ideamark format [<infile>|-] [-o <outfile>|-] [--canonical] [--diagnostics <stderr|stdout|file>]',
+    '',
+  ].join('\n'),
+  extract: [
+    'Usage:',
+    '  ideamark extract [<infile>|-] --section <id> | --occ <id> [-o <outfile>|-] [--diagnostics <stderr|stdout|file>]',
+    '',
+  ].join('\n'),
+  compose: [
+    'Usage:',
+    '  ideamark compose <file1> <file2> [more...] [-o <outfile>|-] [--update] [--base <file>] [--doc-id <id>] [--inherit <mode>] [--diagnostics <stderr|stdout|file>]',
+    '',
+  ].join('\n'),
+  publish: [
+    'Usage:',
+    '  ideamark publish [<infile>|-] [-o <outfile>|-] [--diagnostics <stderr|stdout|file>]',
+    '',
+  ].join('\n'),
+};
 
 function usageExit() {
   writeStderr('usage error\n');
@@ -43,8 +112,21 @@ function writeDiagnostics(records, target) {
 
 function main() {
   const args = process.argv.slice(2);
+  if (args.length === 1 && (args[0] === '-h' || args[0] === '--help')) {
+    writeStdout(HELP.root);
+    process.exit(0);
+  }
+  if (args.length === 1 && args[0] === '--version') {
+    writeStdout(`${VERSION}\n`);
+    process.exit(0);
+  }
   const cmd = args.shift();
   if (!cmd) usageExit();
+  if (args.includes('-h') || args.includes('--help')) {
+    const help = HELP[cmd] || HELP.root;
+    writeStdout(help);
+    process.exit(0);
+  }
 
   if (cmd === 'validate') {
     let infile = null;
@@ -172,14 +254,53 @@ function main() {
   if (cmd === 'describe') {
     const topic = args.shift();
     if (!topic) usageExit();
-    let format = 'md';
+    let format = null;
     while (args.length) {
       const a = args.shift();
-      if (a === '--format') format = args.shift() || usageExit();
-      else usageExit();
+      if (a === '--format') {
+        format = args.shift() || usageExit();
+        if (!['json', 'yaml', 'md'].includes(format)) usageExit();
+      } else usageExit();
+    }
+    if (!format) {
+      format = topic === 'params' ? 'json' : 'md';
     }
     const result = describe(topic, format);
-    if (!result.ok) usageExit();
+    if (!result.ok) {
+      if (result.error === 'unknown topic') usageExit();
+      if (result.diagnostics) writeStderr(stringifyNdjson(result.diagnostics));
+      process.exit(1);
+    }
+    writeStdout(result.output);
+    process.exit(0);
+  }
+
+  if (cmd === 'ls') {
+    let infile = null;
+    let format = 'json';
+    const include = { sections: false, occurrences: false, entities: false, vocab: false };
+    while (args.length) {
+      const a = args.shift();
+      if (a === '--format') {
+        format = args.shift() || usageExit();
+        if (!['json', 'md'].includes(format)) usageExit();
+      } else if (a === '--sections') include.sections = true;
+      else if (a === '--occurrences') include.occurrences = true;
+      else if (a === '--entities') include.entities = true;
+      else if (a === '--vocab') include.vocab = true;
+      else if (!infile) infile = a;
+      else usageExit();
+    }
+    if (!include.sections && !include.occurrences && !include.entities && !include.vocab) {
+      include.sections = include.occurrences = include.entities = include.vocab = true;
+    }
+    const text = readInput(infile);
+    const doc = parseDocument(text);
+    const result = listDocument(doc, { format, include });
+    if (!result.ok) {
+      if (result.diagnostics) writeStderr(stringifyNdjson(result.diagnostics));
+      process.exit(1);
+    }
     writeStdout(result.output);
     process.exit(0);
   }
