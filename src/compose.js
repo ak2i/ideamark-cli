@@ -63,7 +63,7 @@ function mergeRegistry(base, incoming, diagnostics, renamePolicy) {
     if (!out.sections[id]) out.sections[id] = def;
   }
 
-  return out;
+  return { registry: out, renameMap };
 }
 
 function composeDocuments(docs, options) {
@@ -84,8 +84,10 @@ function composeDocuments(docs, options) {
   };
 
   for (const doc of docs) {
-    registry = mergeRegistry(registry, doc.registry, diagnostics, renamePolicy);
-    const incomingOrder = (doc.registry.structure && doc.registry.structure.sections) || [];
+    const merged = mergeRegistry(registry, doc.registry, diagnostics, renamePolicy);
+    registry = merged.registry;
+    const incomingOrderRaw = (doc.registry.structure && doc.registry.structure.sections) || [];
+    const incomingOrder = incomingOrderRaw.map((sec) => merged.renameMap[sec] || sec);
     if (!registry.structure.sections.length) {
       registry.structure.sections = incomingOrder.slice();
     } else {

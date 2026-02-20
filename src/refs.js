@@ -27,6 +27,8 @@ function normalizeRefsInObject(obj, docId, idSets) {
     if (k === 'occurrences') {
       if (Array.isArray(v)) {
         out[k] = v.map((x) => normalizeRefValue(x, docId, idSets.occurrences, 'occurrences'));
+      } else if (v && typeof v === 'object') {
+        out[k] = normalizeRefsInObject(v, docId, idSets);
       } else {
         out[k] = v;
       }
@@ -35,6 +37,8 @@ function normalizeRefsInObject(obj, docId, idSets) {
     if (k === 'sections') {
       if (Array.isArray(v)) {
         out[k] = v.map((x) => normalizeRefValue(x, docId, idSets.sections, 'sections'));
+      } else if (v && typeof v === 'object') {
+        out[k] = normalizeRefsInObject(v, docId, idSets);
       } else {
         out[k] = v;
       }
@@ -60,6 +64,7 @@ function normalizeRefValue(value, docId, idSet, type) {
 }
 
 function renameRefsInObject(obj, renameMap) {
+  if (typeof obj === 'string') return renameRefValue(obj, renameMap);
   if (!obj || typeof obj !== 'object') return obj;
   if (Array.isArray(obj)) {
     return obj.map((v) => renameRefsInObject(v, renameMap));

@@ -60,6 +60,21 @@ function extractDocument(doc, options) {
           }
         }
       }
+      if (occ.derived_from) {
+        const items = Array.isArray(occ.derived_from) ? occ.derived_from : [occ.derived_from];
+        for (const item of items) {
+          if (item && typeof item === 'object') {
+            if (typeof item.entity === 'string' && registry.entities[item.entity] && !keepEnt.has(item.entity)) {
+              keepEnt.add(item.entity);
+              changed = true;
+            }
+            if (typeof item.occurrence === 'string' && registry.occurrences[item.occurrence] && !keepOcc.has(item.occurrence)) {
+              keepOcc.add(item.occurrence);
+              changed = true;
+            }
+          }
+        }
+      }
     }
   }
 
