@@ -189,3 +189,7 @@ npm install -g ideamark-cli
 ## Tests
 
 See `tests/README.md` for smoke and internal tests.
+
+## Release Notes
+
+See `docs/release/v0.1.0.md`.
