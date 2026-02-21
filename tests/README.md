@@ -11,6 +11,15 @@ node tests/run-smoke.js
 
 This runner executes each smoke case, captures stdout/stderr/exit code, and compares against the golden files under `docs/dev/v0.1.0/test-materials/v0.9.13/ideamark-tests-v0.9.13/tests/golden/`.
 
+## Smoke tests (v0.1.1)
+
+Additional cases are embedded in `tests/run-smoke.js`:
+
+1. `ideamark --version` returns exit 0 and contains the package version string.
+2. `ideamark describe ai-authoring` returns the exact content of `docs/guides/ideamark/ai-authoring.md`.
+3. `ideamark describe params --format json` returns JSON with required top-level keys.
+4. `ideamark ls <fixture> --format json` returns expected IDs and vocab entries.
+
 ### NDJSON comparison rules
 
 For `validate` stdout (and ops stdin validate), the runner parses NDJSON and compares a normalized subset:

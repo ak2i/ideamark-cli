@@ -1,10 +1,11 @@
 const { writeStdout, writeStderr } = require('./utils');
+const { version } = require('../package.json');
 
 function makeMeta(mode) {
   return {
     type: 'meta',
     tool: 'ideamark-cli',
-    version: '0.1.0',
+    version,
     mode,
   };
 }

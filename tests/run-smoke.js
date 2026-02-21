@@ -4,9 +4,12 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const { parseDocument } = require('../src/parser');
 const { validateDocument } = require('../src/validate');
+const { version } = require('../package.json');
 
 const root = process.cwd();
 const base = path.join(root, 'docs', 'dev', 'v0.1.0', 'test-materials', 'v0.9.13', 'ideamark-tests-v0.9.13', 'tests');
+const v011Base = path.join(root, 'tests', 'fixtures', 'v0.1.1');
+const guideBase = path.join(root, 'docs', 'guides', 'ideamark');
 
 function readFile(p) {
   return fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
@@ -162,6 +165,65 @@ function runCaseDescribe() {
   const res = run(args);
   expectEqual(res.stdout, path.join(base, 'golden', 'describe', 'TC-DES-SMOKE-001.stdout.json'));
   expectExit(res.status, path.join(base, 'golden', 'describe', 'TC-DES-SMOKE-001.exit.txt'));
+}
+
+function runCaseVersion() {
+  const res = run(['--version']);
+  if (res.status !== 0) throw new Error('version exit mismatch');
+  if (!res.stdout.includes(version)) throw new Error('version stdout mismatch');
+}
+
+function runCaseDescribeAiAuthoring() {
+  const expected = readFile(path.join(guideBase, 'ai-authoring.md'));
+  const res = run(['describe', 'ai-authoring']);
+  if (res.status !== 0) throw new Error('describe ai-authoring exit mismatch');
+  if (!res.stdout) throw new Error('describe ai-authoring stdout empty');
+  if (res.stdout !== expected) throw new Error('describe ai-authoring output mismatch');
+}
+
+function runCaseDescribeParamsJson() {
+  const res = run(['describe', 'params', '--format', 'json']);
+  if (res.status !== 0) throw new Error('describe params exit mismatch');
+  let parsed;
+  try {
+    parsed = JSON.parse(res.stdout);
+  } catch (err) {
+    throw new Error('describe params stdout not json');
+  }
+  for (const key of ['anchorage', 'occurrence', 'entity', 'status']) {
+    if (!parsed[key]) throw new Error(`describe params missing ${key}`);
+  }
+}
+
+function runCaseLs() {
+  const inFile = path.join(v011Base, 'ls', 'LS-001.in.ideamark.md');
+  const res = run(['ls', inFile, '--format', 'json']);
+  if (res.status !== 0) throw new Error('ls exit mismatch');
+  if (res.stderr.trim()) throw new Error('ls stderr not empty');
+  let parsed;
+  try {
+    parsed = JSON.parse(res.stdout);
+  } catch (err) {
+    throw new Error('ls stdout not json');
+  }
+  const ids = (arr) => new Set((arr || []).map((x) => x.id));
+  const sections = ids(parsed.sections);
+  const occs = ids(parsed.occurrences);
+  const ents = ids(parsed.entities);
+  for (const id of ['SEC-A', 'SEC-B']) if (!sections.has(id)) throw new Error(`ls missing section ${id}`);
+  for (const id of ['OCC-1', 'OCC-2']) if (!occs.has(id)) throw new Error(`ls missing occurrence ${id}`);
+  for (const id of ['IE-1', 'IE-2']) if (!ents.has(id)) throw new Error(`ls missing entity ${id}`);
+  const vocab = parsed.vocab || {};
+  const has = (k, v) => Array.isArray(vocab[k]) && vocab[k].includes(v);
+  if (!has('anchorage.view', 'background')) throw new Error('ls vocab missing anchorage.view background');
+  if (!has('anchorage.view', 'decision')) throw new Error('ls vocab missing anchorage.view decision');
+  if (!has('anchorage.phase', 'exploration')) throw new Error('ls vocab missing anchorage.phase exploration');
+  if (!has('anchorage.phase', 'confirmed')) throw new Error('ls vocab missing anchorage.phase confirmed');
+  if (!has('occurrence.role', 'observation')) throw new Error('ls vocab missing occurrence.role observation');
+  if (!has('occurrence.role', 'decision')) throw new Error('ls vocab missing occurrence.role decision');
+  if (!has('entity.kind', 'observation')) throw new Error('ls vocab missing entity.kind observation');
+  if (!has('entity.kind', 'decision')) throw new Error('ls vocab missing entity.kind decision');
+  if (!has('status.state', 'completed')) throw new Error('ls vocab missing status.state completed');
 }
 
 function runCaseOps() {
@@ -397,6 +459,10 @@ function main() {
   runCaseCompose();
   runCasePublish();
   runCaseDescribe();
+  runCaseVersion();
+  runCaseDescribeAiAuthoring();
+  runCaseDescribeParamsJson();
+  runCaseLs();
   runCaseOps();
   runCaseExtractSuccess();
   runCaseComposeSuccess();
