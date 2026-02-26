@@ -1,27 +1,126 @@
 {
-  "doc_id": {
-    "pattern": "string"
+  "contract": {
+    "name": "doc-cli-contract",
+    "version": "1.0.2"
   },
-  "section_id": {
-    "pattern": "SEC-*"
+  "tool": {
+    "name": "ideamark-cli",
+    "version": "0.1.0"
   },
-  "occurrence_id": {
-    "pattern": "OCC-*"
+  "document": {
+    "name": "ideamark",
+    "version": "1.0.2"
   },
-  "entity_id": {
-    "pattern": "IE-*"
-  },
-  "anchorage": {
-    "view": ["background", "solution", "decision", "plan", "concept", "structural_hypothesis"],
-    "phase": ["exploration", "confirmed", "implementation", "validation", "plan", "evolving"]
-  },
-  "occurrence": {
-    "role": ["observation", "hypothesis", "decision", "plan", "note"]
-  },
-  "entity": {
-    "kind": ["observation", "decision", "goal", "metric", "hypothesis"]
-  },
-  "status": {
-    "state": ["in_progress", "paused", "completed", "published"]
-  }
+  "params": [
+    {
+      "name": "doc_id",
+      "path": "header.doc_id",
+      "required": false,
+      "type": "id",
+      "pattern": "string",
+      "description": "Document identifier.",
+      "notes": "Required in strict mode."
+    },
+    {
+      "name": "section_id",
+      "path": "sections.*.section_id",
+      "required": false,
+      "type": "id",
+      "pattern": "SEC-*",
+      "description": "Section identifier.",
+      "notes": "Required when a section is defined."
+    },
+    {
+      "name": "occurrence_id",
+      "path": "occurrences.*.occurrence_id",
+      "required": false,
+      "type": "id",
+      "pattern": "OCC-*",
+      "description": "Occurrence identifier.",
+      "notes": "Required when an occurrence is defined."
+    },
+    {
+      "name": "entity_id",
+      "path": "entities.*.entity_id",
+      "required": false,
+      "type": "id",
+      "pattern": "IE-*",
+      "description": "Entity identifier.",
+      "notes": "Required when an entity is defined."
+    },
+    {
+      "name": "anchorage.view",
+      "path": "sections.*.anchorage.view",
+      "required": false,
+      "type": "enum",
+      "enum": [
+        "background",
+        "solution",
+        "decision",
+        "plan",
+        "concept",
+        "structural_hypothesis"
+      ],
+      "description": "Anchorage view vocabulary.",
+      "notes": "Required in strict mode when sections are defined."
+    },
+    {
+      "name": "anchorage.phase",
+      "path": "sections.*.anchorage.phase",
+      "required": false,
+      "type": "enum",
+      "enum": [
+        "exploration",
+        "confirmed",
+        "implementation",
+        "validation",
+        "plan",
+        "evolving"
+      ],
+      "description": "Anchorage phase vocabulary.",
+      "notes": "Required in strict mode when sections are defined."
+    },
+    {
+      "name": "occurrence.role",
+      "path": "occurrences.*.role",
+      "required": false,
+      "type": "enum",
+      "enum": [
+        "observation",
+        "hypothesis",
+        "decision",
+        "plan",
+        "note"
+      ],
+      "description": "Occurrence role vocabulary."
+    },
+    {
+      "name": "entity.kind",
+      "path": "entities.*.kind",
+      "required": false,
+      "type": "enum",
+      "enum": [
+        "observation",
+        "decision",
+        "goal",
+        "metric",
+        "hypothesis"
+      ],
+      "description": "Entity kind vocabulary."
+    },
+    {
+      "name": "status.state",
+      "path": "header.status.state",
+      "required": false,
+      "type": "enum",
+      "enum": [
+        "in_progress",
+        "paused",
+        "completed",
+        "published"
+      ],
+      "description": "Document status vocabulary.",
+      "notes": "Required in strict mode."
+    }
+  ]
 }
