@@ -5,6 +5,24 @@
 
 ---
 
+## 0. docs_dev_v1.0.2 シリーズ（開発仕様の整合）
+
+目的: v1.0.2 仕様変更に関する開発資料の順序と依存関係を明確化する。  
+順序: `spec-change` → `evidence-annotations` → `evidence-block-normative` → `anchorage` → `specs` 反映
+
+詳細設計:
+1. `docs_dev_v1.0.2_spec-change_evidence-block.md` を基準に v1.0.2 変更点を確定する。  
+2. `docs_dev_v1.0.2_evidence-annotations.md` で推奨スキーマと CLI 影響を詰める。  
+3. `docs_dev_v1.0.2_evidence-block-normative.md` に最小要件を切り出し、参照整合を取る。  
+4. `docs_dev_v1.0.2_anchorage.md` を Section 付与の前提で整理し、語彙非固定方針を明記する。  
+5. `docs/specs/v1.0.2/ideamark-yaml-spec-v1.0.2.md` に Evidence/Anchorage の反映と整合確認を行う。
+
+完了条件:
+1. 4本の docs_dev 文書が互いに矛盾なく参照整合している。  
+2. specs 側の Evidence/Anchorage 記述と矛盾しない。
+
+---
+
 ## 1. describe 既定フォーマット統一（md）
 
 目的: `describe` の既定 `--format` を `md` に統一し、契約（MUST）に合わせる。  
