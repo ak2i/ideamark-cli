@@ -25,7 +25,7 @@ IdeaMark は Markdown 文書に構造化メタデータを埋め込むことで�
 
 YAML は Markdown の fenced code block として埋め込む：
 
-```markdown
+````markdown
 # 文書タイトル
 
 ```yaml
@@ -35,7 +35,7 @@ doc_id: "..."
 ```
 
 本文のテキスト...
-```
+````
 
 
 
@@ -51,6 +51,7 @@ doc_id: "..."
 
 ### 2.1 Header（必須）
 
+````markdown
 ```yaml
 ideamark_version: 1                    # 必須: 固定値
 doc_id: string                         # 必須: 文書の一意識別子
@@ -61,6 +62,7 @@ updated_at: timestamp                  # 必須: 更新日時 (ISO 8601)
 lang: string                           # 必須: 言語コード (BCP 47)
 template: TemplateRef                 # optional: 生成に利用したテンプレート参照（doc_typeは抽象語彙のまま）
 ```
+````
 
 #### DocType
 
@@ -81,6 +83,7 @@ template: TemplateRef                 # optional: 生成に利用したテンプ
 
 ### 2.2 Refs（文書間参照、optional）
 
+````markdown
 ```yaml
 refs:
   sources:                             # 素材・入力として参照
@@ -118,6 +121,7 @@ refs:
     section: section_ref               # optional: どの Section の詳細か
     relation: DetailRelation           # 必須: 関係種別
 ```
+````
 
 #### SourceRole
 
@@ -136,6 +140,7 @@ refs:
 テンプレートから生成・編集された文書は、Header の `template`（optional）でテンプレート情報を保持できる。
 パスが不明な場合でも、`file` に **テンプレートファイル名のみ**を記録して追跡できる。
 
+````markdown
 ```yaml
 template:
   id: string                           # optional: template_id（分かる場合）
@@ -145,6 +150,7 @@ template:
   file: string                         # optional: パス不明時のファイル名（例: Decision6-WorkCell.ideamark.template.md）
   description: string                  # optional: 何をテンプレートとして使ったか
 ```
+````
 
 推奨：テンプレート文書そのものは `refs.sources` にも `role: template` として記録し、監査・来歴の追跡性を担保する。
 
@@ -171,13 +177,16 @@ template:
 
 Entity / Occurrence / Section から詳細文書を参照できる。
 
+````markdown
 ```yaml
 detail_doc: DetailDocRef               # optional: 単一参照
 detail_docs: [DetailDocRef, ...]       # optional: 複数参照
 ```
+````
 
 #### DetailDocRef
 
+````markdown
 ```yaml
 detail_doc:
   uri: string                          # 必須: 詳細 Document の URI
@@ -185,6 +194,7 @@ detail_doc:
   summary: string                      # optional: 要約（人間向け）
   covers: [cover_ref, ...]             # optional: 対象範囲
 ```
+````
 
 #### DetailRelation
 
@@ -219,6 +229,7 @@ https://example.com/ideamark/docs/xxx.yaml
 
 ### 3.1 Entities Registry
 
+````markdown
 ```yaml
 entities:
   {entity_id}:                         # ID は IE- プレフィックス推奨
@@ -243,6 +254,7 @@ entities:
       kind: EntityKind
       content: string
 ```
+````
 
 ### 3.2 EntityKind
 
@@ -293,6 +305,7 @@ entities:
 
 ### 3.4 Provenance（出自情報）
 
+````markdown
 ```yaml
 provenance:
   type: ProvenanceType                 # 必須: 出自種別
@@ -301,6 +314,7 @@ provenance:
   prompt_hash: string                  # optional: プロンプトハッシュ
   created_by: string                   # optional: 作成者ID
 ```
+````
 
 #### ProvenanceType
 
@@ -312,13 +326,14 @@ provenance:
 |`synthesized`|複数ソースから統合|
 
 ### 3.5 TransferContext（転用文脈）
-
+````markdown
 ```yaml
 transfer_context:
   source_domain: string                # 必須: 転用元ドメイン
   target_domain: string                # 必須: 転用先ドメイン
   mapping_type: MappingType            # 必須: マッピング種別
 ```
+````
 
 #### MappingType
 
@@ -333,7 +348,7 @@ transfer_context:
 ## 4. Occurrence（出現）
 
 ### 4.1 Occurrences Registry
-
+````markdown
 ```yaml
 occurrences:
   {occurrence_id}:                     # ID は OCC- プレフィックス推奨
@@ -348,6 +363,7 @@ occurrences:
     detail_doc: DetailDocRef           # optional: 詳細 Document 参照（単一）
     detail_docs: [DetailDocRef, ...]   # optional: 詳細 Document 参照（複数）
 ```
+````
 
 ### 4.2 OccurrenceRole
 
@@ -403,6 +419,7 @@ occurrences:
 
 ### 4.3 OccurrenceStatus
 
+````markdown
 ```yaml
 status:
   state: StatusState                   # 必須: 状態
@@ -411,6 +428,7 @@ status:
   confirmed_by: ConfirmationMethod     # optional: 確定方法
   awaiting: string                     # optional: 待機中の条件（provisional 時）
 ```
+````
 
 #### StatusState
 
@@ -433,6 +451,7 @@ status:
 
 ### 4.4 Attribution（帰属情報）
 
+````markdown
 ```yaml
 attribution:
   contributor: string                  # 必須: 貢献者ID
@@ -441,6 +460,7 @@ attribution:
   reviewed_by: string                  # optional: レビュー者ID
   reviewed_at: timestamp               # optional: レビュー時刻
 ```
+````
 
 #### GeneratedBy
 
@@ -452,11 +472,13 @@ attribution:
 
 ### 4.5 DerivedFrom（派生元情報）
 
+````markdown
 ```yaml
 derived_from:
   entity: entity_ref                   # 必須: 派生元 Entity
   operation: DerivationOp              # 必須: 操作種別
 ```
+````
 
 -----
 
@@ -464,6 +486,7 @@ derived_from:
 
 ### 5.1 Sections Registry
 
+````markdown
 ```yaml
 sections:
   {section_id}:                        # ID は SEC- プレフィックス推奨
@@ -474,9 +497,11 @@ sections:
     detail_doc: DetailDocRef           # optional: 詳細 Document 参照（単一）
     detail_docs: [DetailDocRef, ...]   # optional: 詳細 Document 参照（複数）
 ```
+````
 
 ### 5.2 Anchorage（読み方の指定）
 
+````markdown
 ```yaml
 anchorage:
   view: ViewType                       # 必須: 観点
@@ -485,6 +510,7 @@ anchorage:
   temporality: TemporalityType         # optional: 時間的性質
   snapshot_at: timestamp               # optional: スナップショット時点
 ```
+````
 
 以下の語彙一覧（ViewType / PhaseType / TemporalityType）は **推奨語彙セット**であり、
 仕様としての固定語彙ではない。実装は **未知語彙を許容**し、未掲載の値を理由に
@@ -724,6 +750,7 @@ continuation:
 
 ### 9.1 Occurrence 内での Entity インライン
 
+````markdown
 ```yaml
 occurrences:
   OCC-001:
@@ -738,9 +765,11 @@ occurrences:
     status:
       state: "confirmed"
 ```
+````
 
 ### 9.2 Section 内での Occurrence インライン
 
+````markdown
 ```yaml
 sections:
   SEC-001:
@@ -754,6 +783,7 @@ sections:
         status:
           state: "confirmed"
 ```
+````
 
 -----
 

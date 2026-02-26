@@ -183,7 +183,6 @@ structure:
 
 この文書は IdeaMark の機能テストを兼ねている。
 各セクションの `anchorage` を参照することで、読む観点が指定される。
-```
 
 ## 設計方針の提案
 
@@ -208,18 +207,20 @@ structure:
 ````markdown
 ## Section 001 : セクション名
 ```yaml
-section_id: "SEC-001"
+section_id: "sample-SEC-001"
 anchorage:
   view: "background"
   phase: "confirmed"
 ```
+````
 
 セクション全体の概要を自然言語で記述する。
 
 ### OCC-001 : 出現タイトル
+````markdown
 ```yaml
-occurrence_id: "OCC-001"
-entity: "IE-001"
+occurrence_id: "sample-OCC-001"
+entity: "sample-IE-001"
 role: "context"
 status:
   state: "confirmed"
@@ -227,11 +228,12 @@ detail_doc:
   uri: "./detail-doc.ideamark.md"
   relation: "elaborates"
 ```
+````
 Occurrence の概要を自然言語で記述する。
 
 #### IdeaEntity: IE-001
 IdeaEntity の概要を自然言語で記述する。
-````
+
 
 ### YAML ブロックの種類
 
@@ -249,9 +251,10 @@ IdeaEntity の概要を自然言語で記述する。
 Entity / Occurrence / Section に `detail_doc` または `detail_docs` を付与できる。
 詳細文書側は `refs.parent` で親文書への参照を持つ。
 
+````markdown
 ```yaml
 entities:
-  IE-001:
+  sample-IE-001:
     kind: "hypothesis"
     content: "予約制の導入が有効"
     detail_doc:
@@ -261,12 +264,13 @@ entities:
 refs:
   parent:
     uri: "ideamark://docs/main-plan-001"
-    entity: "IE-001"
+    entity: "sample-IE-001"
     relation: "elaborates"
 ```
+````
 
 ### 機械処理の方針
-```
+
 1. 文書冒頭の YAML ブロック（ideamark_version: 1 を含む）を検出
 2. 文書末尾の Entities Registry を検出（entities: キーを含む）
 3. 各 ## セクション内の section_id を持つ YAML を検出
