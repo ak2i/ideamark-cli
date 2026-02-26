@@ -1,5 +1,5 @@
-# docs/dev/v1.0.2/spec-change-evidence-block.md
-## v1.0.2 変更点：Evidence Block の導入（Draft）
+# docs/dev/v0.1.2/docs_dev_v1.0.2_spec-change_evidence-block.md
+## v1.0.2 変更点：Evidence Block の導入
 
 Generated: 2026-02-22T00:12:57.249972Z
 
@@ -11,10 +11,12 @@ Generated: 2026-02-22T00:12:57.249972Z
 
 - Markdown 本文中に fenced YAML を埋め込めることは既存 Markdown の能力として当然だが、
   v1.0.2 では **`ideamark:evidence`** を識別子として、ツール生成結果の格納用途を標準化する。
+- Evidence Block の内容は YAML mapping/object であることを必須とする（MUST）。
 - Evidence Block は拡張前提であり、キーや値の意味は固定しない。
-- validate は Evidence Block の未知キーを理由に fail してはならない。
+- validate は Evidence Block の未知キーを理由に fail してはならない（MUST NOT）。
+- Evidence Block の配置は任意（位置制約なし）とする。
 
-参照：`docs/dev/v1.0.2/evidence-block-normative.md`
+参照：`docs/dev/v0.1.2/docs_dev_v1.0.2_evidence-block-normative.md`
 
 ---
 
@@ -43,5 +45,3 @@ Evidence Block は “追加要素” であり、既存文書を壊さない：
 - 後続で推奨スキーマやメトリクス語彙を追加しても、未知キー許容により後方互換を保ちやすい
 
 ---
-
-End of draft.

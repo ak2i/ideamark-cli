@@ -486,6 +486,10 @@ anchorage:
   snapshot_at: timestamp               # optional: スナップショット時点
 ```
 
+以下の語彙一覧（ViewType / PhaseType / TemporalityType）は **推奨語彙セット**であり、
+仕様としての固定語彙ではない。実装は **未知語彙を許容**し、未掲載の値を理由に
+validation error としてはならない（MUST NOT）。
+
 #### ViewType
 
 |値                      |説明           |
@@ -496,6 +500,7 @@ anchorage:
 |`discussion`           |議論として読む      |
 |`decision`             |意思決定として読む    |
 |`background`           |背景情報として読む    |
+|`pending`              |未定（暫定）として読む |
 |`structural_hypothesis`|構造仮説として読む    |
 |`observation_series`   |観測時系列として読む   |
 |`causal_network`       |因果ネットワークとして読む|
@@ -769,6 +774,7 @@ sections:
 |`detail_doc_ref_valid`    |detail_doc/detail_docs の必須項目が存在すること|
 |`detail_doc_cover_ref_valid`|detail_doc.covers の参照が解決可能であること|
 |`parent_ref_valid`        |refs.parent の必須項目が存在すること         |
+|`anchorage_vocab_non_strict`|anchorage.view / phase / temporality の語彙チェックは行わないこと|
 
 ### 10.2 Extraction 検証（–strict モード）
 
@@ -819,6 +825,7 @@ refs/sources 等の来歴宣言と独立である（矛盾を許容する）。
 ### 13.1 識別
 
 `yaml ideamark:evidence` と識別される fenced YAML ブロックは Evidence Block として扱う。
+Evidence Block は文書中の任意位置に置いてよい（MAY）。
 
 ### 13.2 Validation
 

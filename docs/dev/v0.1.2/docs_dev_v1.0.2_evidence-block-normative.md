@@ -1,9 +1,9 @@
-# docs/dev/v1.0.2/evidence-block-normative.md
-## Evidence Block — v1.0.2 最小要件（Normative Draft）
+# docs/dev/v0.1.2/docs_dev_v1.0.2_evidence-block-normative.md
+## Evidence Block — v1.0.2 最小要件（Normative）
 
 Generated: 2026-02-22T00:12:57.249972Z
 
-この文書は、`docs/dev/v1.0.2/evidence-annotations.md`（議論ドラフト）を前提に、
+この文書は、`docs/dev/v0.1.2/docs_dev_v1.0.2_evidence-annotations.md` を前提に、
 **v1.0.2 の正式仕様（specs側）へ取り込む最小要件**を切り出したものです。
 
 狙い：
@@ -36,7 +36,7 @@ Evidence Block は次の fenced code block 形式で表現される：
 
 ### 2.2 内容の型
 - ブロック内容は YAML の **mapping/object** でなければならない（MUST）。
-- mapping/object でない場合、文書は validation error となり得る（MAY）。
+- mapping/object でない場合、validate 実装は error として扱ってよい（MAY）。
   - ただし、v1.0.2 では “どのコマンドがどこまで検証するか” はツール実装に委ねる。
 
 ### 2.3 拡張性
@@ -70,7 +70,7 @@ Evidence Block は次のメタ情報を含むことが望ましい（SHOULD）�
 - `inputs`（比較対象・クエリ条件・対象期間など）
 - `limits`（オンデマンド計算、部分性、近似など）
 
-※ 推奨スキーマの詳細は `docs/dev/v1.0.2/evidence-annotations.md` を参照。
+※ 推奨スキーマの詳細は `docs/dev/v0.1.2/docs_dev_v1.0.2_evidence-annotations.md` を参照。
 
 ---
 
@@ -88,5 +88,3 @@ v1.0.2 の正式仕様（specs）には、次のみを含める：
 拡張仕様（docs/dev）として管理し、後続バージョンで必要に応じて固める。
 
 ---
-
-End of draft.

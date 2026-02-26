@@ -1,5 +1,5 @@
 # Doc CLI Contract v1.0.2
-## Capabilities JSON Schema (Integrated Draft)
+## Capabilities JSON Schema
 Generated: 2026-02-25T09:50:35.688972Z
 
 This section defines the JSON schema for:
@@ -25,6 +25,9 @@ The goal is:
     "name": "<tool-name>",
     "version": "<semver>"
   },
+  "features": {
+    "...": { }
+  },
   "commands": {
     "...": { }
   }
@@ -37,6 +40,7 @@ The goal is:
 - contract.version (MUST)
 - tool.name (MUST)
 - tool.version (MUST, SemVer recommended)
+- features (MAY)
 - commands (MUST)
 
 Unknown top-level fields MUST NOT cause failure.
@@ -156,4 +160,4 @@ This section is OPTIONAL.
 
 ---------------------------------------------------------------------
 
-End of schema draft.
+End of schema.

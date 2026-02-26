@@ -1,17 +1,19 @@
-# docs/dev/v1.0.2/anchorage.md
-## Anchorage（解釈レイヤー）— v1.0.2 方針（Draft）
+# docs/dev/v0.1.2/docs_dev_v1.0.2_anchorage.md
+## Anchorage（解釈レイヤー）— v1.0.2 方針
 
 Generated: 2026-02-21T22:53:13.452053Z
 
 この文書は IdeaMark YAML Spec v1.0.2 に向けた **anchorage の扱い**を定義する開発資料（差分・方針）です。
-v1.0.2 では、anchorage の語彙（キー・値）を固定せず、実運用データの観測から収束を促す方針を採用します。
+v1.0.2 では、anchorage の語彙（値）を固定せず、実運用データの観測から収束を促す方針を採用します。
+一方で anchorage の **フィールド構造**（view / phase / domain / temporality / snapshot_at）は v1.0.2 として固定とします。
 
 ---
 
 ## 1. 目的と位置づけ
 
-anchorage は、Section / Occurrence / Entity により構造化された内容に対して、
-**人間およびAIが意味（解釈）を見出すための切り口（lens）**を付与するメタデータです。
+anchorage は Section に付与される属性であり、
+Section に含まれる Occurrence / Entity によって構成された内容を
+**人間およびAIが意味（解釈）を見出すための切り口（lens）**として記述するメタデータです。
 
 - anchorage は `doc_type`（知識状態）でも `doc_profile`（文書形）でもありません。
 - anchorage は **解釈の補助情報**であり、本文内容の真偽・正当性を規定しません。
@@ -21,9 +23,9 @@ anchorage は、Section / Occurrence / Entity により構造化された内容�
 ## 2. v1.0.2 の基本方針（語彙は固定しない）
 
 ### 2.1 語彙自由（Model C）
-v1.0.2 では anchorage の **キー・値の語彙を固定しません**。
+v1.0.2 では anchorage の **値の語彙を固定しません**。
 
-- 未知のキー：許可
+- 未知のキー：許可（ただし、構造としては view / phase / domain / temporality / snapshot_at を固定）
 - 未知の値：許可
 - 言語（日本語/英語/その他）：許可
 - 独自語彙：許可
@@ -34,14 +36,15 @@ v1.0.2 では anchorage の **キー・値の語彙を固定しません**。
 語彙は固定しませんが、**構文上の破壊**を防ぐために、次のみ strict に扱います。
 
 - anchorage が存在する場合、anchorage は YAML mapping（object）であること
+- anchorage のフィールド構造（view / phase / domain / temporality / snapshot_at）は v1.0.2 で固定
 
 ---
 
 ## 3. 構文ルール（Validation）
 
 ### 3.1 フィールドの有無
-- `anchorage` は **任意（MAY）** とします。
-  - ただし、解釈・再利用性の向上のため、著者は `anchorage` を付与することが望ましい（SHOULD）。
+- Section においては `anchorage` を **必須（MUST）** とします。
+- ただし、解釈が未確定な段階でも記録できるよう、**未定を表す語彙の使用を許容**します。
 
 ### 3.2 型（Strict）
 `anchorage` が存在する場合：
@@ -52,6 +55,8 @@ v1.0.2 では anchorage の **キー・値の語彙を固定しません**。
 - anchorage 配下のキー・値について、Validation は意味検査を行いません。
 - 未知語彙・独自語彙・多言語語彙は Validation Error の原因になりません。
 - 値の型（string/number/object/list 等）も、v1.0.2 では制限しません。
+  - 例: `view: pending` / `phase: evolving` のように「未定・暫定」を示す語彙で埋めてもよい。
+  - 運用上、`pending` は view 側に用い、phase は `evolving` を推奨する。
 
 ---
 
@@ -114,5 +119,3 @@ anchorage:
   - v1.0.2 では、Validation はリモート参照や語彙辞書の解決を要求しません。
 
 ---
-
-End of draft.

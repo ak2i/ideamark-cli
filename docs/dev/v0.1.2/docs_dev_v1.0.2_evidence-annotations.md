@@ -1,5 +1,5 @@
-# docs/dev/v1.0.2/evidence-annotations.md
-## Evidence Annotations（統計・差分結果の埋め込み）— v1.0.2 議論ドラフト
+# docs/dev/v0.1.2/docs_dev_v1.0.2_evidence-annotations.md
+## Evidence Annotations（統計・差分結果の埋め込み）— v1.0.2
 
 Generated: 2026-02-22T00:08:10.484673Z
 
@@ -26,7 +26,7 @@ IdeaMark 文書へ **機械可読な形で付加（annotation）**するため�
 - Evidence は本文中に “メモ的に” 追記できるが、**機械可読**であるべき
 - そのため、Markdown中の **Fenced YAML** を Evidence Block として標準化する
 
-### 2.2 最小フォーマット（案）
+### 2.2 最小フォーマット
 Evidence Block は、次の識別子で開始する：
 
 ```markdown
@@ -39,9 +39,9 @@ Evidence Block は、次の識別子で開始する：
 
 ---
 
-## 3. Evidence Block のスコープ（どこに付けられるか）
+## 3. Evidence Block の推奨スコープ（付与位置の例）
 
-v1.0.2 では以下のスコープに付与できることを想定する（すべて任意）。
+v1.0.2 では以下のスコープを **推奨例** として挙げる（すべて任意）。
 
 - **Document-level**：文書全体の先頭（ヘッダ直後）または末尾
 - **Section-level**：各 Section の本文直下
@@ -156,7 +156,7 @@ v1.0.2 では **参照できる**ことだけを方針化し、解決方法は�
 ※ capabilities で「attach対応」「artifact出力対応」などを宣言可能にする。
 
 ### 6.2 validate との関係
-- Evidence Block は未知フィールドを含むため、**validate は拒否しない**。  
+- Evidence Block は未知フィールドを含むため、**validate は拒否してはならない（MUST NOT）**。  
 - ただし “Fenced YAML として壊れている” 場合は構文エラーになり得る。
 
 ---
@@ -181,5 +181,3 @@ ideamark query refs --entity IE-001 --emit-evidence yaml --evidence-scope entity
 （コマンド名や細部は仮。ここでは “attach/emit-evidence/artifact-out” の概念を示す。）
 
 ---
-
-End of draft.
