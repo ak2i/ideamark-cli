@@ -40,7 +40,7 @@ const HELP = {
     '',
     'Global options:',
     '  -h, --help     Show help',
-    '  --version      Show version',
+    '  --version      Show version [--format json]',
     '',
   ].join('\n'),
   describe: [
@@ -116,7 +116,24 @@ function main() {
     writeStdout(HELP.root);
     process.exit(0);
   }
-  if (args.length === 1 && args[0] === '--version') {
+  if (args[0] === '--version') {
+    let format = null;
+    if (args.length > 1) {
+      if (args[1] === '--format') {
+        format = args[2] || usageExit();
+        if (format !== 'json') usageExit();
+      } else usageExit();
+      if (args.length > 3) usageExit();
+    }
+    if (format === 'json') {
+      const payload = {
+        tool: { version: VERSION },
+        contract: { version: '1.0.2' },
+        document_spec: { version: '1.0.2' },
+      };
+      writeStdout(`${JSON.stringify(payload)}\n`);
+      process.exit(0);
+    }
     writeStdout(`${VERSION}\n`);
     process.exit(0);
   }
@@ -262,9 +279,7 @@ function main() {
         if (!['json', 'yaml', 'md'].includes(format)) usageExit();
       } else usageExit();
     }
-    if (!format) {
-      format = topic === 'params' ? 'json' : 'md';
-    }
+    if (!format) format = 'md';
     const result = describe(topic, format);
     if (!result.ok) {
       if (result.error === 'unknown topic') usageExit();
