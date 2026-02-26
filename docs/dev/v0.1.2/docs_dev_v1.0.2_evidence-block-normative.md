@@ -54,6 +54,7 @@ Evidence Block は文書中の任意位置に置いてよい（MAY）。
 - Section-level：該当 Section 本文直下
 - Entity-level：Entity 定義（Registry内）直下または近傍
 - Occurrence-level：Occurrence 定義（Registry内）直下または近傍
+  - Entity-level / Occurrence-level は Registry の YAML ブロック直後に付与するのが最も安定（YAML の途中に fenced block は挿入できないため）
 
 ※ v1.0.2 では厳密な位置制約は設けない（再利用性・互換性優先）。
 
@@ -68,6 +69,7 @@ Evidence Block は次のメタ情報を含むことが望ましい（SHOULD）�
 - `produced_by`（tool / command / plugin / tool_version）
 - `produced_at`（生成時刻）
 - `inputs`（比較対象・クエリ条件・対象期間など）
+- `memo`（短いメモや補足。mapping を保つための最小キーとしても使える）
 - `limits`（オンデマンド計算、部分性、近似など）
 
 ※ 推奨スキーマの詳細は `docs/dev/v0.1.2/docs_dev_v1.0.2_evidence-annotations.md` を参照。

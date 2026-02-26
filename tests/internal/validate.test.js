@@ -32,3 +32,54 @@ test('validate: structure section missing error', () => {
   const res = runCli(['validate', '--strict'], doc);
   assert.strictEqual(res.status, 1);
 });
+
+test('validate: anchorage required (non-strict)', () => {
+  let doc = minimalDoc();
+  doc = doc.replace(
+    '## SEC-1\n```yaml\nsection_id: "SEC-1"\nanchorage:\n  view: "design"\n  phase: "implementation"\noccurrences: ["OCC-1"]\n```\n\n',
+    ''
+  );
+  doc = doc.replace(
+    '    anchorage: { view: "design", phase: "implementation" }\n',
+    ''
+  );
+  const res = runCli(['validate'], doc);
+  assert.strictEqual(res.status, 1);
+  assert.match(res.stdout, /anchorage_required/);
+});
+
+test('validate: anchorage must be mapping', () => {
+  let doc = minimalDoc();
+  doc = doc.replace(
+    'anchorage:\n  view: "design"\n  phase: "implementation"\n',
+    'anchorage: "oops"\n'
+  );
+  doc = doc.replace(
+    '    anchorage: { view: "design", phase: "implementation" }\n',
+    '    anchorage: "oops"\n'
+  );
+  const res = runCli(['validate'], doc);
+  assert.strictEqual(res.status, 1);
+  assert.match(res.stdout, /anchorage_mapping/);
+});
+
+test('validate: evidence block must be mapping', () => {
+  const doc = minimalDoc() + '\n```yaml ideamark:evidence\n- kind: "diff-metric"\n```\n';
+  const res = runCli(['validate'], doc);
+  assert.strictEqual(res.status, 1);
+  assert.match(res.stdout, /evidence_mapping/);
+});
+
+test('validate: emit evidence yaml', () => {
+  const doc = minimalDoc();
+  const res = runCli(['validate', '--emit-evidence', 'yaml'], doc);
+  assert.strictEqual(res.status, 0);
+  assert.match(res.stdout, /```yaml ideamark:evidence/);
+});
+
+test('validate: attach evidence to stdout', () => {
+  const doc = minimalDoc();
+  const res = runCli(['validate', '--attach', '-'], doc);
+  assert.strictEqual(res.status, 0);
+  assert.match(res.stdout, /```yaml ideamark:evidence/);
+});

@@ -32,3 +32,9 @@ test('format: works with frontmatter only', () => {
   const res = runCli(['format'], doc);
   assert.match(res.stdout, /doc_id/);
 });
+
+test('format: preserves evidence info string', () => {
+  const doc = minimalDoc() + '\n```yaml ideamark:evidence\nmemo: "note"\n```\n';
+  const res = runCli(['format'], doc);
+  assert.match(res.stdout, /```yaml ideamark:evidence/);
+});

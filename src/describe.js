@@ -15,6 +15,13 @@ const CAPABILITIES = {
     name: 'ideamark-cli',
     version: pkg.version,
   },
+  features: {
+    evidence: {
+      emit: ['yaml', 'ndjson'],
+      attach: true,
+      artifact_out: true,
+    },
+  },
   commands: {
     describe: {
       formats: ['md', 'json', 'yaml'],
@@ -43,6 +50,23 @@ const CAPABILITIES = {
         },
         '--fail-on-warn': {
           description: 'Fail the command if any warning is emitted.',
+        },
+        '--emit-evidence': {
+          values: ['yaml', 'ndjson'],
+          description: 'Emit an evidence record for the validation result.',
+        },
+        '--evidence-scope': {
+          values: ['document', 'section', 'entity', 'occurrence'],
+          description: 'Scope for evidence attachment or reporting.',
+        },
+        '--evidence-target': {
+          description: 'Target ID for section/entity/occurrence scoped evidence.',
+        },
+        '--attach': {
+          description: 'Attach evidence to the input document and write output.',
+        },
+        '--artifact-out': {
+          description: 'Write evidence data to an external artifact file.',
         },
       },
     },
@@ -80,7 +104,7 @@ const CHECKLIST = {
     'header_singleton',
     'yaml_parseable',
     'id_unique_within_doc',
-    'section_anchorage_required',
+    'anchorage_required',
     'occurrence_required',
     'entity_ref_valid',
     'occurrence_ref_valid',
@@ -288,9 +312,9 @@ function toMarkdown(topic, data) {
       '- `--format <json|md>` — Choose output format.',
       '',
       '## Evidence (Cross-cutting)',
-      '- **Emit evidence:** Not supported',
-      '- **Attach evidence to a document:** Not supported',
-      '- **Artifact out:** Not supported',
+      '- **Emit evidence:** Supported (yaml, ndjson)',
+      '- **Attach evidence to a document:** Supported',
+      '- **Artifact out:** Supported',
       '',
       '## Compatibility Notes',
       'Unknown fields in capabilities JSON should be ignored by consumers.',

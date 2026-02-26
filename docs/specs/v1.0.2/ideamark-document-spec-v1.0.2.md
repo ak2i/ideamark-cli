@@ -275,8 +275,10 @@ refs:
 2. 文書末尾の Entities Registry を検出（entities: キーを含む）
 3. 各 ## セクション内の section_id を持つ YAML を検出
 4. 各 ### 内の occurrence_id を持つ YAML を検出
-5. fenced `yaml` 以外の Markdown は補足情報として無視（または LLM 用コンテキスト）
-6. YAML ブロック直後の Markdown は人間向けの概要として扱い、機械処理対象外とする
+5. `yaml ideamark:evidence` の fenced YAML は Evidence Block として認識し、本文構造とは独立の注釈として扱う
+6. Evidence Block は構造解析の対象外だが、機械処理・再出力時に保持されることを前提とする
+7. fenced `yaml` 以外の Markdown は補足情報として無視（または LLM 用コンテキスト）
+8. YAML ブロック直後の Markdown は人間向けの概要として扱い、機械処理対象外とする
 
 
 -----
@@ -309,6 +311,7 @@ Evidence Block は本文の意味内容を変更しない付加情報である�
 - fenced 言語は `yaml` を用いる（MUST）
 - info string に `ideamark:evidence` を含めること（MUST）
 - 内容は YAML mapping/object であること（MUST）
+  - 任意メモを含めたい場合も mapping にし、例: `memo: "..."` のようにキーを持たせること
 
 ### 13.3 拡張性
 
@@ -316,7 +319,13 @@ Evidence Block は本文の意味内容を変更しない付加情報である�
 - 同一 target に複数 Evidence Block を付与してよい（MAY）
 - `id` フィールドは任意（MAY）
 
-### 13.4 Diff における扱い
+### 13.4 Tooling（format/validation/diff）
+
+- Evidence Block は format/publish などの出力処理で削除・平坦化されてはならない（MUST NOT）
+- info string（`yaml ideamark:evidence`）は保持されること（MUST）
+- validation は内容が mapping/object であることを検証してよい（MAY）
+
+### 13.5 Diff における扱い
 
 - `ideamark diff` は既定動作として Evidence Block を
   差分計算対象から除外することが望ましい（SHOULD）

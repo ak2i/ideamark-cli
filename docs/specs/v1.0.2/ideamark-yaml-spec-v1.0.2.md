@@ -804,6 +804,8 @@ sections:
 |`detail_doc_ref_valid`    |detail_doc/detail_docs の必須項目が存在すること|
 |`detail_doc_cover_ref_valid`|detail_doc.covers の参照が解決可能であること|
 |`parent_ref_valid`        |refs.parent の必須項目が存在すること         |
+|`anchorage_required`      |Section の anchorage が存在すること         |
+|`anchorage_mapping`       |anchorage が mapping/object であること      |
 |`anchorage_vocab_non_strict`|anchorage.view / phase / temporality の語彙チェックは行わないこと|
 
 ### 10.2 Extraction 検証（–strict モード）
@@ -856,13 +858,20 @@ refs/sources 等の来歴宣言と独立である（矛盾を許容する）。
 
 `yaml ideamark:evidence` と識別される fenced YAML ブロックは Evidence Block として扱う。
 Evidence Block は文書中の任意位置に置いてよい（MAY）。
+Evidence Block も `yaml_parseable` の対象に含まれる。
 
 ### 13.2 Validation
 
 - 内容が YAML mapping/object であることを検証してよい（MAY）
 - 未知キーを理由に validation failure してはならない（MUST NOT）
+  - 任意メモを含めたい場合も mapping にし、例: `memo: "..."` のようにキーを持たせること
 
-### 13.3 Diff Interaction
+### 13.3 Formatting Interaction
+
+- format/publish は Evidence Block を削除・平坦化してはならない（MUST NOT）
+- info string（`yaml ideamark:evidence`）は保持されること（MUST）
+
+### 13.4 Diff Interaction
 
 - diff 実装は既定で Evidence Block を比較対象から除外することが望ましい（SHOULD）
 - `--include-evidence` 等のオプションで比較対象に含めることを許可してよい（MAY）

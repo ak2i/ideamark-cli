@@ -13,6 +13,7 @@ const { validateDocument } = require('../src/validate');
 const { emitNdjson } = require('../src/diagnostics');
 const { stringifyNdjson } = require('../src/diagnostics');
 const { formatDocument } = require('../src/format');
+const { attachEvidence, buildEvidenceBlock } = require('../src/evidence');
 const { extractDocument } = require('../src/extract');
 const { composeDocuments } = require('../src/compose');
 const { publishDocument } = require('../src/publish');
@@ -149,20 +150,72 @@ function main() {
     let infile = null;
     let mode = 'working';
     let failOnWarn = false;
+    let emitEvidence = null;
+    let evidenceScope = 'document';
+    let evidenceTarget = null;
+    let attachOut = null;
+    let artifactOut = null;
     while (args.length) {
       const a = args.shift();
       if (a === '--strict') mode = 'strict';
       else if (a === '--mode') mode = args.shift() || usageExit();
       else if (a === '--fail-on-warn') failOnWarn = true;
+      else if (a === '--emit-evidence') emitEvidence = args.shift() || usageExit();
+      else if (a === '--evidence-scope') evidenceScope = args.shift() || usageExit();
+      else if (a === '--evidence-target') evidenceTarget = args.shift() || usageExit();
+      else if (a === '--attach') attachOut = args.shift() || usageExit();
+      else if (a === '--artifact-out') artifactOut = args.shift() || usageExit();
       else if (!infile) infile = a;
       else usageExit();
     }
+    if (emitEvidence && !['yaml', 'ndjson'].includes(emitEvidence)) usageExit();
+    if (evidenceScope && !['document', 'section', 'entity', 'occurrence'].includes(evidenceScope)) usageExit();
     const text = readInput(infile);
     const doc = parseDocument(text);
     const result = validateDocument(doc, { mode });
-    emitNdjson([result.meta, ...result.diagnostics, result.summary], 'stdout');
+    const diagnosticsPayload = [result.meta, ...result.diagnostics, result.summary];
+    const hasEvidence = !!emitEvidence || !!attachOut;
+    if (!hasEvidence) {
+      emitNdjson(diagnosticsPayload, 'stdout');
+    }
     const hasWarn = result.diagnostics.some((d) => d.severity === 'warning');
     const ok = result.ok && !(failOnWarn && hasWarn);
+    if (hasEvidence) {
+      const target = {};
+      if (evidenceScope === 'section') target.section_id = evidenceTarget || null;
+      if (evidenceScope === 'entity') target.entity_id = evidenceTarget || null;
+      if (evidenceScope === 'occurrence') target.occurrence_id = evidenceTarget || null;
+      const evidenceRecord = {
+        kind: 'lint-report',
+        scope: evidenceScope,
+        target,
+        produced_by: {
+          tool: 'ideamark-cli',
+          command: 'validate',
+          tool_version: VERSION,
+        },
+        produced_at: new Date().toISOString(),
+        summary: result.summary,
+      };
+      let evidenceForAttach = evidenceRecord;
+      if (artifactOut && emitEvidence === 'ndjson') {
+        writeFileUtf8(artifactOut, `${JSON.stringify(evidenceRecord)}\n`);
+        evidenceForAttach = {
+          ...evidenceRecord,
+          artifact_ref: { uri: artifactOut },
+        };
+      }
+
+      if (attachOut) {
+        const attached = attachEvidence(text, evidenceForAttach, { scope: evidenceScope, targetId: evidenceTarget });
+        writeOutput(attachOut, attached.output);
+      } else if (emitEvidence === 'yaml') {
+        writeStdout(buildEvidenceBlock(evidenceRecord));
+      } else if (emitEvidence === 'ndjson') {
+        writeStdout(`${JSON.stringify(evidenceRecord)}\n`);
+      }
+      if (diagnosticsPayload.length) writeStderr(stringifyNdjson(diagnosticsPayload));
+    }
     process.exit(ok ? 0 : 1);
   }
 
