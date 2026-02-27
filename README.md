@@ -1,8 +1,8 @@
 # ideamark-cli
 
-Command-line tools for working with IdeaMark documents (v0.1.0). The CLI can validate, format, extract, compose, and publish IdeaMark documents, and provides a self-describing `describe` command.
+Command-line tools for working with IdeaMark documents (v0.1.2). The CLI can validate, format, extract, compose, and publish IdeaMark documents, and provides a self-describing `describe` command.
 
-## Commands (v0.1.0)
+## Commands (v0.1.2)
 
 - `validate`
 - `format`
@@ -16,11 +16,14 @@ Command-line tools for working with IdeaMark documents (v0.1.0). The CLI can val
 ### validate
 
 ```bash
-ideamark validate [<infile>|-] [--strict] [--fail-on-warn] [--mode working|strict]
+ideamark validate [<infile>|-] [--strict] [--fail-on-warn] [--mode working|strict] \
+  [--emit-evidence yaml|ndjson] [--evidence-scope document|section|entity|occurrence] \
+  [--evidence-target <id>] [--attach <file|->] [--artifact-out <path>]
 ```
 
 - Reads from stdin if `<infile>` is omitted or `-`.
 - Outputs NDJSON diagnostics to stdout.
+- When `--emit-evidence` or `--attach` is used, diagnostics go to stderr and evidence/artifacts are emitted to stdout or files.
 - Exit codes: `0` success, `1` validation failure, `2` usage error.
 
 ### format
@@ -76,12 +79,15 @@ Topics:
 - `checklist`
 - `vocab`
 - `capabilities`
+- `ai-authoring`
+- `params`
 
 ## I/O conventions
 
 - `<infile>` omitted or `-` means stdin.
 - `-o -` means stdout.
 - `validate` writes diagnostics to stdout.
+- `validate` writes diagnostics to stderr when `--emit-evidence` or `--attach` is used.
 - Other commands write artifacts to stdout and diagnostics to stderr (or `--diagnostics`).
 
 ## Exit codes
@@ -173,6 +179,26 @@ derived_from:
   - entity: "ideamark://docs/<doc_id>#/entities/IE-4"
 ```
 
+## Evidence examples
+
+Emit an evidence block for validation:
+
+```bash
+ideamark validate example.ideamark.md --emit-evidence yaml
+```
+
+Attach evidence to the document (stdout):
+
+```bash
+ideamark validate example.ideamark.md --attach -
+```
+
+Write NDJSON evidence to a file and attach a reference:
+
+```bash
+ideamark validate example.ideamark.md --emit-evidence ndjson --artifact-out evidence.ndjson --attach -
+```
+
 ## Installation
 
 Local install (repo):\n
@@ -192,4 +218,4 @@ See `tests/README.md` for smoke and internal tests.
 
 ## Release Notes
 
-See `docs/release/v0.1.0.md`.
+See `docs/release/v0.1.0.md` and `docs/release/v0.1.1.md`.

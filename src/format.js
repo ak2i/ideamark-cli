@@ -17,14 +17,16 @@ function formatDocument(text, options) {
     if (seg.type !== 'yaml') return seg;
     if (!seg.parsed || !seg.parsed.ok) return seg;
     let obj = seg.parsed.value;
-    if (canonical) {
+    const isEvidence = typeof seg.info === 'string' && seg.info.includes('ideamark:evidence');
+    if (canonical && !isEvidence) {
       obj = normalizeRefsInObject(obj, docId, idSets);
     }
     const dumped = stringifyYaml(obj).trimEnd();
     if (seg.subtype === 'frontmatter') {
       return { type: 'text', value: `---\n${dumped}\n---\n` };
     }
-    return { type: 'text', value: `\`\`\`yaml\n${dumped}\n\`\`\`\n` };
+    const info = seg.info || 'yaml';
+    return { type: 'text', value: `\`\`\`${info}\n${dumped}\n\`\`\`\n` };
   });
 
   const output = segments.map((s) => (s.type === 'text' ? s.value : '')).join('');

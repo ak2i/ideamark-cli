@@ -6,6 +6,7 @@
 ---
 
 ## 0. docs_dev_v1.0.2 シリーズ（開発仕様の整合）
+Status: Done
 
 目的: v1.0.2 仕様変更に関する開発資料の順序と依存関係を明確化する。  
 順序: `spec-change` → `evidence-annotations` → `evidence-block-normative` → `anchorage` → `specs` 反映
@@ -24,6 +25,7 @@
 ---
 
 ## 1. describe 既定フォーマット統一（md）
+Status: Done
 
 目的: `describe` の既定 `--format` を `md` に統一し、契約（MUST）に合わせる。  
 対象: `ideamark-cli/bin/ideamark.js`
@@ -41,6 +43,7 @@
 ---
 
 ## 2. describe capabilities --format json のスキーマ準拠
+Status: Done
 
 目的: `doc-cli-contract_v1.0.2_capabilities-schema.md` 準拠の JSON を出力する。  
 対象: `ideamark-cli/src/describe.js`
@@ -61,6 +64,7 @@
 ---
 
 ## 3. describe capabilities --format md のテンプレ準拠
+Status: Done
 
 目的: `doc-cli-contract_v1.0.2_capabilities-md-template.md` に準拠した Markdown を出力する。  
 対象: `ideamark-cli/src/describe.js`
@@ -80,6 +84,7 @@
 ---
 
 ## 4. --version --format json の追加（SHOULD）
+Status: Done
 
 目的: `--version --format json` を実装し、契約の SHOULD を満たす。  
 対象: `ideamark-cli/bin/ideamark.js`
@@ -96,6 +101,7 @@
 ---
 
 ## 5. describe capabilities / contract 整合の検証
+Status: Done
 
 目的: contract と describe の出力が矛盾しないことを確認する。  
 対象: 仕様確認（実装後）
@@ -111,6 +117,7 @@
 ---
 
 ## 6. describe params / ai-authoring の契約差分確認
+Status: Done
 
 目的: 新しい describe 仕様と ideamark テンプレの差分を洗い出す。  
 対象: `docs/guides/ideamark/params.md`, `params.json`, `ai-authoring.md`
@@ -129,6 +136,7 @@
 ---
 
 ## 7. describe 実装で ai-authoring json を参照できるようにする
+Status: Done
 
 目的: `describe ai-authoring --format json` をテンプレ参照で提供できるようにする。  
 対象: `ideamark-cli/src/describe.js`
@@ -141,3 +149,15 @@
 完了条件:
 1. `ideamark describe ai-authoring --format json` で JSON が返る。  
 2. `ideamark describe ai-authoring` は引き続き md を返す。
+
+---
+
+## サマライズ（変更点まとめ）
+
+- docs/dev/v0.1.2 の `docs_dev_v1.0.2_*` 文書の Draft 表記を削除し、参照パスを実体に合わせて整合。
+- anchorage 方針を Section 付与に明確化し、語彙は推奨セット・未知語彙許容を spec に反映。
+- Evidence Block の最小要件を dev/spec で整合（識別子・mapping 必須・未知キー許容・配置任意）。
+- `describe` 既定フォーマットを `md` に統一し、`--version --format json` を追加。
+- `describe capabilities` の JSON/MD を v1.0.2 契約に準拠させ、topics に `checklist`/`vocab` を追加。
+- `describe ai-authoring --format json` をテンプレ参照で有効化。
+- `params.json` / `ai-authoring.json` の `tool.version` を `0.1.2` に更新。

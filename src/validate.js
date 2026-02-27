@@ -37,6 +37,13 @@ function validateDocument(doc, options) {
   const mode = options.mode || 'working';
   const strict = mode === 'strict';
   const diagnostics = [];
+  const isEvidenceBlock = (seg) => {
+    return seg
+      && seg.type === 'yaml'
+      && seg.subtype === 'fenced'
+      && typeof seg.info === 'string'
+      && seg.info.includes('ideamark:evidence');
+  };
 
   if (doc.parseErrors.length) {
     diagnostics.push(
@@ -74,14 +81,29 @@ function validateDocument(doc, options) {
     }
   }
 
-  // Section anchorage required (strict)
-  if (strict) {
-    for (const [secId, sec] of Object.entries(doc.registry.sections || {})) {
-      if (!sec.anchorage) {
-        diagnostics.push(
-          diag('error', 'section_anchorage_required', 'Section anchorage required', { scope: 'section', id: secId }, mode)
-        );
-      }
+  // Section anchorage required
+  for (const [secId, sec] of Object.entries(doc.registry.sections || {})) {
+    if (sec.anchorage === undefined) {
+      diagnostics.push(
+        diag('error', 'anchorage_required', 'Section anchorage required', { scope: 'section', id: secId }, mode)
+      );
+      continue;
+    }
+    if (!isObject(sec.anchorage)) {
+      diagnostics.push(
+        diag('error', 'anchorage_mapping', 'Anchorage must be a mapping/object', { scope: 'section', id: secId, path: 'anchorage' }, mode)
+      );
+    }
+  }
+
+  // Evidence Block must be a mapping/object
+  for (const seg of doc.segments || []) {
+    if (!isEvidenceBlock(seg)) continue;
+    if (!seg.parsed || !seg.parsed.ok) continue;
+    if (!isObject(seg.parsed.value)) {
+      diagnostics.push(
+        diag('error', 'evidence_mapping', 'Evidence Block must be a mapping/object', { scope: 'evidence' }, mode)
+      );
     }
   }
 

@@ -50,6 +50,7 @@ v1.0.2 では以下のスコープを **推奨例** として挙げる（すべ�
 
 ※ 「どこに付けてもよい」を優先し、厳密な位置制約は強めない。  
 ※ ツールは scope を明示して出力し、挿入先を選べるようにする（後述）。
+※ Entity-level は Registry の YAML ブロック直後に置くのが最も安定（YAML の途中に fenced block は挿入できないため）。
 
 ---
 
@@ -93,6 +94,7 @@ metrics:
 
 notes:
   human: "仮説→実験の遷移が減り、背景→仮説が増えた。議論フェーズの前倒しが起きている可能性。"
+memo: "任意の短いメモを保持したい場合はここに記す"
 limits:
   computed_on_demand: true
   completeness: "partial"     # partial|full|unknown
@@ -102,6 +104,7 @@ limits:
 - **produced_by / produced_at / inputs**：再現性と信頼性の足場
 - **metrics**：プラグインが自由に増やせる（固定しない）
 - **notes.human**：人間向け解釈はここに寄せられる（本文に散らさない）
+- **memo**：短いメモや補足（mapping を保つための最小キーとしても使える）
 - **limits**：オンデマンド計算であること・部分性を明示
 
 ---

@@ -20,6 +20,7 @@ function tokenize(text) {
   const lines = text.split(/\r?\n/);
   const segments = [];
   let i = 0;
+  let fence = null;
 
   const front = parseFrontmatter(text);
   if (front) {
@@ -31,7 +32,9 @@ function tokenize(text) {
   let buffer = [];
   for (; i < lines.length; i++) {
     const line = lines[i];
-    if (line.trim() === '```yaml') {
+    const yamlFenceMatch = line.match(/^\s*```yaml(\s+.*)?\s*$/);
+    if (!fence && yamlFenceMatch) {
+      const info = line.trim().slice('```'.length).trim();
       if (buffer.length) {
         segments.push({ type: 'text', value: buffer.join('\n') + '\n' });
         buffer = [];
@@ -42,9 +45,19 @@ function tokenize(text) {
         yamlLines.push(lines[i]);
         i++;
       }
-      const raw = ['```yaml', ...yamlLines, '```'].join('\n');
-      segments.push({ type: 'yaml', subtype: 'fenced', raw, content: yamlLines.join('\n') });
+      const raw = ['```' + info, ...yamlLines, '```'].join('\n');
+      segments.push({ type: 'yaml', subtype: 'fenced', info, raw, content: yamlLines.join('\n') });
       continue;
+    }
+    const fenceMatch = line.match(/^\s*(`{3,}|~{3,})(.*)$/);
+    if (fenceMatch) {
+      const marker = fenceMatch[1];
+      const info = fenceMatch[2].trim();
+      if (!fence) {
+        fence = { char: marker[0], len: marker.length };
+      } else if (marker[0] === fence.char && marker.length >= fence.len && info === '') {
+        fence = null;
+      }
     }
     buffer.push(line);
   }
