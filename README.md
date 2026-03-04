@@ -1,10 +1,12 @@
 # ideamark-cli
 
-Command-line tools for working with IdeaMark documents (v0.1.2). The CLI can validate, format, extract, compose, and publish IdeaMark documents, and provides a self-describing `describe` command.
+Command-line tools for working with IdeaMark documents (v0.1.3 development track). The CLI can validate, lint, diff, format, extract, compose, and publish IdeaMark documents, and provides a self-describing `describe` command.
 
-## Commands (v0.1.2)
+## Commands (v0.1.3)
 
 - `validate`
+- `lint`
+- `diff`
 - `format`
 - `extract`
 - `compose`
@@ -72,7 +74,9 @@ ideamark publish [<infile>|-] [-o <outfile>|-] [--diagnostics <path|->]
 ### describe
 
 ```bash
-ideamark describe <topic> [--format json|yaml|md]
+ideamark describe <topic> [--format json|yaml|md] [--audience human|ai] [--lang ja|en|ja-JP|en-US] [--model small|large] [--profile <alias>]
+ideamark describe ls --target guides [--sections] [--vocab] [--format json|yaml|md]
+ideamark describe routing [--format json|yaml|md]
 ```
 
 Topics:
@@ -81,6 +85,29 @@ Topics:
 - `capabilities`
 - `ai-authoring`
 - `params`
+- `ls`
+- `routing`
+
+### lint
+
+```bash
+ideamark lint [<infile>|-] [--format ndjson|json|md] [--strict] [--profile minimal|diagnostic|strict]
+```
+
+- Default is non-blocking (`exit 0` even when error diagnostics exist).
+- `--strict` makes error-level diagnostics fail with `exit 1`.
+- NDJSON output follows `meta -> diagnostic* -> summary`.
+
+### diff
+
+```bash
+ideamark diff <from> <to> [--format ndjson|json|md] [--scope yaml|all] [--include-markdown] [--include-meta]
+```
+
+- Default scope is YAML-first (`--scope yaml`).
+- Timestamp/meta fields (`created_at`, `updated_at`) are excluded by default.
+- `--include-meta` adds meta field differences.
+- `--include-markdown` includes markdown-body differences when using `--scope all`.
 
 ## I/O conventions
 
@@ -214,8 +241,8 @@ npm install -g ideamark-cli
 
 ## Tests
 
-See `tests/README.md` for smoke and internal tests.
+See `tests/README.md` for smoke, internal tests, and v0.1.3 LLM metrics runner.
 
 ## Release Notes
 
-See `docs/release/v0.1.0.md` and `docs/release/v0.1.1.md`.
+See `docs/release/v0.1.0.md`, `docs/release/v0.1.1.md`, and `docs/release/v0.1.2.md`.

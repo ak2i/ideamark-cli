@@ -235,7 +235,7 @@ Status: Done
 ---
 
 ## 10. LLMテストモデル整備（guides品質回帰）
-Status: Todo
+Status: Done
 
 目的: guides 変更が実運用品質を下げないことを定量監視する。  
 対象: テストシナリオと計測項目
@@ -249,11 +249,16 @@ Status: Todo
 完了条件:
 1. 指標収集手順が自動化される。
 2. guides変更前後の比較が可能になる。
+実装メモ (2026-03-04):
+1. `tests/run-llm-metrics-v0.1.3.js` を追加。
+2. small/large の2シナリオで、YAML parse成功率・ID一意率・参照解決率・自己修正率・再試行回数・round-trip整合率を算出。
+3. 出力形式を NDJSON（`meta` / `scenario` / `summary`）で固定。
+4. `npm run llm-metrics:v0.1.3` を追加し、`--out` で成果物保存に対応。
 
 ---
 
 ## 11. ドキュメント反映とリリース準備
-Status: Todo
+Status: In Progress
 
 目的: 実装と仕様書の乖離をなくして v0.1.3 開発版を締める。  
 対象: docs/dev と docs/specs の整合
@@ -266,3 +271,6 @@ Status: Todo
 完了条件:
 1. 実装・テスト・文書の三者が矛盾しない。
 2. 次バージョン（v0.2系）の引き継ぎ項目が残せる。
+進捗メモ (2026-03-04):
+1. `README.md` を v0.1.3 コマンド実装（describe拡張/lint/diff）に合わせて更新。
+2. `docs/release/v0.1.3.md` を新規追加し、変更点・テストランナー・既知制約を明記。
