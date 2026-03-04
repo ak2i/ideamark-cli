@@ -1,7 +1,7 @@
 {
   "contract": {
     "name": "doc-cli-contract",
-    "version": "1.0.2"
+    "version": "1.0.3"
   },
   "tool": {
     "name": "ideamark-cli",
@@ -9,7 +9,7 @@
   },
   "document": {
     "name": "ideamark",
-    "version": "1.0.2"
+    "version": "1.0.3"
   },
   "params": [
     {

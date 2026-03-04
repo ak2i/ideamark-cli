@@ -6,7 +6,7 @@
 ---
 
 ## 0. 参照仕様の固定と差分基線作成
-Status: Todo
+Status: In Progress
 
 目的: v0.1.3 の作業対象と非対象を固定し、途中で仕様解釈がぶれない状態にする。  
 参照:
@@ -26,7 +26,7 @@ Status: Todo
 ---
 
 ## 1. describe I/F の直交化（audience/lang/model + profile 正規化）
-Status: Todo
+Status: Done
 
 目的: `describe` を v0.1.3 の正規I/Fへ寄せ、呼び出し側が意図分解しやすい形にする。  
 対象: `describe` 実装、CLI引数解釈層
@@ -41,11 +41,15 @@ Status: Todo
 完了条件:
 1. 直交I/Fで `describe` 出力が分岐する。
 2. profile 指定と直交指定の結果が矛盾しない。
+実装メモ (2026-03-04):
+1. `describe` に `--audience/--lang/--model/--profile` を追加。
+2. `format=json` 時の既定を `audience=ai, model=small`、`format=md` 時の既定を `audience=human, lang=ja-JP` とした。
+3. `audience=human` で `--model` 指定時は usage error (exit 2) とした。
 
 ---
 
 ## 2. describe トピック拡張（ls / routing）
-Status: Todo
+Status: Done
 
 目的: Doc CLI Contract v1.0.3 の SHOULD topic を実装し、探索性を上げる。  
 対象: `describe ls`, `describe routing`, capabilities 宣言
@@ -59,11 +63,15 @@ Status: Todo
 完了条件:
 1. `describe capabilities` に `ls` / `routing` が宣言される。
 2. `describe ls` と `describe routing` がサンプルガイドを基に一貫した情報を返す。
+実装メモ (2026-03-04):
+1. `describe ls --target guides` を実装（出力に物理パスは含めない）。
+2. `describe routing` を実装し、内蔵 guides サンプルから routing セクションを抽出して応答。
+3. `--lang ja|en|ja-JP|en-US` で ja/en のガイド切替に対応。
 
 ---
 
 ## 3. guides 再設計（ai-small / ai-large / human）
-Status: Todo
+Status: In Progress
 
 目的: v0.1.3 方針に沿って、LLMサイズ別に迷いにくいガイドを提供する。  
 対象: guides テンプレート、`describe ai-authoring` 出力
@@ -78,6 +86,10 @@ Status: Todo
 完了条件:
 1. ai-small / ai-large で期待挙動が分離される。
 2. `describe ai-authoring` が v1.0.3 契約に準拠する。
+進捗メモ (2026-03-04):
+1. `docs/guides/ideamark/ai-authoring.{md,json}` を更新し、ai-small 固定手順・ai-large フレームワーク・routing hints を追加。
+2. `minimal_validation` / `forbidden_patterns` / `followup_topics` を JSON に追加。
+3. 残課題: `describe ai-authoring` の audience/model 連動出し分け。
 
 ---
 
@@ -158,7 +170,7 @@ Status: Todo
 ---
 
 ## 8. describe capabilities 更新（lint/diff/routing/languages）
-Status: Todo
+Status: In Progress
 
 目的: 実装機能を `describe capabilities` へ過不足なく宣言する。  
 対象: capabilities JSON/MD 生成
@@ -173,6 +185,11 @@ Status: Todo
 完了条件:
 1. capabilities JSON/MD の内容が実装実態と一致する。
 2. 呼び出し側が formats/options/topics を機械的に判断できる。
+進捗メモ (2026-03-04):
+1. contract version を `1.0.3` へ更新。
+2. `features.routing` / `features.languages` を追加。
+3. `commands.describe.topics` に `ls` / `routing` を追加。
+4. `lint` / `diff` 宣言はコマンド実装時に追加予定。
 
 ---
 
@@ -227,4 +244,3 @@ Status: Todo
 完了条件:
 1. 実装・テスト・文書の三者が矛盾しない。
 2. 次バージョン（v0.2系）の引き継ぎ項目が残せる。
-

@@ -46,7 +46,9 @@ const HELP = {
   ].join('\n'),
   describe: [
     'Usage:',
-    '  ideamark describe <topic> [--format json|yaml|md]',
+    '  ideamark describe <topic> [--format json|yaml|md] [--audience human|ai] [--lang ja|en|ja-JP|en-US]',
+    '  ideamark describe ls --target guides [--sections] [--vocab] [--format json|yaml|md]',
+    '  ideamark describe routing [--format json|yaml|md]',
     '',
     'Topics:',
     '  capabilities',
@@ -54,6 +56,8 @@ const HELP = {
     '  vocab',
     '  ai-authoring',
     '  params',
+    '  ls',
+    '  routing',
     '',
   ].join('\n'),
   ls: [
@@ -129,8 +133,8 @@ function main() {
     if (format === 'json') {
       const payload = {
         tool: { version: VERSION },
-        contract: { version: '1.0.2' },
-        document_spec: { version: '1.0.2' },
+        contract: { version: '1.0.3' },
+        document_spec: { version: '1.0.3' },
       };
       writeStdout(`${JSON.stringify(payload)}\n`);
       process.exit(0);
@@ -325,17 +329,49 @@ function main() {
     const topic = args.shift();
     if (!topic) usageExit();
     let format = null;
+    const describeOptions = {
+      audience: null,
+      lang: null,
+      model: null,
+      profile: null,
+      target: null,
+      sections: false,
+      vocab: false,
+    };
     while (args.length) {
       const a = args.shift();
       if (a === '--format') {
         format = args.shift() || usageExit();
         if (!['json', 'yaml', 'md'].includes(format)) usageExit();
+      } else if (a === '--audience') {
+        describeOptions.audience = args.shift() || usageExit();
+        if (!['human', 'ai'].includes(describeOptions.audience)) usageExit();
+      } else if (a === '--lang') {
+        describeOptions.lang = args.shift() || usageExit();
+      } else if (a === '--model') {
+        describeOptions.model = args.shift() || usageExit();
+        if (!['small', 'large'].includes(describeOptions.model)) usageExit();
+      } else if (a === '--profile') {
+        describeOptions.profile = args.shift() || usageExit();
+      } else if (a === '--target') {
+        describeOptions.target = args.shift() || usageExit();
+      } else if (a === '--sections') {
+        describeOptions.sections = true;
+      } else if (a === '--vocab') {
+        describeOptions.vocab = true;
       } else usageExit();
     }
     if (!format) format = 'md';
-    const result = describe(topic, format);
+    const result = describe(topic, format, describeOptions);
     if (!result.ok) {
-      if (result.error === 'unknown topic') usageExit();
+      if (result.error === 'unknown_topic' || result.error === 'unsupported_target') usageExit();
+      if (
+        ['invalid_profile', 'invalid_audience', 'invalid_model', 'model_requires_ai'].includes(
+          result.error
+        )
+      ) {
+        usageExit();
+      }
       if (result.diagnostics) writeStderr(stringifyNdjson(result.diagnostics));
       process.exit(1);
     }

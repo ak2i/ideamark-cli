@@ -1,7 +1,7 @@
 {
   "contract": {
     "name": "doc-cli-contract",
-    "version": "1.0.2"
+    "version": "1.0.3"
   },
   "tool": {
     "name": "ideamark-cli",
@@ -9,33 +9,71 @@
   },
   "document": {
     "name": "ideamark",
-    "version": "1.0.2"
+    "version": "1.0.3"
   },
   "guidance": {
-    "overview": "Generate valid IdeaMark documents for human review and tooling.",
+    "overview": "Generate valid IdeaMark documents for human review, automation, and routing-aware discovery.",
     "principles": [
       "Produce valid IdeaMark YAML blocks (frontmatter and fenced yaml blocks).",
       "Keep IDs stable and unique within a document.",
       "Use concise, factual language and avoid speculation.",
-      "Prefer explicit structure over prose when capturing sections, occurrences, and entities."
+      "Prefer explicit structure over prose when capturing sections, occurrences, and entities.",
+      "Use non-blocking validation in working loops and strict validation before handoff."
     ],
     "do": [
       "Include a document header block.",
       "Keep references resolvable within the document.",
-      "Use the published vocab for anchorage.view, anchorage.phase, and status.state."
+      "Use the published vocab for anchorage.view, anchorage.phase, and status.state.",
+      "Tag sections with anchorage.domain for routing/discovery use."
     ],
     "dont": [
       "Invent IDs that collide with existing ones.",
       "Refer to entities or occurrences that do not exist.",
-      "Omit required fields in strict mode."
+      "Omit required fields in strict mode.",
+      "Skip the generate -> validate -> breakdown loop for large documents."
     ],
     "checklist": [
       "Header includes ideamark_version, doc_id, doc_type, status, created_at, updated_at, lang (strict mode).",
       "Each section_id has anchorage.view and anchorage.phase (strict mode).",
-      "Every occurrence_id references an entity (or uses inline: true)."
+      "Every occurrence_id references an entity (or uses inline: true).",
+      "Run minimal validation: header_singleton, yaml_parseable, id_unique_within_doc, references_resolvable."
     ],
     "examples": [
       "A section contains section_id: SEC-001 and anchorage.view: background."
+    ],
+    "profiles": {
+      "ai_small": {
+        "goal": "maximize first-pass validity with fixed procedure",
+        "steps": ["generate", "validate", "breakdown(copy)"],
+        "minimal_validation": [
+          "header_singleton",
+          "yaml_parseable",
+          "id_unique_within_doc",
+          "references_resolvable"
+        ],
+        "forbidden_patterns": [
+          "inventing undefined references",
+          "changing existing stable IDs without cause"
+        ],
+        "followup_topics": ["params", "checklist", "routing"]
+      },
+      "ai_large": {
+        "framework": ["PLAN", "AUTHOR", "VALIDATE", "TRANSFORM"],
+        "decision_points": ["SPLIT-MODE", "STRICTNESS", "MERGE-POLICY"],
+        "completion_criteria": [
+          "requested outputs produced",
+          "chosen strictness validation passes",
+          "lineage is recorded"
+        ]
+      },
+      "human": {
+        "default_lang": "ja-JP",
+        "variants": ["easy", "advanced"]
+      }
+    },
+    "routing_hints": [
+      "If the task is iterative work-item management, route to FlowMark first.",
+      "If the task is knowledge stabilization and structural validation, route to IdeaMark."
     ]
   }
 }
