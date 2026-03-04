@@ -59,6 +59,7 @@ const HELP = {
     '  checklist',
     '  vocab',
     '  ai-authoring',
+    '  prompt-authoring',
     '  params',
     '  ls',
     '  routing',

@@ -79,6 +79,10 @@ const TEMPLATE_MAP = {
     json: 'ai-authoring.json',
     md: 'ai-authoring.md',
   },
+  'prompt-authoring': {
+    json: 'prompt-authoring.json',
+    md: 'prompt-authoring.md',
+  },
   params: {
     json: 'params.json',
     md: 'params.md',
@@ -174,7 +178,16 @@ function buildCapabilities() {
     commands: {
       describe: {
         formats: ['md', 'json', 'yaml'],
-        topics: ['ai-authoring', 'params', 'capabilities', 'checklist', 'vocab', 'ls', 'routing'],
+        topics: [
+          'ai-authoring',
+          'prompt-authoring',
+          'params',
+          'capabilities',
+          'checklist',
+          'vocab',
+          'ls',
+          'routing',
+        ],
         description:
           'Print tool guidance and discovery metadata for IdeaMark authoring and routing.',
         options: {

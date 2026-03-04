@@ -275,3 +275,29 @@ Status: Done
 1. `README.md` を v0.1.3 コマンド実装（describe拡張/lint/diff）に合わせて更新。
 2. `docs/release/v0.1.3.md` を新規追加し、変更点・テストランナー・既知制約を明記。
 3. `docs/dev/v0.1.3/handover-to-v0.2.md` を新規追加し、v0.2向け引き継ぎ項目を明文化。
+
+---
+
+## 12. prompt-authoring 契約追加（describe から外部プロンプト生成を規定）
+Status: Done
+
+目的: プロンプト生成を CLI の外部責務として維持しつつ、`describe` から再利用可能な規定を配布して、
+「構造は正しいが人間向け本文が不足する」生成品質劣化を防ぐ。  
+対象: `describe` トピック、guides テンプレート、CLI help/README、回帰テスト
+
+詳細設計:
+1. `describe prompt-authoring --format md|json|yaml` を追加し、外部オーケストレータ向けのプロンプト規定を返す。
+2. 規定に `narrative_requirements` を追加し、Section/Occurrence の YAML 直後に自然言語本文を配置する要件を定義。
+3. 既存 `describe ai-authoring` の Do/Do not を更新し、YAML-only 文書を避ける指示を明示する。
+4. `describe capabilities` と CLI help / README の topics 一覧に `prompt-authoring` を反映する。
+5. internal test に `prompt-authoring` 出力の存在・要件キーを検証するケースを追加する。
+
+完了条件:
+1. 外部ツールが `describe prompt-authoring` のみで、本文要件を含む生成プロンプトを合成できる。
+2. `describe ai-authoring` と `prompt-authoring` の指針が矛盾しない。
+3. `node --test tests/internal/describe.test.js` が通る。
+進捗メモ (2026-03-05):
+1. `describe prompt-authoring` を追加し、`docs/guides/ideamark/prompt-authoring.{md,json}` を新設。
+2. `ai-authoring` guide の Do/Do not/Checklist を更新し、Section/Occurrence YAML直後の自然言語本文要件を追加。
+3. `describe capabilities` / CLI help / README の topic 一覧へ `prompt-authoring` を反映。
+4. `tests/internal/describe.test.js` に `prompt-authoring` ケースを追加し、`node --test tests/internal/describe.test.js` で通過確認。

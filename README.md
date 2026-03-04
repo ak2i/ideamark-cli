@@ -84,6 +84,7 @@ Topics:
 - `vocab`
 - `capabilities`
 - `ai-authoring`
+- `prompt-authoring`
 - `params`
 - `ls`
 - `routing`
