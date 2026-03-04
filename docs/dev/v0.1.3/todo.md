@@ -258,7 +258,7 @@ Status: Done
 ---
 
 ## 11. ドキュメント反映とリリース準備
-Status: In Progress
+Status: Done
 
 目的: 実装と仕様書の乖離をなくして v0.1.3 開発版を締める。  
 対象: docs/dev と docs/specs の整合
@@ -274,3 +274,4 @@ Status: In Progress
 進捗メモ (2026-03-04):
 1. `README.md` を v0.1.3 コマンド実装（describe拡張/lint/diff）に合わせて更新。
 2. `docs/release/v0.1.3.md` を新規追加し、変更点・テストランナー・既知制約を明記。
+3. `docs/dev/v0.1.3/handover-to-v0.2.md` を新規追加し、v0.2向け引き継ぎ項目を明文化。
