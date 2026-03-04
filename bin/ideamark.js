@@ -19,6 +19,7 @@ const { composeDocuments } = require('../src/compose');
 const { publishDocument } = require('../src/publish');
 const { describe } = require('../src/describe');
 const { listDocument } = require('../src/ls');
+const { lintDocument, lintToJson, lintToMarkdown, PROFILE_RULES } = require('../src/lint');
 const pkg = require('../package.json');
 
 const VERSION = pkg.version;
@@ -37,6 +38,7 @@ const HELP = {
     '  compose    Compose multiple documents',
     '  publish    Publish a working document',
     '  describe   Describe built-in topics',
+    '  lint       Lint an IdeaMark document',
     '  ls         List IDs and vocab in a document',
     '',
     'Global options:',
@@ -68,6 +70,11 @@ const HELP = {
   validate: [
     'Usage:',
     '  ideamark validate [<infile>|-] [--strict|--mode <mode>] [--fail-on-warn]',
+    '',
+  ].join('\n'),
+  lint: [
+    'Usage:',
+    '  ideamark lint [<infile>|-] [--format ndjson|json|md] [--strict] [--profile minimal|diagnostic|strict]',
     '',
   ].join('\n'),
   format: [
@@ -377,6 +384,38 @@ function main() {
     }
     writeStdout(result.output);
     process.exit(0);
+  }
+
+  if (cmd === 'lint') {
+    let infile = null;
+    let format = 'ndjson';
+    let strict = false;
+    let profile = 'diagnostic';
+    while (args.length) {
+      const a = args.shift();
+      if (a === '--format') {
+        format = args.shift() || usageExit();
+        if (!['ndjson', 'json', 'md'].includes(format)) usageExit();
+      } else if (a === '--strict') {
+        strict = true;
+      } else if (a === '--profile') {
+        profile = args.shift() || usageExit();
+        if (!Object.prototype.hasOwnProperty.call(PROFILE_RULES, profile)) usageExit();
+      } else if (!infile) infile = a;
+      else usageExit();
+    }
+    const text = readInput(infile);
+    const doc = parseDocument(text);
+    const result = lintDocument(doc, { strict, profile });
+    if (format === 'json') {
+      writeStdout(`${lintToJson(result)}\n`);
+    } else if (format === 'md') {
+      writeStdout(lintToMarkdown(result, profile, strict));
+      writeStdout('\n');
+    } else {
+      emitNdjson([result.meta, ...result.diagnostics, result.summary], 'stdout');
+    }
+    process.exit(result.ok ? 0 : 1);
   }
 
   if (cmd === 'ls') {

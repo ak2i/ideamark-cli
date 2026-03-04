@@ -113,7 +113,7 @@ Status: Todo
 ---
 
 ## 5. minimal validation 実装
-Status: Todo
+Status: Done
 
 目的: v0.1.3 最低検証ラインを `validate` / guides 手順に反映する。  
 対象: validate エンジン
@@ -127,11 +127,14 @@ Status: Todo
 完了条件:
 1. 正常入力で false positive がない。
 2. 意図的破壊入力で再現性のある diagnostic が出る。
+実装メモ (2026-03-04):
+1. validate で `header_singleton` / `yaml_parseable` / `id_unique_within_doc` / 参照整合検証を実施済み。
+2. 既存 internal test により正常系/異常系を継続検証している。
 
 ---
 
 ## 6. lint 実装（diagnostic / non-blocking default）
-Status: Todo
+Status: Done
 
 目的: v0.1.3 追加要素として lint を診断ツール化する。  
 対象: `ideamark lint`
@@ -147,6 +150,12 @@ Status: Todo
 完了条件:
 1. `lint --strict` のみ error で exit 1。
 2. NDJSON レコード順・型が契約どおり。
+実装メモ (2026-03-04):
+1. `ideamark lint` を追加（`--format ndjson|json|md`, `--strict`, `--profile`）。
+2. default は non-blocking（error があっても exit 0）。
+3. `--strict` 時は error 診断があれば exit 1。
+4. NDJSON は `meta -> diagnostic* -> summary` で出力し、`meta.command=\"lint\"` を付与。
+5. ルール実装: IM-LINT-001..004 / IM-LINT-101..104。
 
 ---
 
@@ -189,7 +198,8 @@ Status: In Progress
 1. contract version を `1.0.3` へ更新。
 2. `features.routing` / `features.languages` を追加。
 3. `commands.describe.topics` に `ls` / `routing` を追加。
-4. `lint` / `diff` 宣言はコマンド実装時に追加予定。
+4. `commands.lint` を宣言済み（formats/options/description）。
+5. 残課題: `commands.diff` は diff 実装時に追加。
 
 ---
 

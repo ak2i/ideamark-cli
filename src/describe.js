@@ -218,6 +218,25 @@ function buildCapabilities() {
           },
         },
       },
+      lint: {
+        formats: ['ndjson', 'json', 'md'],
+        stdin: true,
+        description:
+          'Emit non-blocking diagnostics for IdeaMark documents. Does not modify input.',
+        options: {
+          '--strict': {
+            description: 'Fail (exit 1) if any error-level diagnostics exist.',
+          },
+          '--format': {
+            values: ['ndjson', 'json', 'md'],
+            description: 'Output format.',
+          },
+          '--profile': {
+            values: ['minimal', 'diagnostic', 'strict'],
+            description: 'Select lint rule profile.',
+          },
+        },
+      },
       format: {
         formats: ['md'],
         stdin: true,
@@ -578,6 +597,15 @@ function toMarkdown(topic, data, context) {
       `**Description:** ${data.commands.format.description}`,
       `**Formats:** \`${data.commands.format.formats.join('`, `')}\``,
       '**Input:** file path, `-` (stdin)',
+      '',
+      '### lint',
+      `**Description:** ${data.commands.lint.description}`,
+      `**Formats:** \`${data.commands.lint.formats.join('`, `')}\``,
+      '**Input:** file path, `-` (stdin)',
+      '',
+      '**Key options**',
+      '- `--strict` — Fails when any error-level diagnostics exist.',
+      '- `--profile <minimal|diagnostic|strict>` — Select lint rule profile.',
       '',
       '### extract',
       `**Description:** ${data.commands.extract.description}`,
