@@ -237,6 +237,28 @@ function buildCapabilities() {
           },
         },
       },
+      diff: {
+        formats: ['ndjson', 'json', 'md'],
+        stdin: false,
+        description:
+          'Emit structural differences between two IdeaMark documents (YAML-first by default).',
+        options: {
+          '--format': {
+            values: ['ndjson', 'json', 'md'],
+            description: 'Output format.',
+          },
+          '--scope': {
+            values: ['yaml', 'all'],
+            description: 'Diff scope. Default: yaml.',
+          },
+          '--include-markdown': {
+            description: 'Include Markdown body differences (optional).',
+          },
+          '--include-meta': {
+            description: 'Include meta/timestamp differences (optional).',
+          },
+        },
+      },
       format: {
         formats: ['md'],
         stdin: true,
@@ -597,6 +619,16 @@ function toMarkdown(topic, data, context) {
       `**Description:** ${data.commands.format.description}`,
       `**Formats:** \`${data.commands.format.formats.join('`, `')}\``,
       '**Input:** file path, `-` (stdin)',
+      '',
+      '### diff',
+      `**Description:** ${data.commands.diff.description}`,
+      `**Formats:** \`${data.commands.diff.formats.join('`, `')}\``,
+      '**Input:** two file paths',
+      '',
+      '**Key options**',
+      '- `--scope <yaml|all>` — Select structural-only or full diff scope.',
+      '- `--include-markdown` — Include markdown body differences.',
+      '- `--include-meta` — Include header metadata/timestamp fields.',
       '',
       '### lint',
       `**Description:** ${data.commands.lint.description}`,

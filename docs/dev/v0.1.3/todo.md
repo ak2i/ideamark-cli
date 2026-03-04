@@ -160,7 +160,7 @@ Status: Done
 ---
 
 ## 7. diff 実装（YAML-first / 構造差分）
-Status: Todo
+Status: Done
 
 目的: 変更レビューと回帰確認のための構造diffを提供する。  
 対象: `ideamark diff`
@@ -175,11 +175,16 @@ Status: Todo
 完了条件:
 1. 期待差分のみが出力される（ノイズ抑制）。
 2. 参照破断リスクが `summary` または補助フィールドで判別できる。
+実装メモ (2026-03-04):
+1. `ideamark diff <from> <to>` を追加（`--format ndjson|json|md`, `--scope yaml|all`, `--include-markdown`, `--include-meta`）。
+2. default は YAML-first。`updated_at` / `created_at` は既定で除外し、`--include-meta` で比較対象に含める。
+3. 変更レコードは `op/path/before/after/summary/risk_hint` 形式で出力。
+4. `structure.sections` の順序変化は `move` として出力。
 
 ---
 
 ## 8. describe capabilities 更新（lint/diff/routing/languages）
-Status: In Progress
+Status: Done
 
 目的: 実装機能を `describe capabilities` へ過不足なく宣言する。  
 対象: capabilities JSON/MD 生成
@@ -199,7 +204,7 @@ Status: In Progress
 2. `features.routing` / `features.languages` を追加。
 3. `commands.describe.topics` に `ls` / `routing` を追加。
 4. `commands.lint` を宣言済み（formats/options/description）。
-5. 残課題: `commands.diff` は diff 実装時に追加。
+5. `commands.diff` を宣言済み（formats/options/description）。
 
 ---
 

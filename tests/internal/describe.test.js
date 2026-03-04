@@ -10,6 +10,7 @@ test('describe: capabilities json', () => {
   assert.ok(payload.commands.describe.topics.includes('routing'));
   assert.strictEqual(payload.features.routing.supported, true);
   assert.ok(payload.commands.lint);
+  assert.ok(payload.commands.diff);
 });
 
 test('describe: checklist yaml', () => {

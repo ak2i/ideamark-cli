@@ -20,6 +20,7 @@ const { publishDocument } = require('../src/publish');
 const { describe } = require('../src/describe');
 const { listDocument } = require('../src/ls');
 const { lintDocument, lintToJson, lintToMarkdown, PROFILE_RULES } = require('../src/lint');
+const { computeDiff, toNdjson: diffToNdjson, toJson: diffToJson, toMarkdown: diffToMarkdown } = require('../src/diff');
 const pkg = require('../package.json');
 
 const VERSION = pkg.version;
@@ -39,6 +40,7 @@ const HELP = {
     '  publish    Publish a working document',
     '  describe   Describe built-in topics',
     '  lint       Lint an IdeaMark document',
+    '  diff       Diff two IdeaMark documents',
     '  ls         List IDs and vocab in a document',
     '',
     'Global options:',
@@ -75,6 +77,11 @@ const HELP = {
   lint: [
     'Usage:',
     '  ideamark lint [<infile>|-] [--format ndjson|json|md] [--strict] [--profile minimal|diagnostic|strict]',
+    '',
+  ].join('\n'),
+  diff: [
+    'Usage:',
+    '  ideamark diff <from> <to> [--format ndjson|json|md] [--scope yaml|all] [--include-markdown] [--include-meta]',
     '',
   ].join('\n'),
   format: [
@@ -416,6 +423,52 @@ function main() {
       emitNdjson([result.meta, ...result.diagnostics, result.summary], 'stdout');
     }
     process.exit(result.ok ? 0 : 1);
+  }
+
+  if (cmd === 'diff') {
+    let fromFile = null;
+    let toFile = null;
+    let format = 'ndjson';
+    let scope = 'yaml';
+    let includeMarkdown = false;
+    let includeMeta = false;
+    while (args.length) {
+      const a = args.shift();
+      if (a === '--format') {
+        format = args.shift() || usageExit();
+        if (!['ndjson', 'json', 'md'].includes(format)) usageExit();
+      } else if (a === '--scope') {
+        scope = args.shift() || usageExit();
+        if (!['yaml', 'all'].includes(scope)) usageExit();
+      } else if (a === '--include-markdown') {
+        includeMarkdown = true;
+      } else if (a === '--include-meta') {
+        includeMeta = true;
+      } else if (!fromFile) {
+        fromFile = a;
+      } else if (!toFile) {
+        toFile = a;
+      } else {
+        usageExit();
+      }
+    }
+    if (!fromFile || !toFile || fromFile === '-' || toFile === '-') usageExit();
+    const fromText = readFileUtf8(fromFile);
+    const toText = readFileUtf8(toFile);
+    const result = computeDiff(fromText, toText, { scope, includeMarkdown, includeMeta });
+    if (!result.ok) {
+      writeStderr(`${result.error}: ${result.message}\n`);
+      process.exit(1);
+    }
+    if (format === 'json') {
+      writeStdout(`${diffToJson(result.changes)}\n`);
+    } else if (format === 'md') {
+      writeStdout(diffToMarkdown(result.changes, { scope, includeMarkdown, includeMeta }));
+      writeStdout('\n');
+    } else {
+      writeStdout(diffToNdjson(result.changes));
+    }
+    process.exit(0);
   }
 
   if (cmd === 'ls') {
