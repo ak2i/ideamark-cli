@@ -209,7 +209,7 @@ Status: Done
 ---
 
 ## 9. スモークテスト自動化（lint/diff/validate）
-Status: Todo
+Status: Done
 
 目的: v0.1.3 の最低回帰ラインを自動で確認できる状態にする。  
 対象: テストスクリプト、フィクスチャ
@@ -224,6 +224,13 @@ Status: Todo
 完了条件:
 1. CI相当手順でスモーク一式が再現可能。
 2. 失敗時に原因切り分け可能な粒度でログが出る。
+実装メモ (2026-03-04):
+1. `tests/run-smoke-v0.1.3.js` を追加。
+2. `lint` 正常系（error=0）/ 異常系（`--strict` exit 1）を確認。
+3. `diff` で add/replace の検出を確認。
+4. `validate` で NDJSON の先頭 `meta` / 末尾 `summary` を確認。
+5. `validate --strict` 異常系（参照破断）を確認。
+6. `npm run smoke:v0.1.3` で再実行可能。
 
 ---
 

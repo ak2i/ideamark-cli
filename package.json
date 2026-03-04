@@ -35,7 +35,8 @@
     "ideamark": "bin/ideamark.js"
   },
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "smoke:v0.1.3": "node tests/run-smoke-v0.1.3.js"
   },
   "dependencies": {
     "yaml": "^2.4.5"
