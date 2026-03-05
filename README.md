@@ -1,6 +1,6 @@
 # ideamark-cli
 
-Command-line tools for working with IdeaMark documents (v0.1.3 development track). The CLI can validate, lint, diff, format, extract, compose, and publish IdeaMark documents, and provides a self-describing `describe` command.
+Command-line tools for working with IdeaMark documents (v0.1.3 development track). The CLI can validate, lint, diff, format, extract, compose, publish, and list IdeaMark documents, and provides a self-describing `describe` command.
 
 ## Commands (v0.1.3)
 
@@ -12,6 +12,7 @@ Command-line tools for working with IdeaMark documents (v0.1.3 development track
 - `compose`
 - `publish`
 - `describe`
+- `ls`
 
 ## Usage
 
@@ -109,6 +110,16 @@ ideamark diff <from> <to> [--format ndjson|json|md] [--scope yaml|all] [--includ
 - Timestamp/meta fields (`created_at`, `updated_at`) are excluded by default.
 - `--include-meta` adds meta field differences.
 - `--include-markdown` includes markdown-body differences when using `--scope all`.
+
+### ls
+
+```bash
+ideamark ls [<infile>|-] [--sections] [--occurrences] [--entities] [--vocab] [--format json|md]
+```
+
+- Lists section/occurrence/entity IDs and vocabulary usage in a document.
+- If no include flags are given, all of `--sections --occurrences --entities --vocab` are enabled.
+- Output format defaults to `json` (`--format md` is also supported).
 
 ## I/O conventions
 
