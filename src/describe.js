@@ -286,6 +286,11 @@ function buildCapabilities() {
         formats: ['md'],
         stdin: false,
         description: 'Compose multiple IdeaMark documents into a single output.',
+        options: {
+          '--preserve-markdown': {
+            description: 'Preserve source markdown narrative and place it under merged sections when possible.',
+          },
+        },
       },
       publish: {
         formats: ['md'],

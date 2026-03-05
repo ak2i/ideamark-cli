@@ -1,0 +1,122 @@
+{
+  "contract": {
+    "name": "doc-cli-contract",
+    "version": "1.0.3"
+  },
+  "tool": {
+    "name": "ideamark-cli",
+    "version": "0.1.3"
+  },
+  "document": {
+    "name": "ideamark",
+    "version": "1.0.3"
+  },
+  "prompt_authoring": {
+    "overview": "Generate external LLM prompts that preserve YAML validity and human-readable Markdown narrative.",
+    "ownership": {
+      "inside_cli": [
+        "describe guidance distribution",
+        "validate/lint execution",
+        "vocab/checklist publication"
+      ],
+      "outside_cli": [
+        "final prompt assembly",
+        "model invocation",
+        "retry strategy"
+      ]
+    },
+    "required_inputs": [
+      "source_materials",
+      "output_path",
+      "target_spec_version",
+      "audience"
+    ],
+    "output_contract": {
+      "required_yaml_blocks": [
+        "header",
+        "section",
+        "occurrence",
+        "registry"
+      ],
+      "ordering_requirements": [
+        "Render blocks in local cluster order: section then that section's occurrences, then next section.",
+        "Occurrence block order should follow each section.occurrences list.",
+        "Keep the registry block at the end."
+      ],
+      "narrative_requirements": [
+        "After each section YAML block, include one or more Markdown paragraphs summarizing intent and context.",
+        "After each occurrence YAML block, include at least one sentence explaining claim/evidence.",
+        "Avoid YAML-only documents intended for human reading."
+      ],
+      "prohibitions": [
+        "unresolved references",
+        "duplicate IDs",
+        "yaml-only output for mixed/human audience"
+      ]
+    },
+    "reference_mapping_rules": {
+      "reference_mode": {
+        "default": "auto",
+        "behavior": [
+          "If explicit references exist in input, generate structured references.",
+          "If no references exist, references section/occurrences may be omitted.",
+          "Do not invent citation identifiers or URLs."
+        ]
+      },
+      "core_standard": {
+        "required": [
+          "Map source links to refs.sources[] with id/uri/role/description.",
+          "Model provenance/citation as entity + occurrence(role=citation).",
+          "Connect claims to source entities via supporting_evidence and optional target."
+        ],
+        "notes": [
+          "Core rules should apply even when no template is provided.",
+          "Unknown citation subfields should be ignored by consumers unless template-aware."
+        ]
+      },
+      "minimum_reference_set": {
+        "applies_when": "explicit_references_detected",
+        "required": [
+          "Create IE-REF-* entities and OCC-REF-* occurrences for major references (report page, PDF, DOI when present).",
+          "Create a references section containing OCC-REF-*.",
+          "Keep OCC-*-CITATION as aggregate and link to IE-REF-* via supporting_evidence."
+        ]
+      },
+      "template_extensions": {
+        "policy": "extend_not_replace",
+        "required": [
+          "If template defines reference profile, apply extra fields in addition to core standard.",
+          "Record template usage in header.template.",
+          "Optionally include template source in refs.sources with role=template."
+        ],
+        "examples": [
+          "paper template: doi/journal/volume/pages",
+          "policy template: agency/jurisdiction/effective_date"
+        ]
+      }
+    },
+    "generation_flow": [
+      "describe(ai-authoring + checklist)",
+      "prompt_assembly",
+      "generate",
+      "validate(strict)",
+      "repair_loop"
+    ],
+    "prompt_template_hints": {
+      "system": [
+        "You are generating IdeaMark v1.0.3 documents for both machines and humans.",
+        "Keep IDs stable and references resolvable."
+      ],
+      "task": [
+        "Include strict header fields.",
+        "Produce section/occurrence/registry YAML blocks.",
+        "Write narrative text immediately after each section and occurrence YAML block.",
+        "Render section-scoped local clusters: section then listed occurrences."
+      ],
+      "quality_gate": [
+        "Must pass ideamark validate --mode strict.",
+        "Must include human-readable narrative adjacent to structure blocks."
+      ]
+    }
+  }
+}

@@ -97,7 +97,7 @@ const HELP = {
   ].join('\n'),
   compose: [
     'Usage:',
-    '  ideamark compose <file1> <file2> [more...] [-o <outfile>|-] [--update] [--base <file>] [--doc-id <id>] [--inherit <mode>] [--diagnostics <stderr|stdout|file>]',
+    '  ideamark compose <file1> <file2> [more...] [-o <outfile>|-] [--update] [--base <file>] [--doc-id <id>] [--inherit <mode>] [--preserve-markdown] [--diagnostics <stderr|stdout|file>]',
     '',
   ].join('\n'),
   publish: [
@@ -292,6 +292,7 @@ function main() {
     let basefile = null;
     let docId = null;
     let inherit = 'none';
+    let preserveMarkdown = false;
     let diagnosticsTarget = 'stderr';
     const files = [];
     while (args.length) {
@@ -301,6 +302,7 @@ function main() {
       else if (a === '--base') basefile = args.shift() || usageExit();
       else if (a === '--doc-id') docId = args.shift() || usageExit();
       else if (a === '--inherit') inherit = args.shift() || usageExit();
+      else if (a === '--preserve-markdown') preserveMarkdown = true;
       else if (a === '--diagnostics') diagnosticsTarget = args.shift() || usageExit();
       else files.push(a);
     }
@@ -308,7 +310,7 @@ function main() {
     const docs = files.map((f) => parseDocument(readFileUtf8(f)));
     let baseHeader = null;
     if (basefile) baseHeader = parseDocument(readFileUtf8(basefile)).header;
-    const result = composeDocuments(docs, { update, baseHeader, docId, inherit });
+    const result = composeDocuments(docs, { update, baseHeader, docId, inherit, preserveMarkdown });
     if (!result.ok) {
       writeDiagnostics(result.diagnostics, diagnosticsTarget);
       process.exit(1);
