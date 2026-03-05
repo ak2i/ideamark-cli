@@ -53,3 +53,26 @@ npm test
 ```
 
 These cover validate/format/extract/compose/publish/describe behaviors and ensure outputs change with input, errors surface correctly, and reference updates occur.
+
+## LLM metrics runner (v0.1.3)
+
+Run the v0.1.3 LLM metrics runner:
+
+```bash
+npm run llm-metrics:v0.1.3
+```
+
+Optional file output:
+
+```bash
+node tests/run-llm-metrics-v0.1.3.js --out docs/dev/v0.1.3/metrics/latest.ndjson
+```
+
+The runner emits NDJSON records (`meta`, `scenario`, `summary`) and tracks:
+
+- YAML parse success rate
+- ID uniqueness rate
+- References resolvable rate
+- Self-correction rate
+- Retry count
+- Round-trip consistency (split/extract -> refine -> compose -> validate)

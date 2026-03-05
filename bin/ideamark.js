@@ -19,6 +19,8 @@ const { composeDocuments } = require('../src/compose');
 const { publishDocument } = require('../src/publish');
 const { describe } = require('../src/describe');
 const { listDocument } = require('../src/ls');
+const { lintDocument, lintToJson, lintToMarkdown, PROFILE_RULES } = require('../src/lint');
+const { computeDiff, toNdjson: diffToNdjson, toJson: diffToJson, toMarkdown: diffToMarkdown } = require('../src/diff');
 const pkg = require('../package.json');
 
 const VERSION = pkg.version;
@@ -37,6 +39,8 @@ const HELP = {
     '  compose    Compose multiple documents',
     '  publish    Publish a working document',
     '  describe   Describe built-in topics',
+    '  lint       Lint an IdeaMark document',
+    '  diff       Diff two IdeaMark documents',
     '  ls         List IDs and vocab in a document',
     '',
     'Global options:',
@@ -46,14 +50,19 @@ const HELP = {
   ].join('\n'),
   describe: [
     'Usage:',
-    '  ideamark describe <topic> [--format json|yaml|md]',
+    '  ideamark describe <topic> [--format json|yaml|md] [--audience human|ai] [--lang ja|en|ja-JP|en-US]',
+    '  ideamark describe ls --target guides [--sections] [--vocab] [--format json|yaml|md]',
+    '  ideamark describe routing [--format json|yaml|md]',
     '',
     'Topics:',
     '  capabilities',
     '  checklist',
     '  vocab',
     '  ai-authoring',
+    '  prompt-authoring',
     '  params',
+    '  ls',
+    '  routing',
     '',
   ].join('\n'),
   ls: [
@@ -64,6 +73,16 @@ const HELP = {
   validate: [
     'Usage:',
     '  ideamark validate [<infile>|-] [--strict|--mode <mode>] [--fail-on-warn]',
+    '',
+  ].join('\n'),
+  lint: [
+    'Usage:',
+    '  ideamark lint [<infile>|-] [--format ndjson|json|md] [--strict] [--profile minimal|diagnostic|strict]',
+    '',
+  ].join('\n'),
+  diff: [
+    'Usage:',
+    '  ideamark diff <from> <to> [--format ndjson|json|md] [--scope yaml|all] [--include-markdown] [--include-meta]',
     '',
   ].join('\n'),
   format: [
@@ -78,7 +97,7 @@ const HELP = {
   ].join('\n'),
   compose: [
     'Usage:',
-    '  ideamark compose <file1> <file2> [more...] [-o <outfile>|-] [--update] [--base <file>] [--doc-id <id>] [--inherit <mode>] [--diagnostics <stderr|stdout|file>]',
+    '  ideamark compose <file1> <file2> [more...] [-o <outfile>|-] [--update] [--base <file>] [--doc-id <id>] [--inherit <mode>] [--preserve-markdown] [--diagnostics <stderr|stdout|file>]',
     '',
   ].join('\n'),
   publish: [
@@ -129,8 +148,8 @@ function main() {
     if (format === 'json') {
       const payload = {
         tool: { version: VERSION },
-        contract: { version: '1.0.2' },
-        document_spec: { version: '1.0.2' },
+        contract: { version: '1.0.3' },
+        document_spec: { version: '1.0.3' },
       };
       writeStdout(`${JSON.stringify(payload)}\n`);
       process.exit(0);
@@ -273,6 +292,7 @@ function main() {
     let basefile = null;
     let docId = null;
     let inherit = 'none';
+    let preserveMarkdown = false;
     let diagnosticsTarget = 'stderr';
     const files = [];
     while (args.length) {
@@ -282,6 +302,7 @@ function main() {
       else if (a === '--base') basefile = args.shift() || usageExit();
       else if (a === '--doc-id') docId = args.shift() || usageExit();
       else if (a === '--inherit') inherit = args.shift() || usageExit();
+      else if (a === '--preserve-markdown') preserveMarkdown = true;
       else if (a === '--diagnostics') diagnosticsTarget = args.shift() || usageExit();
       else files.push(a);
     }
@@ -289,7 +310,7 @@ function main() {
     const docs = files.map((f) => parseDocument(readFileUtf8(f)));
     let baseHeader = null;
     if (basefile) baseHeader = parseDocument(readFileUtf8(basefile)).header;
-    const result = composeDocuments(docs, { update, baseHeader, docId, inherit });
+    const result = composeDocuments(docs, { update, baseHeader, docId, inherit, preserveMarkdown });
     if (!result.ok) {
       writeDiagnostics(result.diagnostics, diagnosticsTarget);
       process.exit(1);
@@ -325,21 +346,131 @@ function main() {
     const topic = args.shift();
     if (!topic) usageExit();
     let format = null;
+    const describeOptions = {
+      audience: null,
+      lang: null,
+      model: null,
+      profile: null,
+      target: null,
+      sections: false,
+      vocab: false,
+    };
     while (args.length) {
       const a = args.shift();
       if (a === '--format') {
         format = args.shift() || usageExit();
         if (!['json', 'yaml', 'md'].includes(format)) usageExit();
+      } else if (a === '--audience') {
+        describeOptions.audience = args.shift() || usageExit();
+        if (!['human', 'ai'].includes(describeOptions.audience)) usageExit();
+      } else if (a === '--lang') {
+        describeOptions.lang = args.shift() || usageExit();
+      } else if (a === '--model') {
+        describeOptions.model = args.shift() || usageExit();
+        if (!['small', 'large'].includes(describeOptions.model)) usageExit();
+      } else if (a === '--profile') {
+        describeOptions.profile = args.shift() || usageExit();
+      } else if (a === '--target') {
+        describeOptions.target = args.shift() || usageExit();
+      } else if (a === '--sections') {
+        describeOptions.sections = true;
+      } else if (a === '--vocab') {
+        describeOptions.vocab = true;
       } else usageExit();
     }
     if (!format) format = 'md';
-    const result = describe(topic, format);
+    const result = describe(topic, format, describeOptions);
     if (!result.ok) {
-      if (result.error === 'unknown topic') usageExit();
+      if (result.error === 'unknown_topic' || result.error === 'unsupported_target') usageExit();
+      if (
+        ['invalid_profile', 'invalid_audience', 'invalid_model', 'model_requires_ai'].includes(
+          result.error
+        )
+      ) {
+        usageExit();
+      }
       if (result.diagnostics) writeStderr(stringifyNdjson(result.diagnostics));
       process.exit(1);
     }
     writeStdout(result.output);
+    process.exit(0);
+  }
+
+  if (cmd === 'lint') {
+    let infile = null;
+    let format = 'ndjson';
+    let strict = false;
+    let profile = 'diagnostic';
+    while (args.length) {
+      const a = args.shift();
+      if (a === '--format') {
+        format = args.shift() || usageExit();
+        if (!['ndjson', 'json', 'md'].includes(format)) usageExit();
+      } else if (a === '--strict') {
+        strict = true;
+      } else if (a === '--profile') {
+        profile = args.shift() || usageExit();
+        if (!Object.prototype.hasOwnProperty.call(PROFILE_RULES, profile)) usageExit();
+      } else if (!infile) infile = a;
+      else usageExit();
+    }
+    const text = readInput(infile);
+    const doc = parseDocument(text);
+    const result = lintDocument(doc, { strict, profile });
+    if (format === 'json') {
+      writeStdout(`${lintToJson(result)}\n`);
+    } else if (format === 'md') {
+      writeStdout(lintToMarkdown(result, profile, strict));
+      writeStdout('\n');
+    } else {
+      emitNdjson([result.meta, ...result.diagnostics, result.summary], 'stdout');
+    }
+    process.exit(result.ok ? 0 : 1);
+  }
+
+  if (cmd === 'diff') {
+    let fromFile = null;
+    let toFile = null;
+    let format = 'ndjson';
+    let scope = 'yaml';
+    let includeMarkdown = false;
+    let includeMeta = false;
+    while (args.length) {
+      const a = args.shift();
+      if (a === '--format') {
+        format = args.shift() || usageExit();
+        if (!['ndjson', 'json', 'md'].includes(format)) usageExit();
+      } else if (a === '--scope') {
+        scope = args.shift() || usageExit();
+        if (!['yaml', 'all'].includes(scope)) usageExit();
+      } else if (a === '--include-markdown') {
+        includeMarkdown = true;
+      } else if (a === '--include-meta') {
+        includeMeta = true;
+      } else if (!fromFile) {
+        fromFile = a;
+      } else if (!toFile) {
+        toFile = a;
+      } else {
+        usageExit();
+      }
+    }
+    if (!fromFile || !toFile || fromFile === '-' || toFile === '-') usageExit();
+    const fromText = readFileUtf8(fromFile);
+    const toText = readFileUtf8(toFile);
+    const result = computeDiff(fromText, toText, { scope, includeMarkdown, includeMeta });
+    if (!result.ok) {
+      writeStderr(`${result.error}: ${result.message}\n`);
+      process.exit(1);
+    }
+    if (format === 'json') {
+      writeStdout(`${diffToJson(result.changes)}\n`);
+    } else if (format === 'md') {
+      writeStdout(diffToMarkdown(result.changes, { scope, includeMarkdown, includeMeta }));
+      writeStdout('\n');
+    } else {
+      writeStdout(diffToNdjson(result.changes));
+    }
     process.exit(0);
   }
 

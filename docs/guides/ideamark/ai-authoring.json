@@ -1,41 +1,93 @@
 {
   "contract": {
     "name": "doc-cli-contract",
-    "version": "1.0.2"
+    "version": "1.0.3"
   },
   "tool": {
     "name": "ideamark-cli",
-    "version": "0.1.2"
+    "version": "0.1.3"
   },
   "document": {
     "name": "ideamark",
-    "version": "1.0.2"
+    "version": "1.0.3"
   },
   "guidance": {
-    "overview": "Generate valid IdeaMark documents for human review and tooling.",
+    "overview": "Generate valid IdeaMark documents for human review, automation, and routing-aware discovery.",
     "principles": [
       "Produce valid IdeaMark YAML blocks (frontmatter and fenced yaml blocks).",
       "Keep IDs stable and unique within a document.",
       "Use concise, factual language and avoid speculation.",
-      "Prefer explicit structure over prose when capturing sections, occurrences, and entities."
+      "Prefer explicit structure and pair core YAML blocks with concise Markdown narrative for human readability.",
+      "Use non-blocking validation in working loops and strict validation before handoff."
     ],
     "do": [
       "Include a document header block.",
       "Keep references resolvable within the document.",
-      "Use the published vocab for anchorage.view, anchorage.phase, and status.state."
+      "Use the published vocab for anchorage.view, anchorage.phase, and status.state.",
+      "Tag sections with anchorage.domain for routing/discovery use.",
+      "Add natural-language summaries after section and occurrence YAML blocks.",
+      "Arrange body blocks in local cluster order: section first, then occurrences listed by that section.",
+      "Apply baseline reference mapping with refs.sources and citation occurrences.",
+      "Apply template-specific reference extensions in addition to baseline mapping when template is present.",
+      "Use reference_mode auto and generate structured references when explicit references exist in source input."
     ],
     "dont": [
       "Invent IDs that collide with existing ones.",
       "Refer to entities or occurrences that do not exist.",
-      "Omit required fields in strict mode."
+      "Omit required fields in strict mode.",
+      "Skip the generate -> validate -> breakdown loop for large documents.",
+      "Output YAML-only documents when the audience includes humans.",
+      "Invent references (URLs, DOI, citation entries) not present in source materials."
     ],
     "checklist": [
       "Header includes ideamark_version, doc_id, doc_type, status, created_at, updated_at, lang (strict mode).",
       "Each section_id has anchorage.view and anchorage.phase (strict mode).",
-      "Every occurrence_id references an entity (or uses inline: true)."
+      "Every occurrence_id references an entity (or uses inline: true).",
+      "Run minimal validation: header_singleton, yaml_parseable, id_unique_within_doc, references_resolvable.",
+      "Each section has one or more Markdown paragraphs explaining intent and context.",
+      "Each occurrence has at least one human-readable explanation sentence.",
+      "Each section is immediately followed by its declared occurrences in section.occurrences order.",
+      "Source links are represented in refs.sources and citation occurrences reference source evidence.",
+      "Template-specific citation/reference fields extend baseline mapping instead of replacing it.",
+      "When explicit references exist, IE-REF and OCC-REF structures are generated and grouped under references section.",
+      "When explicit references do not exist, references section can be omitted and fabricated citations are not added."
     ],
     "examples": [
       "A section contains section_id: SEC-001 and anchorage.view: background."
+    ],
+    "profiles": {
+      "ai_small": {
+        "goal": "maximize first-pass validity with fixed procedure",
+        "steps": ["generate", "validate", "breakdown(copy)"],
+        "minimal_validation": [
+          "header_singleton",
+          "yaml_parseable",
+          "id_unique_within_doc",
+          "references_resolvable"
+        ],
+        "forbidden_patterns": [
+          "inventing undefined references",
+          "changing existing stable IDs without cause"
+        ],
+        "followup_topics": ["params", "checklist", "routing"]
+      },
+      "ai_large": {
+        "framework": ["PLAN", "AUTHOR", "VALIDATE", "TRANSFORM"],
+        "decision_points": ["SPLIT-MODE", "STRICTNESS", "MERGE-POLICY"],
+        "completion_criteria": [
+          "requested outputs produced",
+          "chosen strictness validation passes",
+          "lineage is recorded"
+        ]
+      },
+      "human": {
+        "default_lang": "ja-JP",
+        "variants": ["easy", "advanced"]
+      }
+    },
+    "routing_hints": [
+      "If the task is iterative work-item management, route to FlowMark first.",
+      "If the task is knowledge stabilization and structural validation, route to IdeaMark."
     ]
   }
 }

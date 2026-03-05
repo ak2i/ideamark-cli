@@ -4,7 +4,14 @@ const { runCli } = require('./helpers');
 
 test('describe: capabilities json', () => {
   const res = runCli(['describe', 'capabilities', '--format', 'json']);
-  assert.match(res.stdout, /validate/);
+  const payload = JSON.parse(res.stdout);
+  assert.strictEqual(payload.contract.version, '1.0.3');
+  assert.ok(payload.commands.describe.topics.includes('ls'));
+  assert.ok(payload.commands.describe.topics.includes('routing'));
+  assert.ok(payload.commands.describe.topics.includes('prompt-authoring'));
+  assert.strictEqual(payload.features.routing.supported, true);
+  assert.ok(payload.commands.lint);
+  assert.ok(payload.commands.diff);
 });
 
 test('describe: checklist yaml', () => {
@@ -25,4 +32,51 @@ test('describe: unknown topic exit 2', () => {
 test('describe: default md for checklist', () => {
   const res = runCli(['describe', 'checklist']);
   assert.match(res.stdout, /strict checklist/);
+});
+
+test('describe: routing json', () => {
+  const res = runCli(['describe', 'routing', '--format', 'json']);
+  const payload = JSON.parse(res.stdout);
+  assert.strictEqual(payload.topic, 'routing');
+  assert.ok(Array.isArray(payload.source.section_ids));
+  assert.ok(payload.source.section_ids.length > 0);
+});
+
+test('describe: ls guides with sections', () => {
+  const res = runCli([
+    'describe',
+    'ls',
+    '--target',
+    'guides',
+    '--sections',
+    '--format',
+    'json',
+    '--lang',
+    'en-US',
+  ]);
+  const payload = JSON.parse(res.stdout);
+  assert.strictEqual(payload.target, 'guides');
+  assert.ok(Array.isArray(payload.guides[0].sections));
+  assert.ok(payload.guides[0].sections.some((s) => String(s.id).includes('SEC-IMK-SCOPE-BACKGROUND')));
+});
+
+test('describe: model requires ai audience', () => {
+  const res = runCli(['describe', 'capabilities', '--audience', 'human', '--model', 'small']);
+  assert.strictEqual(res.status, 2);
+});
+
+test('describe: prompt-authoring md', () => {
+  const res = runCli(['describe', 'prompt-authoring', '--format', 'md']);
+  assert.match(res.stdout, /Prompt Authoring Guide/);
+  assert.match(res.stdout, /After each section YAML block/);
+});
+
+test('describe: prompt-authoring json includes reference mapping rules', () => {
+  const res = runCli(['describe', 'prompt-authoring', '--format', 'json']);
+  const payload = JSON.parse(res.stdout);
+  assert.ok(payload.prompt_authoring.reference_mapping_rules);
+  assert.ok(payload.prompt_authoring.reference_mapping_rules.core_standard);
+  assert.ok(payload.prompt_authoring.reference_mapping_rules.template_extensions);
+  assert.ok(payload.prompt_authoring.reference_mapping_rules.reference_mode);
+  assert.ok(payload.prompt_authoring.reference_mapping_rules.minimum_reference_set);
 });
