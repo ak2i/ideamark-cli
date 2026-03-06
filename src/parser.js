@@ -32,7 +32,7 @@ function tokenize(text) {
   let buffer = [];
   for (; i < lines.length; i++) {
     const line = lines[i];
-    const yamlFenceMatch = line.match(/^\s*```yaml(\s+.*)?\s*$/);
+    const yamlFenceMatch = line.match(/^\s*```\s*yaml(\s+.*)?\s*$/i);
     if (!fence && yamlFenceMatch) {
       const info = line.trim().slice('```'.length).trim();
       if (buffer.length) {
