@@ -2,7 +2,7 @@ const { formatDocument } = require('./format');
 const { parseDocument } = require('./parser');
 const { validateDocument } = require('./validate');
 const { renderDocument } = require('./render');
-const { nowDate, deepClone } = require('./utils');
+const { nowTimestamp, deepClone } = require('./utils');
 
 function publishDocument(text) {
   const diagnostics = [];
@@ -13,7 +13,7 @@ function publishDocument(text) {
   if (!validation.ok) return { diagnostics, ok: false };
 
   const header = deepClone(parsed.header || {});
-  header.updated_at = nowDate();
+  header.updated_at = nowTimestamp();
   if (header.status && typeof header.status === 'object') {
     header.status.state = 'published';
   }

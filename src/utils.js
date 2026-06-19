@@ -30,6 +30,10 @@ function nowDate() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function nowTimestamp() {
+  return new Date().toISOString();
+}
+
 function uuidV4() {
   return require('crypto').randomUUID();
 }
@@ -66,6 +70,7 @@ module.exports = {
   writeStdout,
   writeStderr,
   nowDate,
+  nowTimestamp,
   uuidV4,
   deepClone,
   stableStringify,
