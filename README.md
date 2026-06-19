@@ -1,8 +1,9 @@
 # ideamark-cli
 
-Command-line tools for working with IdeaMark documents (v0.1.3 development track). The CLI can validate, lint, diff, format, extract, compose, publish, and list IdeaMark documents, and provides a self-describing `describe` command.
+Command-line tools for working with IdeaMark documents on the `v0.2.0` track.  
+The current implementation is being aligned to IdeaMark Core `v1.1.1`.
 
-## Commands (v0.1.3)
+## Commands
 
 - `validate`
 - `lint`
@@ -26,8 +27,26 @@ ideamark validate [<infile>|-] [--strict] [--fail-on-warn] [--mode working|stric
 
 - Reads from stdin if `<infile>` is omitted or `-`.
 - Outputs NDJSON diagnostics to stdout.
-- When `--emit-evidence` or `--attach` is used, diagnostics go to stderr and evidence/artifacts are emitted to stdout or files.
-- Exit codes: `0` success, `1` validation failure, `2` usage error.
+- Validates structure, references, and entity payload requirements.
+- Does not validate payload meaning, external profile semantics, or URI reachability.
+
+### lint
+
+```bash
+ideamark lint [<infile>|-] [--format ndjson|json|md] [--strict] [--profile minimal|diagnostic|strict]
+```
+
+- Default is non-blocking.
+- `--strict` fails on error-level diagnostics.
+
+### diff
+
+```bash
+ideamark diff <from> <to> [--format ndjson|json|md] [--scope yaml|all] [--include-markdown] [--include-meta]
+```
+
+- Default scope is YAML-first.
+- Compares `entities`, `occurrences`, `sections`, `relations`, `perspectives`, and `structure`.
 
 ### format
 
@@ -35,42 +54,25 @@ ideamark validate [<infile>|-] [--strict] [--fail-on-warn] [--mode working|stric
 ideamark format [<infile>|-] [-o <outfile>|-] [--canonical] [--diagnostics <path|->]
 ```
 
-- Formats an IdeaMark document.
-- `--canonical` normalizes references to canonical `ideamark://` URIs.
-- Outputs the formatted document to stdout (or `-o`).
-- Diagnostics go to stderr by default (or `--diagnostics`).
-
 ### extract
 
 ```bash
 ideamark extract [<infile>|-] [-o <outfile>|-] (--section <SEC_ID> | --occ <OCC_ID>) [--diagnostics <path|->]
 ```
 
-- Extracts a section or occurrence and its closure into a new document.
-- Output has a new `doc_id`.
-- Diagnostics go to stderr by default (or `--diagnostics`).
-
 ### compose
 
 ```bash
 ideamark compose <fileA> <fileB> [<fileN>...] [-o <outfile>|-]
                 [--update --base <basefile>] [--doc-id <DOC_ID>] [--inherit none|first|base]
-                [--diagnostics <path|->]
+                [--preserve-markdown] [--diagnostics <path|->]
 ```
-
-- Merges multiple documents by union (no semantic dedupe).
-- On ID conflicts, renames with aliases and retargets references.
-- Diagnostics go to stderr by default (or `--diagnostics`).
 
 ### publish
 
 ```bash
 ideamark publish [<infile>|-] [-o <outfile>|-] [--diagnostics <path|->]
 ```
-
-- Pipeline: `format --canonical` -> `validate --strict`.
-- On success, updates `updated_at` and sets `status.state=published` (if present).
-- On strict failure, outputs diagnostics only and exits `1` (no artifact output).
 
 ### describe
 
@@ -90,71 +92,29 @@ Topics:
 - `ls`
 - `routing`
 
-### lint
-
-```bash
-ideamark lint [<infile>|-] [--format ndjson|json|md] [--strict] [--profile minimal|diagnostic|strict]
-```
-
-- Default is non-blocking (`exit 0` even when error diagnostics exist).
-- `--strict` makes error-level diagnostics fail with `exit 1`.
-- NDJSON output follows `meta -> diagnostic* -> summary`.
-
-### diff
-
-```bash
-ideamark diff <from> <to> [--format ndjson|json|md] [--scope yaml|all] [--include-markdown] [--include-meta]
-```
-
-- Default scope is YAML-first (`--scope yaml`).
-- Timestamp/meta fields (`created_at`, `updated_at`) are excluded by default.
-- `--include-meta` adds meta field differences.
-- `--include-markdown` includes markdown-body differences when using `--scope all`.
-
 ### ls
 
 ```bash
 ideamark ls [<infile>|-] [--sections] [--occurrences] [--entities] [--vocab] [--format json|md]
 ```
 
-- Lists section/occurrence/entity IDs and vocabulary usage in a document.
-- If no include flags are given, all of `--sections --occurrences --entities --vocab` are enabled.
-- Output format defaults to `json` (`--format md` is also supported).
-
-## I/O conventions
-
-- `<infile>` omitted or `-` means stdin.
-- `-o -` means stdout.
-- `validate` writes diagnostics to stdout.
-- `validate` writes diagnostics to stderr when `--emit-evidence` or `--attach` is used.
-- Other commands write artifacts to stdout and diagnostics to stderr (or `--diagnostics`).
-
-## Exit codes
-
-1. `0` success (no error diagnostics)
-2. `1` failure (validation/strict error or command failure)
-3. `2` usage error (invalid arguments)
-
-## Minimal strict-valid example
+## Minimal v1.1.1 example
 
 ```markdown
 ---
-ideamark_version: 1
+ideamark_version: "1.1.1"
 doc_id: "DOC-EXAMPLE-1"
 doc_type: "derived"
 status:
   state: "in_progress"
-created_at: "2026-02-20"
-updated_at: "2026-02-20"
-lang: "en"
+created_at: "2026-06-19T00:00:00Z"
+updated_at: "2026-06-19T00:00:00Z"
+lang: "en-US"
 ---
 
 ## SEC-EXAMPLE
 ```yaml
 section_id: "SEC-EXAMPLE"
-anchorage:
-  view: "design"
-  phase: "implementation"
 occurrences: ["OCC-EXAMPLE"]
 ```
 
@@ -162,8 +122,6 @@ occurrences: ["OCC-EXAMPLE"]
 occurrence_id: "OCC-EXAMPLE"
 entity: "IE-EXAMPLE"
 role: "observation"
-status:
-  state: "confirmed"
 ```
 
 ## Registry
@@ -171,16 +129,20 @@ status:
 entities:
   IE-EXAMPLE:
     kind: "observation"
-    content: "Example content"
+    payload:
+      body: "Example content"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
 occurrences:
   OCC-EXAMPLE:
     entity: "IE-EXAMPLE"
     role: "observation"
-    status: { state: "confirmed" }
 sections:
   SEC-EXAMPLE:
-    anchorage: { view: "design", phase: "implementation" }
     occurrences: ["OCC-EXAMPLE"]
+relations: {}
+perspectives: {}
 structure:
   sections: ["SEC-EXAMPLE"]
 ```
@@ -192,69 +154,20 @@ Validate it:
 ideamark validate --strict example.ideamark.md
 ```
 
-## Publish example (canonical refs)
+## I/O conventions
 
-Input (working):\n
-```markdown
-```yaml
-occurrence_id: "OCC-1"
-entity: "IE-1"
-target: "IE-2"
-supporting_evidence: ["IE-3"]
-derived_from:
-  - entity: "IE-4"
-```
-```
+- `<infile>` omitted or `-` means stdin.
+- `-o -` means stdout.
+- `validate` writes diagnostics to stdout.
+- `validate` writes diagnostics to stderr when `--emit-evidence` or `--attach` is used.
+- Other commands write artifacts to stdout and diagnostics to stderr unless redirected.
 
-After `ideamark publish`, the references are canonicalized:
+## Exit codes
 
-```yaml
-occurrence_id: "OCC-1"
-entity: "ideamark://docs/<doc_id>#/entities/IE-1"
-target: "ideamark://docs/<doc_id>#/entities/IE-2"
-supporting_evidence:
-  - "ideamark://docs/<doc_id>#/entities/IE-3"
-derived_from:
-  - entity: "ideamark://docs/<doc_id>#/entities/IE-4"
-```
-
-## Evidence examples
-
-Emit an evidence block for validation:
-
-```bash
-ideamark validate example.ideamark.md --emit-evidence yaml
-```
-
-Attach evidence to the document (stdout):
-
-```bash
-ideamark validate example.ideamark.md --attach -
-```
-
-Write NDJSON evidence to a file and attach a reference:
-
-```bash
-ideamark validate example.ideamark.md --emit-evidence ndjson --artifact-out evidence.ndjson --attach -
-```
-
-## Installation
-
-Local install (repo):\n
-```bash
-npm install
-npm link
-```
-
-Global install (published package):\n
-```bash
-npm install -g ideamark-cli
-```
+1. `0` success
+2. `1` validation/strict failure or command failure
+3. `2` usage error
 
 ## Tests
 
-See `tests/README.md` for smoke, internal tests, and v0.1.3 LLM metrics runner.
-
-## Release Notes
-
-See `docs/release/v0.1.0.md`, `docs/release/v0.1.1.md`, and `docs/release/v0.1.2.md`.
+See `tests/README.md`.

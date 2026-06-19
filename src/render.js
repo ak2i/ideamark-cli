@@ -14,7 +14,8 @@ function sortRegistry(registry) {
   out.entities = sortObj(registry.entities || {});
   out.occurrences = sortObj(registry.occurrences || {});
   out.sections = sortObj(registry.sections || {});
-  if (Array.isArray(registry.relations)) out.relations = registry.relations;
+  out.relations = sortObj(registry.relations || {});
+  out.perspectives = sortObj(registry.perspectives || {});
   out.structure = registry.structure || { sections: [] };
   return out;
 }
@@ -27,6 +28,8 @@ function renderDocument(model, options) {
     entities: new Set(Object.keys(registry.entities || {})),
     occurrences: new Set(Object.keys(registry.occurrences || {})),
     sections: new Set(Object.keys(registry.sections || {})),
+    relations: new Set(Object.keys(registry.relations || {})),
+    perspectives: new Set(Object.keys(registry.perspectives || {})),
   };
   const docId = header.doc_id;
 

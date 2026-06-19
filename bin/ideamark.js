@@ -148,8 +148,8 @@ function main() {
     if (format === 'json') {
       const payload = {
         tool: { version: VERSION },
-        contract: { version: '1.0.3' },
-        document_spec: { version: '1.0.3' },
+        contract: { version: '1.1.1' },
+        document_spec: { version: '1.1.1' },
       };
       writeStdout(`${JSON.stringify(payload)}\n`);
       process.exit(0);

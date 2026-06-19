@@ -9,7 +9,8 @@ function normalizeForDiff(doc, options) {
     entities: sortKeys(doc.registry.entities || {}),
     occurrences: sortKeys(doc.registry.occurrences || {}),
     sections: sortKeys(doc.registry.sections || {}),
-    relations: Array.isArray(doc.registry.relations) ? sortKeys(doc.registry.relations) : [],
+    relations: sortKeys(doc.registry.relations || {}),
+    perspectives: sortKeys(doc.registry.perspectives || {}),
     structure: sortKeys(doc.registry.structure || { sections: [] }),
   };
 

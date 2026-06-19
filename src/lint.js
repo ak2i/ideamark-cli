@@ -20,6 +20,7 @@ function collectIds(registry) {
     entities: new Set(Object.keys(registry.entities || {})),
     occurrences: new Set(Object.keys(registry.occurrences || {})),
     sections: new Set(Object.keys(registry.sections || {})),
+    relations: new Set(Object.keys(registry.relations || {})),
   };
 }
 
@@ -174,6 +175,19 @@ function lintDocument(doc, options) {
       }
     }
 
+    for (const [relId, rel] of Object.entries(registry.relations || {})) {
+      for (const key of ['from', 'to']) {
+        if (typeof rel[key] !== 'string') {
+          brokenRefs.push({ scope: 'relation', path: key, id: relId });
+          continue;
+        }
+        const ref = parseRef(rel[key], docId);
+        if (ref.kind === 'local' && !idSets.entities.has(ref.id) && !idSets.sections.has(ref.id)) {
+          brokenRefs.push({ scope: 'relation', path: key, id: relId });
+        }
+      }
+    }
+
     for (const [secId, sec] of Object.entries(registry.sections || {})) {
       const occs = sec && Array.isArray(sec.occurrences) ? sec.occurrences : [];
       for (const occRef of occs) {
@@ -280,18 +294,17 @@ function lintDocument(doc, options) {
       }
     }
 
-    for (const [secId, sec] of Object.entries(registry.sections || {})) {
-      const anchorage = sec && sec.anchorage ? sec.anchorage : null;
-      const domain = anchorage && Array.isArray(anchorage.domain) ? anchorage.domain : [];
-      if (domain.length === 0) {
+    for (const [entId, ent] of Object.entries(registry.entities || {})) {
+      const format = ent && ent.payload && ent.payload.format ? ent.payload.format : null;
+      if (!format || typeof format.media_type !== 'string' || format.media_type.length === 0) {
         diagnostics.push(
           d(
             'warning',
             'IM-LINT-104',
-            'Section anchorage.domain is empty; routing/discovery quality may degrade.',
-            { scope: 'section', id: secId, path: 'anchorage.domain' },
+            'Entity payload.format.media_type is missing; payload interoperability may degrade.',
+            { scope: 'entity', id: entId, path: 'payload.format.media_type' },
             mode,
-            'Add one or more domain tags for routing discovery.'
+            'Add payload.format.media_type to improve payload interpretation.'
           )
         );
       }

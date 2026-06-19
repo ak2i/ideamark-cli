@@ -53,7 +53,7 @@ function listEntities(registry) {
     entities.push({
       id,
       kind: ent ? ent.kind : undefined,
-      ref: ent ? ent.ref : undefined,
+      ref: ent && ent.payload ? ent.payload.ref : undefined,
     });
   }
   return sortById(entities);
@@ -61,17 +61,19 @@ function listEntities(registry) {
 
 function collectVocab(doc) {
   const vocab = {
-    'anchorage.view': new Set(),
-    'anchorage.phase': new Set(),
     'occurrence.role': new Set(),
     'entity.kind': new Set(),
+    'entity.atomicity_basis': new Set(),
+    'payload.format.media_type': new Set(),
     'status.state': new Set(),
+    'section.perspectives': new Set(),
   };
 
   for (const sec of Object.values(doc.registry.sections || {})) {
-    if (sec && sec.anchorage) {
-      if (sec.anchorage.view) vocab['anchorage.view'].add(sec.anchorage.view);
-      if (sec.anchorage.phase) vocab['anchorage.phase'].add(sec.anchorage.phase);
+    if (sec && Array.isArray(sec.perspectives)) {
+      for (const p of sec.perspectives) {
+        if (typeof p === 'string' && p.length > 0) vocab['section.perspectives'].add(p);
+      }
     }
   }
 
@@ -81,6 +83,11 @@ function collectVocab(doc) {
 
   for (const ent of Object.values(doc.registry.entities || {})) {
     if (ent && ent.kind) vocab['entity.kind'].add(ent.kind);
+    if (ent && ent.atomicity_basis) vocab['entity.atomicity_basis'].add(ent.atomicity_basis);
+    const mediaType = ent && ent.payload && ent.payload.format && ent.payload.format.media_type;
+    if (typeof mediaType === 'string' && mediaType.length > 0) {
+      vocab['payload.format.media_type'].add(mediaType);
+    }
   }
 
   const status = doc.header && doc.header.status;

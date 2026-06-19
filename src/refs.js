@@ -45,12 +45,21 @@ function normalizeRefsInObject(obj, docId, idSets) {
       continue;
     }
     if (k === 'from' || k === 'to') {
-      out[k] = normalizeRefValue(v, docId, idSets.entities, 'entities');
+      out[k] = normalizeRelationRefValue(v, docId, idSets);
       continue;
     }
     out[k] = normalizeRefsInObject(v, docId, idSets);
   }
   return out;
+}
+
+function normalizeRelationRefValue(value, docId, idSets) {
+  if (typeof value !== 'string') return value;
+  const ref = parseRef(value, docId);
+  if (ref.kind !== 'local') return value;
+  if (idSets.entities && idSets.entities.has(ref.id)) return canonicalUri(docId, 'entities', ref.id);
+  if (idSets.sections && idSets.sections.has(ref.id)) return canonicalUri(docId, 'sections', ref.id);
+  return value;
 }
 
 function normalizeRefValue(value, docId, idSet, type) {

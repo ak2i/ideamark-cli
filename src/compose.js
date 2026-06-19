@@ -1,6 +1,6 @@
 const { validateDocument } = require('./validate');
 const { renderDocument } = require('./render');
-const { uuidV4, nowDate, deepClone, stableStringify } = require('./utils');
+const { uuidV4, nowTimestamp, deepClone, stableStringify } = require('./utils');
 const { renameRefsInObject } = require('./refs');
 const { stringifyYaml } = require('./parser');
 const { sortKeys } = require('./utils');
@@ -87,6 +87,14 @@ function applyRenameMapToText(text, renameMap) {
   return out;
 }
 
+function getSectionOrder(doc, renameMap) {
+  const explicit = Array.isArray(doc.registry.structure && doc.registry.structure.sections)
+    ? doc.registry.structure.sections.filter((x) => typeof x === 'string')
+    : [];
+  const baseOrder = explicit.length ? explicit : Object.keys(doc.registry.sections || {});
+  return baseOrder.map((sec) => (renameMap && renameMap[sec]) || sec);
+}
+
 function mergeRegistry(base, incoming, diagnostics, renamePolicy) {
   const out = deepClone(base);
   const renameMap = {};
@@ -104,6 +112,12 @@ function mergeRegistry(base, incoming, diagnostics, renamePolicy) {
   }
   for (const [id, def] of Object.entries(incoming.sections || {})) {
     if (detectConflict(id, def, out.sections[id])) renameMap[id] = renamePolicy(id);
+  }
+  for (const [id, def] of Object.entries(incoming.relations || {})) {
+    if (detectConflict(id, def, out.relations[id])) renameMap[id] = renamePolicy(id);
+  }
+  for (const [id, def] of Object.entries(incoming.perspectives || {})) {
+    if (detectConflict(id, def, out.perspectives[id])) renameMap[id] = renamePolicy(id);
   }
 
   let inc = deepClone(incoming);
@@ -136,6 +150,8 @@ function mergeRegistry(base, incoming, diagnostics, renamePolicy) {
   inc.entities = renameKeys(inc.entities || {});
   inc.occurrences = renameKeys(inc.occurrences || {});
   inc.sections = renameKeys(inc.sections || {});
+  inc.relations = renameKeys(inc.relations || {});
+  inc.perspectives = renameKeys(inc.perspectives || {});
 
   for (const [id, def] of Object.entries(inc.entities || {})) {
     if (!out.entities[id]) out.entities[id] = def;
@@ -145,6 +161,12 @@ function mergeRegistry(base, incoming, diagnostics, renamePolicy) {
   }
   for (const [id, def] of Object.entries(inc.sections || {})) {
     if (!out.sections[id]) out.sections[id] = def;
+  }
+  for (const [id, def] of Object.entries(inc.relations || {})) {
+    if (!out.relations[id]) out.relations[id] = def;
+  }
+  for (const [id, def] of Object.entries(inc.perspectives || {})) {
+    if (!out.perspectives[id]) out.perspectives[id] = def;
   }
 
   return { registry: out, renameMap };
@@ -163,7 +185,8 @@ function composeDocuments(docs, options) {
     entities: {},
     occurrences: {},
     sections: {},
-    relations: [],
+    relations: {},
+    perspectives: {},
     structure: { sections: [] },
   };
 
@@ -171,8 +194,7 @@ function composeDocuments(docs, options) {
     const merged = mergeRegistry(registry, doc.registry, diagnostics, renamePolicy);
     registry = merged.registry;
     doc.__renameMapForCompose = merged.renameMap || {};
-    const incomingOrderRaw = (doc.registry.structure && doc.registry.structure.sections) || [];
-    const incomingOrder = incomingOrderRaw.map((sec) => merged.renameMap[sec] || sec);
+    const incomingOrder = getSectionOrder(doc, merged.renameMap);
     if (!registry.structure.sections.length) {
       registry.structure.sections = incomingOrder.slice();
     } else {
@@ -192,7 +214,7 @@ function composeDocuments(docs, options) {
   else if (options.inherit === 'base' && options.baseHeader && options.baseHeader.doc_id) header.doc_id = options.baseHeader.doc_id;
   else header.doc_id = uuidV4();
 
-  header.updated_at = nowDate();
+  header.updated_at = nowTimestamp();
   header.status = header.status || { state: 'in_progress' };
   header.refs = header.refs || {};
   header.refs.sources = header.refs.sources || [];

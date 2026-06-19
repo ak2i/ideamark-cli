@@ -1,0 +1,45 @@
+---
+ideamark_version: "1.1.1"
+doc_id: "DOC-1"
+doc_type: "derived"
+status:
+  state: "in_progress"
+created_at: "2026-06-19T00:00:00Z"
+updated_at: "2026-06-19T00:00:00Z"
+lang: "en-US"
+---
+
+## SEC-1
+```yaml
+section_id: "SEC-1"
+occurrences: ["OCC-1"]
+```
+
+```yaml
+occurrence_id: "OCC-1"
+entity: "IE-B"
+role: "observation"
+```
+
+## Registry
+```yaml
+entities:
+  IE-B:
+    kind: "observation"
+    payload:
+      body: "test"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+occurrences:
+  OCC-1:
+    entity: "IE-B"
+    role: "observation"
+sections:
+  SEC-1:
+    occurrences: ["OCC-1"]
+relations: {}
+perspectives: {}
+structure:
+  sections: ["SEC-1"]
+```

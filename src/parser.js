@@ -79,9 +79,11 @@ function classifyBlock(obj, isFrontmatter) {
   if (isFrontmatter) return 'header';
   const hasHeaderKeys = obj.ideamark_version !== undefined && obj.doc_id && obj.doc_type;
   if (hasHeaderKeys) return 'header';
-  if (obj.section_id && obj.anchorage) return 'section';
+  if (obj.section_id) return 'section';
   if (obj.occurrence_id) return 'occurrence';
-  if (obj.entities || obj.occurrences || obj.sections || obj.structure || obj.relations) return 'registry';
+  if (obj.entities || obj.occurrences || obj.sections || obj.structure || obj.relations || obj.perspectives) {
+    return 'registry';
+  }
   return 'other';
 }
 
@@ -125,10 +127,17 @@ function parseDocument(text) {
     entities: {},
     occurrences: {},
     sections: {},
-    relations: [],
+    relations: {},
+    perspectives: {},
     structure: { sections: [] },
   };
-  const duplicates = { entities: new Set(), occurrences: new Set(), sections: new Set() };
+  const duplicates = {
+    entities: new Set(),
+    occurrences: new Set(),
+    sections: new Set(),
+    relations: new Set(),
+    perspectives: new Set(),
+  };
   const seenSectionBlocks = new Set();
   const seenOccurrenceBlocks = new Set();
 
@@ -138,6 +147,7 @@ function parseDocument(text) {
     if (r.occurrences) registry.occurrences = r.occurrences;
     if (r.sections) registry.sections = r.sections;
     if (r.relations) registry.relations = r.relations;
+    if (r.perspectives) registry.perspectives = r.perspectives;
     if (r.structure) registry.structure = r.structure;
   }
 
@@ -149,6 +159,8 @@ function parseDocument(text) {
     if (!registry.sections[sec.section_id]) registry.sections[sec.section_id] = {};
     const target = registry.sections[sec.section_id];
     if (sec.anchorage) target.anchorage = sec.anchorage;
+    if (sec.title !== undefined) target.title = sec.title;
+    if (sec.perspectives !== undefined) target.perspectives = sec.perspectives;
     if (sec.occurrences) target.occurrences = sec.occurrences;
   }
 
@@ -158,7 +170,8 @@ function parseDocument(text) {
     if (seenOccurrenceBlocks.has(occ.occurrence_id)) duplicates.occurrences.add(occ.occurrence_id);
     seenOccurrenceBlocks.add(occ.occurrence_id);
     if (!registry.occurrences[occ.occurrence_id]) registry.occurrences[occ.occurrence_id] = {};
-    registry.occurrences[occ.occurrence_id] = { ...registry.occurrences[occ.occurrence_id], ...occ };
+    const { occurrence_id, ...occBody } = occ;
+    registry.occurrences[occ.occurrence_id] = { ...registry.occurrences[occ.occurrence_id], ...occBody };
   }
 
   return {

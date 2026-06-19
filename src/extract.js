@@ -1,6 +1,15 @@
 const { renderDocument } = require('./render');
 const { validateDocument } = require('./validate');
-const { uuidV4, nowDate, deepClone } = require('./utils');
+const { uuidV4, nowTimestamp, deepClone } = require('./utils');
+const { parseRef } = require('./validate');
+
+function orderedSectionIds(registry) {
+  const order = Array.isArray(registry.structure && registry.structure.sections)
+    ? registry.structure.sections.filter((x) => typeof x === 'string')
+    : [];
+  if (order.length) return order;
+  return Object.keys(registry.sections || {});
+}
 
 function extractDocument(doc, options) {
   const diagnostics = [];
@@ -82,7 +91,8 @@ function extractDocument(doc, options) {
     entities: {},
     occurrences: {},
     sections: {},
-    relations: [],
+    relations: {},
+    perspectives: {},
     structure: { sections: [] },
   };
 
@@ -95,12 +105,42 @@ function extractDocument(doc, options) {
   for (const id of keepSections) {
     if (registry.sections[id]) newRegistry.sections[id] = registry.sections[id];
   }
+  for (const [relId, rel] of Object.entries(registry.relations || {})) {
+    const from = typeof rel.from === 'string' ? parseRef(rel.from, doc.header && doc.header.doc_id) : null;
+    const to = typeof rel.to === 'string' ? parseRef(rel.to, doc.header && doc.header.doc_id) : null;
+    const fromKept = from && from.kind === 'local' && (keepEnt.has(from.id) || keepSections.has(from.id));
+    const toKept = to && to.kind === 'local' && (keepEnt.has(to.id) || keepSections.has(to.id));
+    if (fromKept && toKept) newRegistry.relations[relId] = rel;
+  }
 
-  newRegistry.structure.sections = Array.from(keepSections);
+  const usedPerspectiveIds = new Set();
+  for (const id of keepEnt) {
+    const entity = registry.entities[id];
+    const scopes = entity && Array.isArray(entity.perspective_scope) ? entity.perspective_scope : [];
+    for (const ref of scopes) {
+      if (typeof ref === 'string' && registry.perspectives && registry.perspectives[ref]) {
+        usedPerspectiveIds.add(ref);
+      }
+    }
+  }
+  for (const id of keepSections) {
+    const section = registry.sections[id];
+    const refs = section && Array.isArray(section.perspectives) ? section.perspectives : [];
+    for (const ref of refs) {
+      if (typeof ref === 'string' && registry.perspectives && registry.perspectives[ref]) {
+        usedPerspectiveIds.add(ref);
+      }
+    }
+  }
+  for (const id of usedPerspectiveIds) {
+    newRegistry.perspectives[id] = deepClone(registry.perspectives[id]);
+  }
+
+  newRegistry.structure.sections = orderedSectionIds(registry).filter((id) => keepSections.has(id));
 
   const header = deepClone(doc.header || {});
   header.doc_id = uuidV4();
-  header.updated_at = nowDate();
+  header.updated_at = nowTimestamp();
   header.status = header.status || { state: 'in_progress' };
   header.refs = header.refs || {};
   header.refs.sources = header.refs.sources || [];

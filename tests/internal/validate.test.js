@@ -1,85 +1,84 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { runCli, tempDir, writeTempFile, minimalDoc } = require('./helpers');
+const { minimalDoc } = require('./helpers');
+const { parseDocument } = require('../../src/parser');
+const { validateDocument } = require('../../src/validate');
+const { buildEvidenceBlock, attachEvidence } = require('../../src/evidence');
 
 test('validate: missing header is error', () => {
-  const res = runCli(['validate'], '# No header');
-  assert.strictEqual(res.status, 1);
-  assert.match(res.stdout, /diagnostic/);
+  const res = validateDocument(parseDocument('# No header'), { mode: 'working' });
+  assert.strictEqual(res.ok, false);
+  assert.ok(res.diagnostics.some((x) => x.code === 'header_required'));
 });
 
 test('validate: strict missing fields error', () => {
   const doc = minimalDoc().replace('doc_type: "derived"\n', '');
-  const res = runCli(['validate', '--strict'], doc);
-  assert.strictEqual(res.status, 1);
+  const res = validateDocument(parseDocument(doc), { mode: 'strict' });
+  assert.strictEqual(res.ok, false);
 });
 
 test('validate: duplicate ID error', () => {
-  const extra = '\n```yaml\nsection_id: "SEC-1"\nanchorage:\n  view: "design"\n  phase: "implementation"\n```\n';
+  const extra = '\n```yaml\nsection_id: "SEC-1"\noccurrences: ["OCC-1"]\n```\n';
   const doc = minimalDoc() + extra;
-  const res = runCli(['validate', '--strict'], doc);
-  assert.strictEqual(res.status, 1);
+  const res = validateDocument(parseDocument(doc), { mode: 'strict' });
+  assert.strictEqual(res.ok, false);
 });
 
 test('validate: unreferenced entity warning', () => {
-  const doc = minimalDoc().replace('content: "test"', 'content: "test"\n  IE-2:\n    kind: "observation"\n    content: "extra"');
-  const res = runCli(['validate', '--strict'], doc);
-  assert.match(res.stdout, /warning/);
+  const doc = minimalDoc().replace(
+    '    atomicity_basis: "interpretive"\noccurrences:',
+    '    atomicity_basis: "interpretive"\n  IE-2:\n    kind: "observation"\n    payload:\n      body: "extra"\n      format:\n        media_type: "text/plain"\n    atomicity_basis: "interpretive"\noccurrences:'
+  );
+  const res = validateDocument(parseDocument(doc), { mode: 'strict' });
+  assert.ok(res.diagnostics.some((x) => x.code === 'entity_unreferenced'));
 });
 
-test('validate: structure section missing error', () => {
-  const doc = minimalDoc().replace('structure:\n  sections: ["SEC-1"]', 'structure:\n  sections: ["SEC-404"]');
-  const res = runCli(['validate', '--strict'], doc);
-  assert.strictEqual(res.status, 1);
+test('validate: broken section occurrence ref is error', () => {
+  const doc = minimalDoc().replace('occurrences: ["OCC-1"]', 'occurrences: ["OCC-404"]');
+  const res = validateDocument(parseDocument(doc), { mode: 'strict' });
+  assert.strictEqual(res.ok, false);
 });
 
-test('validate: anchorage required (non-strict)', () => {
-  let doc = minimalDoc();
-  doc = doc.replace(
-    '## SEC-1\n```yaml\nsection_id: "SEC-1"\nanchorage:\n  view: "design"\n  phase: "implementation"\noccurrences: ["OCC-1"]\n```\n\n',
-    ''
+test('validate: payload body/ref/cache one-of required', () => {
+  const doc = minimalDoc().replace(
+    '    payload:\n      body: "test"\n      format:\n        media_type: "text/plain"\n',
+    '    payload: {}\n'
   );
-  doc = doc.replace(
-    '    anchorage: { view: "design", phase: "implementation" }\n',
-    ''
-  );
-  const res = runCli(['validate'], doc);
-  assert.strictEqual(res.status, 1);
-  assert.match(res.stdout, /anchorage_required/);
+  const res = validateDocument(parseDocument(doc), { mode: 'strict' });
+  assert.strictEqual(res.ok, false);
+  assert.ok(res.diagnostics.some((x) => x.code === 'entity_payload_content_required'));
 });
 
-test('validate: anchorage must be mapping', () => {
-  let doc = minimalDoc();
-  doc = doc.replace(
-    'anchorage:\n  view: "design"\n  phase: "implementation"\n',
-    'anchorage: "oops"\n'
+test('validate: payload.ref requires uri', () => {
+  const doc = minimalDoc().replace(
+    '      body: "test"\n      format:\n        media_type: "text/plain"\n',
+    '      ref:\n        selector: "#fragment"\n      format:\n        media_type: "text/plain"\n'
   );
-  doc = doc.replace(
-    '    anchorage: { view: "design", phase: "implementation" }\n',
-    '    anchorage: "oops"\n'
-  );
-  const res = runCli(['validate'], doc);
-  assert.strictEqual(res.status, 1);
-  assert.match(res.stdout, /anchorage_mapping/);
+  const res = validateDocument(parseDocument(doc), { mode: 'strict' });
+  assert.strictEqual(res.ok, false);
+  assert.ok(res.diagnostics.some((x) => x.code === 'entity_payload_ref_uri_required'));
 });
 
 test('validate: evidence block must be mapping', () => {
   const doc = minimalDoc() + '\n```yaml ideamark:evidence\n- kind: "diff-metric"\n```\n';
-  const res = runCli(['validate'], doc);
-  assert.strictEqual(res.status, 1);
-  assert.match(res.stdout, /evidence_mapping/);
+  const res = validateDocument(parseDocument(doc), { mode: 'working' });
+  assert.strictEqual(res.ok, false);
+  assert.ok(res.diagnostics.some((x) => x.code === 'evidence_mapping'));
 });
 
 test('validate: emit evidence yaml', () => {
   const doc = minimalDoc();
-  const res = runCli(['validate', '--emit-evidence', 'yaml'], doc);
-  assert.strictEqual(res.status, 0);
-  assert.match(res.stdout, /```yaml ideamark:evidence/);
+  const validated = validateDocument(parseDocument(doc), { mode: 'working' });
+  const block = buildEvidenceBlock({
+    kind: 'lint-report',
+    scope: 'document',
+    summary: validated.summary,
+  });
+  assert.match(block, /```yaml ideamark:evidence/);
 });
 
 test('validate: attach evidence to stdout', () => {
   const doc = minimalDoc();
-  const res = runCli(['validate', '--attach', '-'], doc);
-  assert.strictEqual(res.status, 0);
-  assert.match(res.stdout, /```yaml ideamark:evidence/);
+  const res = attachEvidence(doc, { memo: 'attached' }, { scope: 'document' });
+  assert.match(res.output, /```yaml ideamark:evidence/);
 });
