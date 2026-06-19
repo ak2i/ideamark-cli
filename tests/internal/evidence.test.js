@@ -12,27 +12,23 @@ test('evidence: buildEvidenceBlock wraps mapping', () => {
 test('evidence: attach document-level after header', () => {
   const doc = minimalDoc();
   const res = attachEvidence(doc, { memo: 'doc' }, { scope: 'document' });
-  const headerPos = res.output.indexOf('---\n');
+  const headerPos = res.output.indexOf('ideamark_version:');
   const evidencePos = res.output.indexOf('```yaml ideamark:evidence');
   assert.ok(evidencePos > headerPos);
 });
 
-test('evidence: attach section-level near section block', () => {
+test('evidence: attach section-level to whole-document yaml without warning when section exists', () => {
   const doc = minimalDoc();
   const res = attachEvidence(doc, { memo: 'sec' }, { scope: 'section', targetId: 'SEC-1' });
-  const sectionBlock = 'section_id: "SEC-1"';
-  const sectionPos = res.output.indexOf(sectionBlock);
-  const evidencePos = res.output.indexOf('```yaml ideamark:evidence');
-  assert.ok(evidencePos > sectionPos);
+  assert.strictEqual(res.diagnostics.length, 0);
+  assert.match(res.output, /```yaml ideamark:evidence/);
 });
 
-test('evidence: attach occurrence-level near occurrence block', () => {
+test('evidence: attach occurrence-level to whole-document yaml without warning when occurrence exists', () => {
   const doc = minimalDoc();
   const res = attachEvidence(doc, { memo: 'occ' }, { scope: 'occurrence', targetId: 'OCC-1' });
-  const occBlock = 'occurrence_id: "OCC-1"';
-  const occPos = res.output.indexOf(occBlock);
-  const evidencePos = res.output.indexOf('```yaml ideamark:evidence');
-  assert.ok(evidencePos > occPos);
+  assert.strictEqual(res.diagnostics.length, 0);
+  assert.match(res.output, /```yaml ideamark:evidence/);
 });
 
 test('evidence: attach unknown target warns and appends', () => {

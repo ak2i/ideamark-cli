@@ -36,7 +36,10 @@ test('extract: structure contains only extracted section', () => {
 
 test('extract: keeps only referenced perspectives', () => {
   const doc = minimalDoc()
-    .replace('section_id: "SEC-1"\noccurrences: ["OCC-1"]', 'section_id: "SEC-1"\nperspectives: ["P-SEC"]\noccurrences: ["OCC-1"]')
+    .replace(
+      'sections:\n  SEC-1:\n    occurrences: ["OCC-1"]',
+      'sections:\n  SEC-1:\n    perspectives: ["P-SEC"]\n    occurrences: ["OCC-1"]'
+    )
     .replace(
       '    atomicity_basis: "interpretive"\noccurrences:',
       '    atomicity_basis: "interpretive"\n    perspective_scope: ["P-ENT"]\noccurrences:'

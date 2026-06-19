@@ -3,11 +3,11 @@
 ## Inputs
 - PDF: `./r6_tokushu2_1.pdf`
 - Template: `./sample-template.ideamark.template.md`
-- Output: `./doc.part-003.ideamark.md`
+- Output: `./doc.part-003.ideamark.yaml`
 
 ## Rules
-- Follow IdeaMark v1.0.3 strict header requirements.
+- Follow IdeaMark v1.1.1 strict header requirements.
 - Extract earthquake impact, response, and forward policy actions.
-- Use section-local ordering and narrative-after-YAML style.
+- Use whole-document YAML output and keep local references resolvable.
 - Use reference_mode auto and include structured references.
 - Keep IDs unique with prefix `P3-`.

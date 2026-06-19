@@ -24,7 +24,7 @@ const BUILTIN_GUIDE_SOURCES = {
     'docs',
     'dev',
     'v0.2.0',
-    'ideamark-builtin-guides-sample.v0.2.0.ideamark.md'
+    'ideamark-builtin-guides-sample.v0.2.0.ideamark.yaml'
   ),
   'ja-JP': path.join(
     __dirname,
@@ -32,7 +32,7 @@ const BUILTIN_GUIDE_SOURCES = {
     'docs',
     'dev',
     'v0.2.0',
-    'ideamark-builtin-guides-sample.v0.2.0.ja-JP.ideamark.md'
+    'ideamark-builtin-guides-sample.v0.2.0.ja-JP.ideamark.yaml'
   ),
 };
 
@@ -152,6 +152,11 @@ function buildCapabilities() {
     tool: {
       name: 'ideamark-cli',
       version: pkg.version,
+    },
+    document: {
+      name: 'ideamark',
+      version: DOCUMENT_SPEC_VERSION,
+      representation: 'yaml-based',
     },
     features: {
       evidence: {
@@ -586,6 +591,7 @@ function toMarkdown(topic, data, context) {
       `# ${toolName}`,
       `**Tool Version:** ${toolVersion}`,
       `**Doc CLI Contract:** ${contractVersion}`,
+      `**Document Spec:** ${data.document.version} (${data.document.representation})`,
       '',
       '## Summary',
       'IdeaMark CLI for v1.1.1 structural validation, transformation, and guidance discovery.',

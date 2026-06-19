@@ -1,24 +1,21 @@
-# Prompt: Convert NASA Tech Brief to IdeaMark v1.0.3 (section-local ordering)
+# Prompt: Convert NASA Tech Brief to IdeaMark v1.1.1 (yaml-based)
 
 ## Inputs
 - Source file: `./nasa_tech_brief_19660000361_automated_drafting_system.md`
-- Output file: `./nasa_tech_brief_19660000361_automated_drafting_system.ideamark.md`
+- Output file: `./nasa_tech_brief_19660000361_automated_drafting_system.ideamark.yaml`
 
 ## Required constraints
-- Conform to IdeaMark spec `v1.0.3`.
+- Conform to IdeaMark spec `v1.1.1`.
 - Include strict header fields.
 - Keep IDs unique and references resolvable.
-- Include Section/Occurrence/Registry YAML blocks.
+- Include `entities`, `occurrences`, and `sections`.
+- Ensure every entity has `payload.body`, `payload.ref`, or `payload.cache`.
 
-## Ordering constraints (must)
-- Render in local cluster order: `section -> that section's occurrences -> next section`.
-- Emit occurrence blocks in the same order as `section.occurrences`.
-- Keep Registry block at the end.
-
-## Narrative constraints (must)
-- After each section YAML block, add one or more Markdown paragraphs.
-- After each occurrence YAML block, add at least one Markdown sentence.
-- Do not produce YAML-only output.
+## Structural constraints (must)
+- Use whole-document YAML output.
+- Each occurrence must point to an existing entity.
+- Each section must list existing occurrences.
+- If `structure.sections` is emitted, keep it aligned with the section IDs.
 
 ## Quality gate
 - Must pass: `ideamark validate --mode strict`

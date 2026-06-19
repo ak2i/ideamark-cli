@@ -26,10 +26,10 @@ function parseFixture(name) {
 }
 
 function runValidateCases() {
-  const valid = validateDocument(parseFixture('minimal-valid.ideamark.md'), { mode: 'strict' });
+  const valid = validateDocument(parseFixture('minimal-valid.ideamark.yaml'), { mode: 'strict' });
   assert(valid.ok === true, 'minimal-valid should strict-validate');
 
-  const invalid = validateDocument(parseFixture('empty-payload.ideamark.md'), { mode: 'strict' });
+  const invalid = validateDocument(parseFixture('empty-payload.ideamark.yaml'), { mode: 'strict' });
   assert(invalid.ok === false, 'empty-payload should fail strict validate');
   assert(
     invalid.diagnostics.some((x) => x.code === 'entity_payload_content_required'),
@@ -38,7 +38,7 @@ function runValidateCases() {
 }
 
 function runLintCase() {
-  const result = lintDocument(parseFixture('broken-ref.ideamark.md'), { profile: 'diagnostic', strict: false });
+  const result = lintDocument(parseFixture('broken-ref.ideamark.yaml'), { profile: 'diagnostic', strict: false });
   assert(
     result.diagnostics.some((x) => x.code === 'IM-LINT-004'),
     'lint broken-ref diagnostic missing'
@@ -46,7 +46,7 @@ function runLintCase() {
 }
 
 function runExtractCase() {
-  const input = parseFixture('minimal-valid.ideamark.md');
+  const input = parseFixture('minimal-valid.ideamark.yaml');
   const result = extractDocument(input, { sectionId: 'SEC-1' });
   assert(result.ok === true, 'extract should succeed');
   const outDoc = parseDocument(result.output);
@@ -55,8 +55,8 @@ function runExtractCase() {
 }
 
 function runComposeCase() {
-  const a = parseFixture('minimal-valid.ideamark.md');
-  const b = parseFixture('payload-ref-only.ideamark.md');
+  const a = parseFixture('minimal-valid.ideamark.yaml');
+  const b = parseFixture('payload-ref-only.ideamark.yaml');
   const result = composeDocuments([a, b], {});
   assert(result.ok === true, 'compose should succeed');
   const outDoc = parseDocument(result.output);
@@ -65,9 +65,9 @@ function runComposeCase() {
   assert(outDoc.registry.relations && !Array.isArray(outDoc.registry.relations), 'relations should be a mapping');
   assert(outDoc.registry.perspectives && !Array.isArray(outDoc.registry.perspectives), 'perspectives should be a mapping');
 
-  const noStructureA = parseDocument(readFixture('minimal-valid.ideamark.md').replace('structure:\n  sections: ["SEC-1"]\n', ''));
+  const noStructureA = parseDocument(readFixture('minimal-valid.ideamark.yaml').replace('structure:\n  sections: ["SEC-1"]\n', ''));
   const noStructureB = parseDocument(
-    readFixture('payload-ref-only.ideamark.md')
+    readFixture('payload-ref-only.ideamark.yaml')
       .replace('structure:\n  sections: ["SEC-1"]\n', '')
       .replace(/SEC-1/g, 'SEC-2')
       .replace(/OCC-1/g, 'OCC-2')
@@ -89,7 +89,7 @@ function runDescribeCase() {
 }
 
 function runLsCase() {
-  const doc = parseFixture('minimal-valid.ideamark.md');
+  const doc = parseFixture('minimal-valid.ideamark.yaml');
   const result = listDocument(doc, {
     format: 'json',
     include: { sections: true, occurrences: true, entities: true, vocab: true },
@@ -102,7 +102,7 @@ function runLsCase() {
 }
 
 function runPublishCase() {
-  const result = publishDocument(readFixture('minimal-valid.ideamark.md'));
+  const result = publishDocument(readFixture('minimal-valid.ideamark.yaml'));
   assert(result.ok === true, 'publish should succeed');
   assert(/updated_at: \d{4}-\d{2}-\d{2}T/.test(result.output), 'publish should emit timestamp updated_at');
   assert(result.output.includes('state: published'), 'publish should set published state');

@@ -7,6 +7,13 @@ function buildEvidenceBlock(data) {
 
 function resolveInsertIndex(doc, scope, targetId) {
   const blocks = doc.yamlBlocks || [];
+  const wholeDoc = blocks.find((b) => b.subtype === 'whole-document');
+  if (wholeDoc) {
+    if (scope === 'section' && doc.registry.sections && doc.registry.sections[targetId]) return { index: doc.segments.length };
+    if (scope === 'occurrence' && doc.registry.occurrences && doc.registry.occurrences[targetId]) return { index: doc.segments.length };
+    if (scope === 'entity' && doc.registry.entities && doc.registry.entities[targetId]) return { index: doc.segments.length };
+    if (scope === 'document') return { index: doc.segments.length };
+  }
   if (scope === 'section') {
     const hit = blocks.find((b) => b.kind === 'section' && b.parsed && b.parsed.ok && b.parsed.value.section_id === targetId);
     if (hit) return { index: hit.index + 1 };

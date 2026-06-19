@@ -6,6 +6,8 @@ test('describe: capabilities json', () => {
   const res = describe('capabilities', 'json', {});
   const payload = JSON.parse(res.output);
   assert.strictEqual(payload.contract.version, '1.1.1');
+  assert.strictEqual(payload.document.version, '1.1.1');
+  assert.strictEqual(payload.document.representation, 'yaml-based');
   assert.ok(payload.commands.describe.topics.includes('ls'));
   assert.ok(payload.commands.describe.topics.includes('routing'));
   assert.ok(payload.commands.describe.topics.includes('prompt-authoring'));
@@ -60,15 +62,14 @@ test('describe: model requires ai audience', () => {
 test('describe: prompt-authoring md', () => {
   const res = describe('prompt-authoring', 'md', {});
   assert.match(res.output, /Prompt Authoring Guide/);
-  assert.match(res.output, /After each section YAML block/);
+  assert.match(res.output, /Every occurrence must point to an existing entity/);
 });
 
 test('describe: prompt-authoring json includes reference mapping rules', () => {
   const res = describe('prompt-authoring', 'json', {});
   const payload = JSON.parse(res.output);
   assert.ok(payload.prompt_authoring.reference_mapping_rules);
-  assert.ok(payload.prompt_authoring.reference_mapping_rules.core_standard);
+  assert.ok(payload.prompt_authoring.reference_mapping_rules.local_reference_baseline);
   assert.ok(payload.prompt_authoring.reference_mapping_rules.template_extensions);
-  assert.ok(payload.prompt_authoring.reference_mapping_rules.reference_mode);
-  assert.ok(payload.prompt_authoring.reference_mapping_rules.minimum_reference_set);
+  assert.ok(payload.prompt_authoring.reference_mapping_rules.external_reference_baseline);
 });

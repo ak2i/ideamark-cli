@@ -1,6 +1,25 @@
 const YAML = require('yaml');
 const { sortKeys } = require('./utils');
 
+const REGISTRY_KEYS = ['entities', 'occurrences', 'sections', 'relations', 'perspectives', 'structure'];
+const HEADER_KEYS = [
+  'ideamark_version',
+  'doc_id',
+  'doc_type',
+  'status',
+  'created_at',
+  'updated_at',
+  'lang',
+  'title',
+  'summary',
+  'authors',
+  'template',
+  'tags',
+  'source',
+  'lineage',
+  'refs',
+];
+
 function parseFrontmatter(text) {
   const lines = text.split(/\r?\n/);
   if (lines[0] !== '---') return null;
@@ -62,6 +81,26 @@ function tokenize(text) {
     buffer.push(line);
   }
   if (buffer.length) segments.push({ type: 'text', value: buffer.join('\n') });
+
+  const hasYaml = segments.some((seg) => seg.type === 'yaml');
+  if (!hasYaml) {
+    try {
+      const obj = YAML.parse(text);
+      if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+        return [
+          {
+            type: 'yaml',
+            subtype: 'whole-document',
+            raw: text,
+            content: text,
+          },
+        ];
+      }
+    } catch (_) {
+      // keep original text-only segmentation when whole-document YAML parse fails
+    }
+  }
+
   return segments;
 }
 
@@ -77,7 +116,9 @@ function parseYamlBlock(block) {
 function classifyBlock(obj, isFrontmatter) {
   if (!obj || typeof obj !== 'object') return 'other';
   if (isFrontmatter) return 'header';
+  const hasRegistryKeys = REGISTRY_KEYS.some((key) => obj[key] !== undefined);
   const hasHeaderKeys = obj.ideamark_version !== undefined && obj.doc_id && obj.doc_type;
+  if (hasHeaderKeys && hasRegistryKeys) return 'document';
   if (hasHeaderKeys) return 'header';
   if (obj.section_id) return 'section';
   if (obj.occurrence_id) return 'occurrence';
@@ -85,6 +126,27 @@ function classifyBlock(obj, isFrontmatter) {
     return 'registry';
   }
   return 'other';
+}
+
+function splitWholeDocumentObject(obj) {
+  const header = {};
+  const registry = {
+    entities: {},
+    occurrences: {},
+    sections: {},
+    relations: {},
+    perspectives: {},
+    structure: { sections: [] },
+  };
+
+  for (const key of HEADER_KEYS) {
+    if (obj[key] !== undefined) header[key] = obj[key];
+  }
+  for (const key of REGISTRY_KEYS) {
+    if (obj[key] !== undefined) registry[key] = obj[key];
+  }
+
+  return { header, registry };
 }
 
 function parseDocument(text) {
@@ -114,6 +176,11 @@ function parseDocument(text) {
     if (kind === 'header') {
       headerCount += 1;
       if (!header) header = obj;
+    } else if (kind === 'document') {
+      const split = splitWholeDocumentObject(obj);
+      headerCount += 1;
+      if (!header) header = split.header;
+      registryBlocks.push(split.registry);
     } else if (kind === 'registry') {
       registryBlocks.push(obj);
     } else if (kind === 'section') {

@@ -1,25 +1,79 @@
 # IdeaMark Params
 
-Overview:
-This file summarizes normalization constraints for tooling.
-Working mode focuses on structure and references; strict mode adds required header fields.
+This guide describes the minimal structural inputs for IdeaMark v1.1.1. The baseline representation is YAML-based.
 
-Required (working):
-- Document header block exists.
-- IDs are unique within a document.
-- References resolve to existing entities/occurrences/sections.
+## Header
 
-Optional (working):
-- `doc_id` format: string (strict mode requires it).
-- `section_id` format: `SEC-*` (required when a section is defined).
-- `occurrence_id` format: `OCC-*` (required when an occurrence is defined).
-- `entity_id` format: `IE-*` (required when an entity is defined).
-- `anchorage.view` and `anchorage.phase` should use the published vocab (strict mode requires them for sections).
-- `status.state` should be one of the published values (strict mode requires it).
-- `occurrence.role` should use the published vocab.
-- `entity.kind` should use the published vocab.
+Required:
+- `ideamark_version`
+- `doc_type`
 
-Examples:
-- `section_id`: `SEC-001`
-- `occurrence_id`: `OCC-001`
-- `entity_id`: `IE-001`
+Strict mode additionally requires:
+- `doc_id`
+- `status.state`
+- `created_at`
+- `updated_at`
+- `lang`
+
+Notes:
+- `ideamark_version` should be `1.1.1`.
+- `doc_type` should use the published vocab: `source`, `derived`, `evolving`, `pattern`.
+- `status.state` should use the published vocab: `in_progress`, `paused`, `completed`, `published`.
+
+## Registry
+
+Required namespaces:
+- `entities`
+- `occurrences`
+- `sections`
+
+Optional namespaces:
+- `relations`
+- `perspectives`
+- `structure`
+
+Entity rules:
+- Every entity must have `payload`.
+- `payload` must contain at least one of `body`, `ref`, or `cache`.
+- If `payload.ref` exists, `payload.ref.uri` is required.
+- `kind` and `atomicity_basis` should use published vocab when present.
+
+Occurrence rules:
+- Every occurrence must have `entity`.
+- Every occurrence must have `role`.
+- `entity` must resolve to an existing entity ID.
+
+Section rules:
+- Every section must have a non-empty `occurrences` array.
+- Each `occurrences[]` entry must resolve to an existing occurrence ID.
+- `anchorage` is optional metadata in v1.1.1.
+
+## References
+
+Supported local reference targets:
+- entity refs such as `IE-1`
+- occurrence refs such as `OCC-1`
+- section refs such as `SEC-1`
+
+Relation rules:
+- `relations.*.from` may target an entity or section.
+- `relations.*.to` may target an entity or section.
+
+## Validation
+
+Working mode checks:
+- YAML parseability
+- required registry namespaces
+- entity payload rules
+- occurrence entity / role rules
+- section occurrence linkage
+- relation target validity
+
+Strict mode highlights:
+- stricter header enforcement
+- `payload.ref.uri` enforcement
+- unresolved local references fail validation
+
+Non-blocking warnings may include:
+- unreferenced entities
+- unused occurrences

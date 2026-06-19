@@ -41,41 +41,7 @@ function renderDocument(model, options) {
     registryObj = normalizeRefsInObject(registryObj, docId, idSets);
   }
 
-  const headerYaml = stringifyYaml(headerObj).trimEnd();
-  const lines = [`---`, headerYaml, `---`, ``];
-
-  const structure = (registryObj.structure && registryObj.structure.sections) || [];
-  const seen = new Set();
-  const sectionOrder = [];
-  for (const sec of structure) {
-    const id = typeof sec === 'string' ? sec : null;
-    if (id && registryObj.sections && registryObj.sections[id]) {
-      sectionOrder.push(id);
-      seen.add(id);
-    }
-  }
-  for (const id of Object.keys(registryObj.sections || {})) {
-    if (!seen.has(id)) sectionOrder.push(id);
-  }
-
-  for (const secId of sectionOrder) {
-    const sec = registryObj.sections[secId] || {};
-    const secYaml = stringifyYaml({ section_id: secId, ...sec }).trimEnd();
-    lines.push(`## ${secId}`);
-    lines.push('```yaml');
-    lines.push(secYaml);
-    lines.push('```');
-    lines.push('');
-  }
-
-  const registryYaml = stringifyYaml(registryObj).trimEnd();
-  lines.push('## Registry');
-  lines.push('```yaml');
-  lines.push(registryYaml);
-  lines.push('```');
-  lines.push('');
-
-  return lines.join('\n');
+  return `${stringifyYaml({ ...headerObj, ...registryObj }).trimEnd()}\n`;
 }
 
 module.exports = { renderDocument };

@@ -1,93 +1,102 @@
 {
   "contract": {
     "name": "doc-cli-contract",
-    "version": "1.0.3"
+    "version": "1.1.1"
   },
   "tool": {
     "name": "ideamark-cli",
-    "version": "0.1.3"
+    "version": "0.2.0"
   },
   "document": {
     "name": "ideamark",
-    "version": "1.0.3"
+    "version": "1.1.1",
+    "representation": "yaml-based"
   },
   "guidance": {
-    "overview": "Generate valid IdeaMark documents for human review, automation, and routing-aware discovery.",
+    "overview": "Generate valid IdeaMark v1.1.1 documents for structural validation, routing-aware discovery, and reusable knowledge capture.",
     "principles": [
-      "Produce valid IdeaMark YAML blocks (frontmatter and fenced yaml blocks).",
+      "Produce YAML-based IdeaMark documents that parse cleanly.",
       "Keep IDs stable and unique within a document.",
-      "Use concise, factual language and avoid speculation.",
-      "Prefer explicit structure and pair core YAML blocks with concise Markdown narrative for human readability.",
-      "Use non-blocking validation in working loops and strict validation before handoff."
+      "Use concise, factual language and avoid inventing unsupported claims or references.",
+      "Treat entities, occurrences, and sections as the minimum structural units.",
+      "Use validation early in working loops and strict validation before handoff."
     ],
     "do": [
-      "Include a document header block.",
-      "Keep references resolvable within the document.",
-      "Use the published vocab for anchorage.view, anchorage.phase, and status.state.",
-      "Tag sections with anchorage.domain for routing/discovery use.",
-      "Add natural-language summaries after section and occurrence YAML blocks.",
-      "Arrange body blocks in local cluster order: section first, then occurrences listed by that section.",
-      "Apply baseline reference mapping with refs.sources and citation occurrences.",
-      "Apply template-specific reference extensions in addition to baseline mapping when template is present.",
-      "Use reference_mode auto and generate structured references when explicit references exist in source input."
+      "Include a valid header with the target `ideamark_version`.",
+      "Create at least one entity, one occurrence, and one section.",
+      "Give every entity a `payload` with `body`, `ref`, or `cache`.",
+      "Make every occurrence point to an existing entity and declare a `role`.",
+      "Make every section list at least one occurrence.",
+      "Use `relations` and `perspectives` only when you can keep references resolvable.",
+      "Use `payload.format.media_type` when payload format matters for routing or downstream processing."
     ],
     "dont": [
       "Invent IDs that collide with existing ones.",
-      "Refer to entities or occurrences that do not exist.",
-      "Omit required fields in strict mode.",
-      "Skip the generate -> validate -> breakdown loop for large documents.",
-      "Output YAML-only documents when the audience includes humans.",
-      "Invent references (URLs, DOI, citation entries) not present in source materials."
+      "Emit empty entity payloads.",
+      "Point `payload.ref` at a missing `uri`.",
+      "Reference entities, occurrences, or sections that do not exist.",
+      "Treat optional metadata such as `anchorage` as a substitute for required structure.",
+      "Invent external references, URLs, or citations that are not present in source materials."
     ],
     "checklist": [
-      "Header includes ideamark_version, doc_id, doc_type, status, created_at, updated_at, lang (strict mode).",
-      "Each section_id has anchorage.view and anchorage.phase (strict mode).",
-      "Every occurrence_id references an entity (or uses inline: true).",
-      "Run minimal validation: header_singleton, yaml_parseable, id_unique_within_doc, references_resolvable.",
-      "Each section has one or more Markdown paragraphs explaining intent and context.",
-      "Each occurrence has at least one human-readable explanation sentence.",
-      "Each section is immediately followed by its declared occurrences in section.occurrences order.",
-      "Source links are represented in refs.sources and citation occurrences reference source evidence.",
-      "Template-specific citation/reference fields extend baseline mapping instead of replacing it.",
-      "When explicit references exist, IE-REF and OCC-REF structures are generated and grouped under references section.",
-      "When explicit references do not exist, references section can be omitted and fabricated citations are not added."
+      "Header matches IdeaMark `1.1.1`.",
+      "Registry includes `entities`, `occurrences`, and `sections`.",
+      "Every entity has non-empty payload content.",
+      "Every occurrence has `entity` and `role`.",
+      "Every section has a non-empty `occurrences` array.",
+      "All local references resolve.",
+      "Run `validate` in working mode during drafting and strict mode before handoff."
     ],
     "examples": [
-      "A section contains section_id: SEC-001 and anchorage.view: background."
+      "Minimal valid pattern: one entity with `payload.body`, one occurrence pointing to that entity, and one section listing that occurrence."
     ],
     "profiles": {
       "ai_small": {
-        "goal": "maximize first-pass validity with fixed procedure",
-        "steps": ["generate", "validate", "breakdown(copy)"],
-        "minimal_validation": [
-          "header_singleton",
-          "yaml_parseable",
-          "id_unique_within_doc",
-          "references_resolvable"
+        "goal": "maximize first-pass validity with a fixed recipe",
+        "steps": [
+          "create_header",
+          "create_entity_payload",
+          "create_occurrence",
+          "create_section",
+          "validate_working",
+          "repair",
+          "validate_strict"
         ],
-        "forbidden_patterns": [
-          "inventing undefined references",
-          "changing existing stable IDs without cause"
-        ],
-        "followup_topics": ["params", "checklist", "routing"]
+        "followup_topics": [
+          "params",
+          "checklist",
+          "routing"
+        ]
       },
       "ai_large": {
-        "framework": ["PLAN", "AUTHOR", "VALIDATE", "TRANSFORM"],
-        "decision_points": ["SPLIT-MODE", "STRICTNESS", "MERGE-POLICY"],
+        "framework": [
+          "PLAN",
+          "AUTHOR",
+          "VALIDATE",
+          "TRANSFORM"
+        ],
+        "decision_points": [
+          "payload body vs ref vs cache",
+          "relation usage",
+          "strictness level"
+        ],
         "completion_criteria": [
-          "requested outputs produced",
-          "chosen strictness validation passes",
-          "lineage is recorded"
+          "requested structure produced",
+          "validation passes",
+          "references remain resolvable"
         ]
       },
       "human": {
         "default_lang": "ja-JP",
-        "variants": ["easy", "advanced"]
+        "variants": [
+          "easy",
+          "advanced"
+        ]
       }
     },
     "routing_hints": [
-      "If the task is iterative work-item management, route to FlowMark first.",
-      "If the task is knowledge stabilization and structural validation, route to IdeaMark."
+      "If the task centers on stable knowledge structure and local reference integrity, route to IdeaMark.",
+      "If the task centers on iterative task execution, route to FlowMark first."
     ]
   }
 }

@@ -73,14 +73,14 @@ These cover validate/format/extract/compose/publish/describe behaviors and ensur
 
 ## v1.1.1 fixtures
 
-`tests/fixtures/v1.1.1/` contains the new baseline samples for the v0.2.0 track.
+`tests/fixtures/v1.1.1/` contains the new pure-YAML baseline samples for the v0.2.0 track.
 
-- `minimal-valid.ideamark.md`: smallest strict-valid v1.1.1 sample
-- `payload-body-only.ideamark.md`: entity payload via `payload.body`
-- `payload-ref-only.ideamark.md`: entity payload via `payload.ref.uri`
-- `payload-cache-only.ideamark.md`: entity payload via `payload.cache`
-- `broken-ref.ideamark.md`: broken internal references for validation/lint error cases
-- `empty-payload.ideamark.md`: invalid empty payload case
+- `minimal-valid.ideamark.yaml`: smallest strict-valid v1.1.1 sample
+- `payload-body-only.ideamark.yaml`: entity payload via `payload.body`
+- `payload-ref-only.ideamark.yaml`: entity payload via `payload.ref.uri`
+- `payload-cache-only.ideamark.yaml`: entity payload via `payload.cache`
+- `broken-ref.ideamark.yaml`: broken internal references for validation/lint error cases
+- `empty-payload.ideamark.yaml`: invalid empty payload case
 
 These fixtures are intended to replace old v0.1.x assumptions over time. Old smoke assets remain only as historical references and should not be used as the primary source for new v0.2.0 tests.
 

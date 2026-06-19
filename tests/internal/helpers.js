@@ -56,7 +56,6 @@ function minimalDoc(overrides) {
   };
   const h = { ...header, ...(overrides && overrides.header ? overrides.header : {}) };
   return [
-    '---',
     `ideamark_version: "${h.ideamark_version}"`,
     `doc_id: "${h.doc_id}"`,
     `doc_type: "${h.doc_type}"`,
@@ -65,22 +64,6 @@ function minimalDoc(overrides) {
     `created_at: "${h.created_at}"`,
     `updated_at: "${h.updated_at}"`,
     `lang: "${h.lang}"`,
-    '---',
-    '',
-    '## SEC-1',
-    '```yaml',
-    'section_id: "SEC-1"',
-    'occurrences: ["OCC-1"]',
-    '```',
-    '',
-    '```yaml',
-    'occurrence_id: "OCC-1"',
-    'entity: "IE-1"',
-    'role: "observation"',
-    '```',
-    '',
-    '## Registry',
-    '```yaml',
     'entities:',
     '  IE-1:',
     '    kind: "observation"',
@@ -100,7 +83,6 @@ function minimalDoc(overrides) {
     'perspectives: {}',
     'structure:',
     '  sections: ["SEC-1"]',
-    '```',
     '',
   ].join('\n');
 }

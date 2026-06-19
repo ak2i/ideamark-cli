@@ -100,8 +100,7 @@ ideamark ls [<infile>|-] [--sections] [--occurrences] [--entities] [--vocab] [--
 
 ## Minimal v1.1.1 example
 
-```markdown
----
+```yaml
 ideamark_version: "1.1.1"
 doc_id: "DOC-EXAMPLE-1"
 doc_type: "derived"
@@ -110,22 +109,6 @@ status:
 created_at: "2026-06-19T00:00:00Z"
 updated_at: "2026-06-19T00:00:00Z"
 lang: "en-US"
----
-
-## SEC-EXAMPLE
-```yaml
-section_id: "SEC-EXAMPLE"
-occurrences: ["OCC-EXAMPLE"]
-```
-
-```yaml
-occurrence_id: "OCC-EXAMPLE"
-entity: "IE-EXAMPLE"
-role: "observation"
-```
-
-## Registry
-```yaml
 entities:
   IE-EXAMPLE:
     kind: "observation"
@@ -146,12 +129,11 @@ perspectives: {}
 structure:
   sections: ["SEC-EXAMPLE"]
 ```
-```
 
 Validate it:
 
 ```bash
-ideamark validate --strict example.ideamark.md
+ideamark validate --strict example.ideamark.yaml
 ```
 
 ## I/O conventions

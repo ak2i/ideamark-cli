@@ -243,45 +243,47 @@ function composeDocuments(docs, options) {
       }
     }
 
-    const headerYaml = stringifyYaml(sortKeys(header)).trimEnd();
-    const lines = ['---', headerYaml, '---', ''];
-    const structure = (registry.structure && registry.structure.sections) || [];
-    const seen = new Set();
-    const sectionOrder = [];
-    for (const sec of structure) {
-      const id = typeof sec === 'string' ? sec : null;
-      if (id && registry.sections && registry.sections[id]) {
-        sectionOrder.push(id);
-        seen.add(id);
+    if (sectionNarrative.size > 0) {
+      const headerYaml = stringifyYaml(sortKeys(header)).trimEnd();
+      const lines = ['---', headerYaml, '---', ''];
+      const structure = (registry.structure && registry.structure.sections) || [];
+      const seen = new Set();
+      const sectionOrder = [];
+      for (const sec of structure) {
+        const id = typeof sec === 'string' ? sec : null;
+        if (id && registry.sections && registry.sections[id]) {
+          sectionOrder.push(id);
+          seen.add(id);
+        }
       }
-    }
-    for (const id of Object.keys(registry.sections || {})) {
-      if (!seen.has(id)) sectionOrder.push(id);
-    }
+      for (const id of Object.keys(registry.sections || {})) {
+        if (!seen.has(id)) sectionOrder.push(id);
+      }
 
-    for (const secId of sectionOrder) {
-      const sec = registry.sections[secId] || {};
-      const secYaml = stringifyYaml({ section_id: secId, ...sec }).trimEnd();
-      lines.push(`## ${secId}`);
+      for (const secId of sectionOrder) {
+        const sec = registry.sections[secId] || {};
+        const secYaml = stringifyYaml({ section_id: secId, ...sec }).trimEnd();
+        lines.push(`## ${secId}`);
+        lines.push('```yaml');
+        lines.push(secYaml);
+        lines.push('```');
+        lines.push('');
+        const narrative = sectionNarrative.get(secId);
+        if (narrative) {
+          lines.push(narrative);
+          lines.push('');
+        }
+      }
+
+      const registryYaml = stringifyYaml(registry).trimEnd();
+      lines.push('## Registry');
       lines.push('```yaml');
-      lines.push(secYaml);
+      lines.push(registryYaml);
       lines.push('```');
       lines.push('');
-      const narrative = sectionNarrative.get(secId);
-      if (narrative) {
-        lines.push(narrative);
-        lines.push('');
-      }
+
+      output = lines.join('\n');
     }
-
-    const registryYaml = stringifyYaml(registry).trimEnd();
-    lines.push('## Registry');
-    lines.push('```yaml');
-    lines.push(registryYaml);
-    lines.push('```');
-    lines.push('');
-
-    output = lines.join('\n');
   }
 
   return { diagnostics, ok: true, output };

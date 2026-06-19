@@ -1,126 +1,136 @@
 {
   "contract": {
     "name": "doc-cli-contract",
-    "version": "1.0.3"
+    "version": "1.1.1"
   },
   "tool": {
     "name": "ideamark-cli",
-    "version": "0.1.2"
+    "version": "0.2.0"
   },
   "document": {
     "name": "ideamark",
-    "version": "1.0.3"
+    "version": "1.1.1",
+    "representation": "yaml-based"
   },
-  "params": [
-    {
-      "name": "doc_id",
-      "path": "header.doc_id",
-      "required": false,
-      "type": "id",
-      "pattern": "string",
-      "description": "Document identifier.",
-      "notes": "Required in strict mode."
-    },
-    {
-      "name": "section_id",
-      "path": "sections.*.section_id",
-      "required": false,
-      "type": "id",
-      "pattern": "SEC-*",
-      "description": "Section identifier.",
-      "notes": "Required when a section is defined."
-    },
-    {
-      "name": "occurrence_id",
-      "path": "occurrences.*.occurrence_id",
-      "required": false,
-      "type": "id",
-      "pattern": "OCC-*",
-      "description": "Occurrence identifier.",
-      "notes": "Required when an occurrence is defined."
-    },
-    {
-      "name": "entity_id",
-      "path": "entities.*.entity_id",
-      "required": false,
-      "type": "id",
-      "pattern": "IE-*",
-      "description": "Entity identifier.",
-      "notes": "Required when an entity is defined."
-    },
-    {
-      "name": "anchorage.view",
-      "path": "sections.*.anchorage.view",
-      "required": false,
-      "type": "enum",
-      "enum": [
-        "background",
-        "solution",
-        "decision",
-        "plan",
-        "concept",
-        "structural_hypothesis"
+  "header": {
+    "required": [
+      "ideamark_version",
+      "doc_type"
+    ],
+    "strict_mode_required": [
+      "doc_id",
+      "status.state",
+      "created_at",
+      "updated_at",
+      "lang"
+    ],
+    "optional": [
+      "title",
+      "summary",
+      "authors",
+      "template",
+      "tags",
+      "source",
+      "lineage"
+    ],
+    "notes": [
+      "`ideamark_version` should match the target document line (`1.1.1`).",
+      "`doc_type` should use the published vocab (`source`, `derived`, `evolving`, `pattern`).",
+      "`status.state` should use the published vocab (`in_progress`, `paused`, `completed`, `published`)."
+    ]
+  },
+  "registry": {
+    "required_namespaces": [
+      "entities",
+      "occurrences",
+      "sections"
+    ],
+    "optional_namespaces": [
+      "relations",
+      "perspectives",
+      "structure"
+    ],
+    "entity": {
+      "required": [
+        "payload"
       ],
-      "description": "Anchorage view vocabulary.",
-      "notes": "Required in strict mode when sections are defined."
-    },
-    {
-      "name": "anchorage.phase",
-      "path": "sections.*.anchorage.phase",
-      "required": false,
-      "type": "enum",
-      "enum": [
-        "exploration",
-        "confirmed",
-        "implementation",
-        "validation",
-        "plan",
-        "evolving"
+      "optional": [
+        "kind",
+        "atomicity_basis",
+        "perspectives",
+        "relations",
+        "status"
       ],
-      "description": "Anchorage phase vocabulary.",
-      "notes": "Required in strict mode when sections are defined."
+      "payload_rule": "At least one of `payload.body`, `payload.ref`, or `payload.cache` must exist.",
+      "payload_ref_rule": "If `payload.ref` is present, `payload.ref.uri` is required."
     },
-    {
-      "name": "occurrence.role",
-      "path": "occurrences.*.role",
-      "required": false,
-      "type": "enum",
-      "enum": [
-        "observation",
-        "hypothesis",
-        "decision",
-        "plan",
-        "note"
+    "occurrence": {
+      "required": [
+        "entity",
+        "role"
       ],
-      "description": "Occurrence role vocabulary."
+      "optional": [
+        "section",
+        "evidence",
+        "supporting_evidence",
+        "target",
+        "status"
+      ]
     },
-    {
-      "name": "entity.kind",
-      "path": "entities.*.kind",
-      "required": false,
-      "type": "enum",
-      "enum": [
-        "observation",
-        "decision",
-        "goal",
-        "metric",
-        "hypothesis"
+    "section": {
+      "required": [
+        "occurrences"
       ],
-      "description": "Entity kind vocabulary."
-    },
-    {
-      "name": "status.state",
-      "path": "header.status.state",
-      "required": false,
-      "type": "enum",
-      "enum": [
-        "in_progress",
-        "paused",
-        "completed",
-        "published"
+      "optional": [
+        "title",
+        "summary",
+        "perspectives",
+        "relations",
+        "anchorage"
       ],
-      "description": "Document status vocabulary.",
-      "notes": "Required in strict mode."
+      "notes": [
+        "`occurrences` must be a non-empty array.",
+        "`anchorage` is optional metadata in v1.1.1, not a structural requirement."
+      ]
     }
-  ]
+  },
+  "references": {
+    "supported_forms": [
+      "entity ref (`IE-*`)",
+      "occurrence ref (`OCC-*`)",
+      "section ref (`SEC-*`)"
+    ],
+    "relation_targets": [
+      "entity_ref",
+      "section_ref"
+    ],
+    "notes": [
+      "`occurrence.entity` must refer to an existing entity.",
+      "`section.occurrences[]` must refer to existing occurrences.",
+      "`relations.*.from` and `relations.*.to` may target entities or sections."
+    ]
+  },
+  "validation": {
+    "working_mode_required": [
+      "yaml_parseable",
+      "entity_required",
+      "occurrence_required",
+      "section_required",
+      "entity_payload_required",
+      "entity_payload_content_required",
+      "occurrence_entity_required",
+      "occurrence_role_required",
+      "section_occurrences_required",
+      "relation_ref_valid"
+    ],
+    "strict_mode_highlights": [
+      "header fields are enforced more strictly",
+      "payload.ref.uri is required when payload.ref exists",
+      "unknown local references should fail validation"
+    ],
+    "warnings": [
+      "unreferenced entities",
+      "unused occurrences"
+    ]
+  }
 }
