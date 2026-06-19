@@ -153,3 +153,42 @@ ideamark validate --strict example.ideamark.yaml
 ## Tests
 
 See `tests/README.md`.
+
+## Public samples
+
+公開サンプルは `docs/samples/` に置いています。小さめの YAML-first サンプルとして次があります。
+
+- [docs/samples/04-rfc3986-uri-overview/README.md](/home/akki/work/projects/ideamark-cli/docs/samples/04-rfc3986-uri-overview/README.md)
+- [docs/samples/04-rfc3986-uri-overview/rfc3986-uri-overview-sample.ideamark.yaml](/home/akki/work/projects/ideamark-cli/docs/samples/04-rfc3986-uri-overview/rfc3986-uri-overview-sample.ideamark.yaml)
+
+## ChatGPT workflow
+
+外部テキストを ChatGPT に渡して IdeaMark YAML へ変換したい場合は、まず `describe` で変換規約を取得します。
+
+```bash
+ideamark describe prompt-authoring --format json --audience ai --model large --lang ja-JP
+ideamark describe ai-authoring --format json --audience ai --model large --lang ja-JP
+ideamark describe params --format json --audience ai --model large --lang ja-JP
+ideamark describe checklist --format md --audience ai --model large --lang ja-JP
+ideamark describe vocab --format md --audience ai --model large --lang ja-JP
+```
+
+実際に ChatGPT へ貼るための雛形は次を参照してください。
+
+- [docs/samples/00-chatgpt-conversion-template/README.md](/home/akki/work/projects/ideamark-cli/docs/samples/00-chatgpt-conversion-template/README.md)
+- [docs/samples/00-chatgpt-conversion-template/chatgpt-conversion-prompt-template.md](/home/akki/work/projects/ideamark-cli/docs/samples/00-chatgpt-conversion-template/chatgpt-conversion-prompt-template.md)
+
+補助スクリプトで prompt を自動生成することもできます。
+
+```bash
+npm run build:chatgpt-prompt -- \
+  --source ./tmp/source.txt \
+  --output ./tmp/chatgpt-prompt.md \
+  --lang ja-JP \
+  --target-file output.ideamark.yaml \
+  --artifacts-dir ./tmp/describe
+```
+
+注意:
+- 現行の生成指示は `entities`, `occurrences`, `sections` を top-level に置く前提です。
+- `registry:` で包むと `validate` が期待どおりに解釈しません。

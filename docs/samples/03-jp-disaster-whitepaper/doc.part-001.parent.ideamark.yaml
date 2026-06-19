@@ -1,0 +1,131 @@
+created_at: 2026-03-05
+doc_id: DOC-JP-DISASTER-WP-P1-PARENT-001
+doc_type: derived
+entities:
+  IE-P1-CITATION:
+    kind: context
+    payload:
+      body: 令和6年版防災白書 第1部（階層抽出版 親文書）。
+      format:
+        media_type: text/plain
+  IE-P1-KEY-ACTION-SET:
+    detail_doc:
+      relation: elaborates
+      summary: 行動項目の詳細
+      uri: ./doc.part-001.detail-actions.ideamark.yaml
+    kind: measure
+    payload:
+      body: ハード/ソフト対策、マイ・タイムライン等の行動準備が必要。
+      format:
+        media_type: text/plain
+  IE-P1-KEY-PUBLIC-LIMIT:
+    detail_doc:
+      relation: evidences
+      summary: 本文根拠と周辺文脈
+      uri: ./doc.part-001.detail-context.ideamark.yaml
+    kind: constraint
+    payload:
+      body: 大規模広域災害では公助単独での対応に限界がある。
+      format:
+        media_type: text/plain
+  IE-P1-REF-PDF:
+    kind: evidence
+    payload:
+      body: "Source PDF: ./r6_dai1bu1.pdf"
+      format:
+        media_type: text/plain
+  IE-P1-SCOPE-OBJECTIVE:
+    detail_docs:
+      - relation: elaborates
+        summary: 背景・公助限界・自助共助の詳細
+        uri: ./doc.part-001.detail-context.ideamark.yaml
+    kind: context
+    payload:
+      body: 第1部抽出の対象を公助限界・事前防災・具体行動へ限定する。
+      format:
+        media_type: text/plain
+ideamark_version: 1.1.1
+lang: ja-JP
+occurrences:
+  OCC-P1-CITATION:
+    entity: IE-P1-CITATION
+    occurrence_id: OCC-P1-CITATION
+    role: citation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P1-REF-PDF
+  OCC-P1-KEY-ACTION-SET:
+    entity: IE-P1-KEY-ACTION-SET
+    occurrence_id: OCC-P1-KEY-ACTION-SET
+    role: solution
+    status:
+      state: confirmed
+  OCC-P1-KEY-PUBLIC-LIMIT:
+    entity: IE-P1-KEY-PUBLIC-LIMIT
+    occurrence_id: OCC-P1-KEY-PUBLIC-LIMIT
+    role: constraint
+    status:
+      state: confirmed
+  OCC-P1-REF-PDF:
+    entity: IE-P1-REF-PDF
+    occurrence_id: OCC-P1-REF-PDF
+    role: citation
+    status:
+      state: confirmed
+  OCC-P1-SCOPE-OBJECTIVE:
+    entity: IE-P1-SCOPE-OBJECTIVE
+    occurrence_id: OCC-P1-SCOPE-OBJECTIVE
+    role: observation
+    status:
+      state: confirmed
+perspectives: {}
+refs:
+  sources:
+    - description: 令和6年版防災白書 第1部
+      id: SRC-P1-PDF
+      role: source_material
+      uri: ./r6_dai1bu1.pdf
+relations: {}
+sections:
+  SEC-P1-KEY-FINDINGS:
+    anchorage:
+      domain:
+        - hazard
+        - preparedness
+        - summary
+        - parent
+      phase: confirmed
+      view: analysis
+    occurrences:
+      - OCC-P1-KEY-PUBLIC-LIMIT
+      - OCC-P1-KEY-ACTION-SET
+  SEC-P1-REFERENCES:
+    anchorage:
+      domain:
+        - references
+        - citation
+      phase: confirmed
+      view: background
+    occurrences:
+      - OCC-P1-REF-PDF
+      - OCC-P1-CITATION
+  SEC-P1-SCOPE:
+    anchorage:
+      domain:
+        - knowledge-extraction
+        - whitepaper
+        - part-001
+        - parent
+      phase: plan
+      view: background
+    occurrences:
+      - OCC-P1-SCOPE-OBJECTIVE
+status:
+  state: in_progress
+structure:
+  sections:
+    - SEC-P1-SCOPE
+    - SEC-P1-KEY-FINDINGS
+    - SEC-P1-REFERENCES
+updated_at: 2026-03-05

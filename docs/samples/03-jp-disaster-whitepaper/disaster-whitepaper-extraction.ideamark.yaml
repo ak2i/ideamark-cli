@@ -1,0 +1,102 @@
+created_at: 2026-03-05T12:00:48.771991
+doc_id: disasterplan.whitepaper.extraction.demo.2026-03-05
+doc_type: source
+entities:
+  IE-TEMPLATE-PLACEHOLDER:
+    kind: context
+    payload:
+      body: この文書は防災白書抽出テンプレートの最小 valid サンプルであり、各 section は実データ投入前の placeholder occurrence を共有する。
+      format:
+        media_type: text/plain
+ideamark_version: 1.1.1
+lang: ja-JP
+occurrences:
+  OCC-TEMPLATE-PLACEHOLDER:
+    entity: IE-TEMPLATE-PLACEHOLDER
+    role: observation
+    status:
+      state: confirmed
+perspectives: {}
+refs:
+  sources:
+    - id: SRC-WHITEPAPER-CASE
+      role: source_material
+      uri: ./r6_dai1bu1.pdf
+    - id: SRC-WHITEPAPER-POLICY
+      role: source_material
+      uri: ./r6_dai3bu.pdf
+    - id: SRC-WHITEPAPER-PLAN
+      role: source_material
+      uri: ./r6_tokushu2_1.pdf
+relations: {}
+sections:
+  SEC-GUIDANCE:
+    anchorage:
+      phase: confirmed
+      view: decision
+    occurrences:
+      - OCC-TEMPLATE-PLACEHOLDER
+  SEC-HAZARD:
+    anchorage:
+      domain:
+        - hazard
+      phase: confirmed
+      view: problem
+    occurrences:
+      - OCC-TEMPLATE-PLACEHOLDER
+  SEC-IMPACT:
+    anchorage:
+      phase: confirmed
+      view: observation_series
+    occurrences:
+      - OCC-TEMPLATE-PLACEHOLDER
+  SEC-LESSONS:
+    anchorage:
+      phase: confirmed
+      view: analysis
+    occurrences:
+      - OCC-TEMPLATE-PLACEHOLDER
+  SEC-LOCAL-MEASURES:
+    anchorage:
+      phase: plan
+      view: solution
+    occurrences:
+      - OCC-TEMPLATE-PLACEHOLDER
+  SEC-NATIONAL-POLICY:
+    anchorage:
+      phase: confirmed
+      view: decision
+    occurrences:
+      - OCC-TEMPLATE-PLACEHOLDER
+  SEC-SCOPE:
+    anchorage:
+      domain:
+        - knowledge-extraction
+      phase: plan
+      view: analysis
+    occurrences:
+      - OCC-TEMPLATE-PLACEHOLDER
+  SEC-VOCAB:
+    anchorage:
+      phase: confirmed
+      view: analysis
+    occurrences:
+      - OCC-TEMPLATE-PLACEHOLDER
+status:
+  state: in_progress
+structure:
+  sections:
+    - SEC-SCOPE
+    - SEC-HAZARD
+    - SEC-IMPACT
+    - SEC-LESSONS
+    - SEC-LOCAL-MEASURES
+    - SEC-NATIONAL-POLICY
+    - SEC-GUIDANCE
+    - SEC-VOCAB
+template:
+  file: sample-template.ideamark.template.md
+  id: imtpl.disaster.whitepaper.extraction
+  name: Disaster Whitepaper Extraction Template
+  version: "1.1"
+updated_at: 2026-03-05T12:00:48.771991

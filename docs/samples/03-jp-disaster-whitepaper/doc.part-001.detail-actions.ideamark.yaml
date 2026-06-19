@@ -1,0 +1,103 @@
+created_at: 2026-03-05
+doc_id: DOC-JP-DISASTER-WP-P1-DETAIL-ACTIONS-001
+doc_type: derived
+entities:
+  IE-P1D-ACT-HARD-SOFT:
+    kind: measure
+    payload:
+      body: 堤防整備・耐震化と、ハザードマップ・教育等のソフト対策を併行実施。
+      format:
+        media_type: text/plain
+  IE-P1D-ACT-MYTIMELINE:
+    kind: measure
+    payload:
+      body: マイ・タイムライン等の個人行動計画を準備する。
+      format:
+        media_type: text/plain
+  IE-P1D-ACT-TRAINING:
+    kind: measure
+    payload:
+      body: 避難訓練、備蓄、家具固定等の平時行動を実装する。
+      format:
+        media_type: text/plain
+  IE-P1DA-SOURCE-TEXT:
+    kind: evidence
+    payload:
+      body: 第1部第1章の抽出テキスト（行動準備関連箇所）。
+      format:
+        media_type: text/plain
+ideamark_version: 1.1.1
+lang: ja-JP
+occurrences:
+  OCC-P1D-ACT-HARD-SOFT:
+    entity: IE-P1D-ACT-HARD-SOFT
+    occurrence_id: OCC-P1D-ACT-HARD-SOFT
+    role: solution
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P1DA-SOURCE-TEXT
+  OCC-P1D-ACT-MYTIMELINE:
+    entity: IE-P1D-ACT-MYTIMELINE
+    occurrence_id: OCC-P1D-ACT-MYTIMELINE
+    role: solution
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P1DA-SOURCE-TEXT
+  OCC-P1D-ACT-SOURCE-REF:
+    entity: IE-P1DA-SOURCE-TEXT
+    occurrence_id: OCC-P1D-ACT-SOURCE-REF
+    role: citation
+    status:
+      state: confirmed
+  OCC-P1D-ACT-TRAINING:
+    entity: IE-P1D-ACT-TRAINING
+    occurrence_id: OCC-P1D-ACT-TRAINING
+    role: solution
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P1DA-SOURCE-TEXT
+perspectives: {}
+refs:
+  parent:
+    entity: IE-P1-KEY-ACTION-SET
+    relation: elaborates
+    uri: ./doc.part-001.parent.ideamark.yaml
+  sources:
+    - id: SRC-P1-PDF
+      role: source_material
+      uri: ./r6_dai1bu1.pdf
+relations: {}
+sections:
+  SEC-P1D-ACTIONS:
+    anchorage:
+      domain:
+        - detail
+        - actions
+        - part-001
+      phase: plan
+      view: solution
+    occurrences:
+      - OCC-P1D-ACT-HARD-SOFT
+      - OCC-P1D-ACT-MYTIMELINE
+      - OCC-P1D-ACT-TRAINING
+      - OCC-P1D-ACT-SOURCE-REF
+  SEC-P1D-ACTIONS-REFERENCES:
+    anchorage:
+      domain:
+        - detail
+        - references
+        - part-001
+      phase: confirmed
+      view: background
+    occurrences:
+      - OCC-P1D-ACT-SOURCE-REF
+status:
+  state: in_progress
+structure:
+  sections:
+    - SEC-P1D-ACTIONS
+    - SEC-P1D-ACTIONS-REFERENCES
+updated_at: 2026-03-05

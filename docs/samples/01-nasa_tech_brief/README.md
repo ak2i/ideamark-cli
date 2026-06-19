@@ -68,3 +68,4 @@ ideamark ls ./nasa_tech_brief_19660000361_automated_drafting_system.ideamark.yam
 ## 6. 補足
 
 - パス記述は移動しやすさのため、すべて相対パスに統一しています。
+- 旧 `.ideamark.md` 版は廃止し、この sample の公開形式は `.ideamark.yaml` に統一しています。

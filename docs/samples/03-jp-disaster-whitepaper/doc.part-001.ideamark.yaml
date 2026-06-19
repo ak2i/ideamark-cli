@@ -1,0 +1,187 @@
+created_at: 2026-03-05
+doc_id: DOC-JP-DISASTER-WP-PART-001
+doc_type: derived
+entities:
+  IE-P1-CITATION:
+    kind: context
+    payload:
+      body: 令和6年版防災白書 第1部第1章周辺の抽出結果。
+      format:
+        media_type: text/plain
+  IE-P1-CONTEXT-PUBLIC-LIMIT:
+    kind: constraint
+    payload:
+      body: 広域災害時には公助のみで十分な対応が難しい。
+      format:
+        media_type: text/plain
+  IE-P1-CONTEXT-RISK:
+    kind: risk
+    payload:
+      body: 巨大地震や激甚化する気象災害を背景に被害軽減が課題。
+      format:
+        media_type: text/plain
+  IE-P1-MEASURE-HARD-SOFT:
+    kind: measure
+    payload:
+      body: ハード対策とソフト対策の両輪で防災力を高める。
+      format:
+        media_type: text/plain
+  IE-P1-MEASURE-TIMELINE:
+    kind: measure
+    payload:
+      body: マイ・タイムライン等の個人行動計画を平時に準備する。
+      format:
+        media_type: text/plain
+  IE-P1-REF-PDF:
+    kind: evidence
+    payload:
+      body: "Source PDF: ./r6_dai1bu1.pdf"
+      format:
+        media_type: text/plain
+  IE-P1-SCOPE-OBJECTIVE:
+    kind: context
+    payload:
+      body: 第1部から自助・共助・公助と事前防災行動を抽出する。
+      format:
+        media_type: text/plain
+  IE-P1-SOURCE-TEXT:
+    kind: evidence
+    payload:
+      body: pdftotextで抽出した第1部テキスト。
+      format:
+        media_type: text/plain
+ideamark_version: 1.1.1
+lang: ja-JP
+occurrences:
+  OCC-P1-CITATION:
+    entity: IE-P1-CITATION
+    occurrence_id: OCC-P1-CITATION
+    role: citation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P1-REF-PDF
+    target: IE-P1-SOURCE-TEXT
+  OCC-P1-SOURCE-TEXT:
+    entity: IE-P1-SOURCE-TEXT
+    occurrence_id: OCC-P1-SOURCE-TEXT
+    role: evidence
+    status:
+      state: confirmed
+  OCC-P1-CONTEXT-PUBLIC-LIMIT:
+    entity: IE-P1-CONTEXT-PUBLIC-LIMIT
+    occurrence_id: OCC-P1-CONTEXT-PUBLIC-LIMIT
+    role: constraint
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P1-SOURCE-TEXT
+  OCC-P1-CONTEXT-RISK:
+    entity: IE-P1-CONTEXT-RISK
+    occurrence_id: OCC-P1-CONTEXT-RISK
+    role: observation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P1-SOURCE-TEXT
+  OCC-P1-MEASURE-HARD-SOFT:
+    entity: IE-P1-MEASURE-HARD-SOFT
+    occurrence_id: OCC-P1-MEASURE-HARD-SOFT
+    role: solution
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P1-SOURCE-TEXT
+  OCC-P1-MEASURE-TIMELINE:
+    entity: IE-P1-MEASURE-TIMELINE
+    occurrence_id: OCC-P1-MEASURE-TIMELINE
+    role: solution
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P1-SOURCE-TEXT
+  OCC-P1-REF-PDF:
+    entity: IE-P1-REF-PDF
+    occurrence_id: OCC-P1-REF-PDF
+    role: citation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P1-REF-PDF
+  OCC-P1-SCOPE-OBJECTIVE:
+    entity: IE-P1-SCOPE-OBJECTIVE
+    occurrence_id: OCC-P1-SCOPE-OBJECTIVE
+    role: observation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P1-SOURCE-TEXT
+perspectives: {}
+refs:
+  sources:
+    - description: 令和6年版防災白書 第1部第1章など
+      id: SRC-P1-PDF
+      role: source_material
+      uri: ./r6_dai1bu1.pdf
+    - description: 抽出テンプレート
+      id: SRC-TEMPLATE
+      role: template
+      uri: ./sample-template.ideamark.template.md
+relations: {}
+sections:
+  SEC-P1-HAZARD-CONTEXT:
+    anchorage:
+      domain:
+        - hazard
+        - preparedness
+        - jijo-kyojo-kojo
+      phase: confirmed
+      view: problem
+    occurrences:
+      - OCC-P1-CONTEXT-RISK
+      - OCC-P1-CONTEXT-PUBLIC-LIMIT
+  SEC-P1-LOCAL-MEASURES:
+    anchorage:
+      domain:
+        - local-measures
+        - preparedness
+        - community
+      phase: plan
+      view: solution
+    occurrences:
+      - OCC-P1-MEASURE-HARD-SOFT
+      - OCC-P1-MEASURE-TIMELINE
+  SEC-P1-REFERENCES:
+    anchorage:
+      domain:
+        - references
+        - citation
+      phase: confirmed
+      view: background
+    occurrences:
+      - OCC-P1-REF-PDF
+      - OCC-P1-CITATION
+      - OCC-P1-SOURCE-TEXT
+  SEC-P1-SCOPE:
+    anchorage:
+      domain:
+        - knowledge-extraction
+        - whitepaper
+        - part-001
+      phase: plan
+      view: background
+    occurrences:
+      - OCC-P1-SCOPE-OBJECTIVE
+status:
+  state: in_progress
+structure:
+  sections:
+    - SEC-P1-SCOPE
+    - SEC-P1-HAZARD-CONTEXT
+    - SEC-P1-LOCAL-MEASURES
+    - SEC-P1-REFERENCES
+template:
+  id: imtpl.disaster.whitepaper.extraction
+  name: Disaster Whitepaper Extraction Template
+  version: "1.1"
+updated_at: 2026-03-05

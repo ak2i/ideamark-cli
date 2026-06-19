@@ -36,6 +36,7 @@
   },
   "scripts": {
     "test": "node --test",
+    "build:chatgpt-prompt": "node scripts/build-chatgpt-conversion-prompt.js",
     "smoke:v0.1.3": "node tests/run-smoke-v0.1.3.js",
     "smoke:v0.2.0": "node tests/run-smoke-v0.2.0.js",
     "llm-metrics:v0.1.3": "node tests/run-llm-metrics-v0.1.3.js"

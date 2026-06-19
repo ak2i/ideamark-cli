@@ -42,3 +42,4 @@ ideamark ls ./usgs_sir_2024_5062_volcano_monitoring_capabilities.ideamark.yaml \
 
 - このサンプルの基準出力は whole-document YAML です。
 - 参照・パス記述は移動しやすいよう相対パスで統一しています。
+- 旧 `.ideamark.md` 版は廃止し、この sample の公開形式は `.ideamark.yaml` に統一しています。

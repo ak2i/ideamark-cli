@@ -132,3 +132,7 @@ Status: Done
 6. compose統合: `doc.composed.ideamark.yaml` を生成し strict validate成功（error=0, warning=0）
 6.1 `--preserve-markdown` 付き compose により `doc.composed.with-narrative.ideamark.md` も生成・strict validate成功
 7. reference_mode auto方針で、各partで明示参照（PDF）を `SEC-*-REFERENCES` + `OCC-*-REF-PDF` + `OCC-*-CITATION` として構造化
+
+補足:
+- 公開保存する標準 sample は `.ideamark.yaml` を使う。
+- `.ideamark.md` は `--preserve-markdown` の出力など、生成時の一時的な派生物だけを想定する。

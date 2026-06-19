@@ -65,3 +65,17 @@ Template extension policy:
 - "Every occurrence must point to an existing entity."
 - "Every section must list existing occurrences."
 - "Do not invent external references or unresolved local IDs."
+
+## Recommended ChatGPT command set
+
+If you are assembling a conversion prompt for ChatGPT, start with:
+
+```bash
+ideamark describe prompt-authoring --format json --audience ai --model large --lang ja-JP
+ideamark describe ai-authoring --format json --audience ai --model large --lang ja-JP
+ideamark describe params --format json --audience ai --model large --lang ja-JP
+ideamark describe checklist --format md --audience ai --model large --lang ja-JP
+ideamark describe vocab --format md --audience ai --model large --lang ja-JP
+```
+
+Use `json` for structural guidance and `md` for human-readable checklist / vocab review.

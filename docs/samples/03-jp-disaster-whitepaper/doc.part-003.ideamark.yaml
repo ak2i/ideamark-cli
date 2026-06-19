@@ -1,0 +1,202 @@
+created_at: 2026-03-05
+doc_id: DOC-JP-DISASTER-WP-PART-003
+doc_type: derived
+entities:
+  IE-P3-CITATION:
+    kind: context
+    payload:
+      body: 令和6年版防災白書 特集2抽出結果。
+      format:
+        media_type: text/plain
+  IE-P3-GUIDANCE-NEXT:
+    kind: decision
+    payload:
+      body: 検証と教訓抽出を踏まえ今後の防災対策へ反映。
+      format:
+        media_type: text/plain
+  IE-P3-HAZARD-DAMAGE:
+    kind: risk
+    payload:
+      body: 人的・住家・ライフライン等に甚大な被害が発生。
+      format:
+        media_type: text/plain
+  IE-P3-HAZARD-EVENT:
+    kind: risk
+    payload:
+      body: 令和6年能登半島地震は震度7観測を含む広域地震。
+      format:
+        media_type: text/plain
+  IE-P3-REF-PDF:
+    kind: evidence
+    payload:
+      body: "Source PDF: ./r6_tokushu2_1.pdf"
+      format:
+        media_type: text/plain
+  IE-P3-RESPONSE-EMERGENCY:
+    kind: measure
+    payload:
+      body: 非常災害対策本部の下で被災者支援を継続。
+      format:
+        media_type: text/plain
+  IE-P3-RESPONSE-RECOVERY:
+    kind: measure
+    payload:
+      body: 復旧・復興支援本部による再生対応を推進。
+      format:
+        media_type: text/plain
+  IE-P3-SCOPE-OBJECTIVE:
+    kind: context
+    payload:
+      body: 特集2から被害と対応を抽出する。
+      format:
+        media_type: text/plain
+  IE-P3-SOURCE-TEXT:
+    kind: evidence
+    payload:
+      body: pdftotextで抽出した特集2テキスト。
+      format:
+        media_type: text/plain
+ideamark_version: 1.1.1
+lang: ja-JP
+occurrences:
+  OCC-P3-CITATION:
+    entity: IE-P3-CITATION
+    occurrence_id: OCC-P3-CITATION
+    role: citation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P3-REF-PDF
+    target: IE-P3-SOURCE-TEXT
+  OCC-P3-SOURCE-TEXT:
+    entity: IE-P3-SOURCE-TEXT
+    occurrence_id: OCC-P3-SOURCE-TEXT
+    role: evidence
+    status:
+      state: confirmed
+  OCC-P3-GUIDANCE-NEXT:
+    entity: IE-P3-GUIDANCE-NEXT
+    occurrence_id: OCC-P3-GUIDANCE-NEXT
+    role: decision
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+  OCC-P3-HAZARD-DAMAGE:
+    entity: IE-P3-HAZARD-DAMAGE
+    occurrence_id: OCC-P3-HAZARD-DAMAGE
+    role: observation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+  OCC-P3-HAZARD-EVENT:
+    entity: IE-P3-HAZARD-EVENT
+    occurrence_id: OCC-P3-HAZARD-EVENT
+    role: observation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+  OCC-P3-REF-PDF:
+    entity: IE-P3-REF-PDF
+    occurrence_id: OCC-P3-REF-PDF
+    role: citation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P3-REF-PDF
+  OCC-P3-RESPONSE-EMERGENCY:
+    entity: IE-P3-RESPONSE-EMERGENCY
+    occurrence_id: OCC-P3-RESPONSE-EMERGENCY
+    role: solution
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+  OCC-P3-RESPONSE-RECOVERY:
+    entity: IE-P3-RESPONSE-RECOVERY
+    occurrence_id: OCC-P3-RESPONSE-RECOVERY
+    role: solution
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+  OCC-P3-SCOPE-OBJECTIVE:
+    entity: IE-P3-SCOPE-OBJECTIVE
+    occurrence_id: OCC-P3-SCOPE-OBJECTIVE
+    role: observation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+perspectives: {}
+refs:
+  sources:
+    - description: 特集2 令和6年能登半島地震
+      id: SRC-P3-PDF
+      role: source_material
+      uri: ./r6_tokushu2_1.pdf
+    - description: 抽出テンプレート
+      id: SRC-TEMPLATE
+      role: template
+      uri: ./sample-template.ideamark.template.md
+relations: {}
+sections:
+  SEC-P3-GUIDANCE:
+    anchorage:
+      domain:
+        - response
+        - recovery
+        - guidance
+      phase: confirmed
+      view: decision
+    occurrences:
+      - OCC-P3-RESPONSE-EMERGENCY
+      - OCC-P3-RESPONSE-RECOVERY
+      - OCC-P3-GUIDANCE-NEXT
+  SEC-P3-HAZARD:
+    anchorage:
+      domain:
+        - hazard
+        - earthquake
+        - noto
+      phase: confirmed
+      view: problem
+    occurrences:
+      - OCC-P3-HAZARD-EVENT
+      - OCC-P3-HAZARD-DAMAGE
+  SEC-P3-REFERENCES:
+    anchorage:
+      domain:
+        - references
+        - citation
+      phase: confirmed
+      view: background
+    occurrences:
+      - OCC-P3-REF-PDF
+      - OCC-P3-CITATION
+      - OCC-P3-SOURCE-TEXT
+  SEC-P3-SCOPE:
+    anchorage:
+      domain:
+        - knowledge-extraction
+        - whitepaper
+        - part-003
+      phase: plan
+      view: background
+    occurrences:
+      - OCC-P3-SCOPE-OBJECTIVE
+status:
+  state: in_progress
+structure:
+  sections:
+    - SEC-P3-SCOPE
+    - SEC-P3-HAZARD
+    - SEC-P3-GUIDANCE
+    - SEC-P3-REFERENCES
+template:
+  id: imtpl.disaster.whitepaper.extraction
+  name: Disaster Whitepaper Extraction Template
+  version: "1.1"
+updated_at: 2026-03-05

@@ -1,0 +1,187 @@
+created_at: 2026-03-05
+doc_id: DOC-JP-DISASTER-WP-PART-002
+doc_type: derived
+entities:
+  IE-P2-CITATION:
+    kind: context
+    payload:
+      body: 令和6年版防災白書 第3部抽出結果。
+      format:
+        media_type: text/plain
+  IE-P2-MEASURE-PREVENTION:
+    kind: measure
+    payload:
+      body: 教育訓練、施設整備、耐震化、浸水対策等の予防施策。
+      format:
+        media_type: text/plain
+  IE-P2-MEASURE-RECOVERY:
+    kind: measure
+    payload:
+      body: 救助体制整備、被災者支援、公共施設復旧等の復旧復興施策。
+      format:
+        media_type: text/plain
+  IE-P2-POLICY-FIVE-PILLARS:
+    kind: policy
+    payload:
+      body: 科学技術、予防、国土保全、復旧、国際協力の5分野で防災計画を構成。
+      format:
+        media_type: text/plain
+  IE-P2-POLICY-INTERNATIONAL:
+    kind: policy
+    payload:
+      body: 仙台防災枠組の普及・定着と国際防災協力を推進。
+      format:
+        media_type: text/plain
+  IE-P2-REF-PDF:
+    kind: evidence
+    payload:
+      body: "Source PDF: ./r6_dai3bu.pdf"
+      format:
+        media_type: text/plain
+  IE-P2-SCOPE-OBJECTIVE:
+    kind: context
+    payload:
+      body: 第3部の計画体系と施策分野を抽出する。
+      format:
+        media_type: text/plain
+  IE-P2-SOURCE-TEXT:
+    kind: evidence
+    payload:
+      body: pdftotextで抽出した第3部テキスト。
+      format:
+        media_type: text/plain
+ideamark_version: 1.1.1
+lang: ja-JP
+occurrences:
+  OCC-P2-CITATION:
+    entity: IE-P2-CITATION
+    occurrence_id: OCC-P2-CITATION
+    role: citation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P2-REF-PDF
+    target: IE-P2-SOURCE-TEXT
+  OCC-P2-SOURCE-TEXT:
+    entity: IE-P2-SOURCE-TEXT
+    occurrence_id: OCC-P2-SOURCE-TEXT
+    role: evidence
+    status:
+      state: confirmed
+  OCC-P2-MEASURE-PREVENTION:
+    entity: IE-P2-MEASURE-PREVENTION
+    occurrence_id: OCC-P2-MEASURE-PREVENTION
+    role: solution
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P2-SOURCE-TEXT
+  OCC-P2-MEASURE-RECOVERY:
+    entity: IE-P2-MEASURE-RECOVERY
+    occurrence_id: OCC-P2-MEASURE-RECOVERY
+    role: solution
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P2-SOURCE-TEXT
+  OCC-P2-POLICY-FIVE-PILLARS:
+    entity: IE-P2-POLICY-FIVE-PILLARS
+    occurrence_id: OCC-P2-POLICY-FIVE-PILLARS
+    role: decision
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P2-SOURCE-TEXT
+  OCC-P2-POLICY-INTERNATIONAL:
+    entity: IE-P2-POLICY-INTERNATIONAL
+    occurrence_id: OCC-P2-POLICY-INTERNATIONAL
+    role: decision
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P2-SOURCE-TEXT
+  OCC-P2-REF-PDF:
+    entity: IE-P2-REF-PDF
+    occurrence_id: OCC-P2-REF-PDF
+    role: citation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P2-REF-PDF
+  OCC-P2-SCOPE-OBJECTIVE:
+    entity: IE-P2-SCOPE-OBJECTIVE
+    occurrence_id: OCC-P2-SCOPE-OBJECTIVE
+    role: observation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-P2-SOURCE-TEXT
+perspectives: {}
+refs:
+  sources:
+    - description: 令和6年度の防災に関する計画
+      id: SRC-P2-PDF
+      role: source_material
+      uri: ./r6_dai3bu.pdf
+    - description: 抽出テンプレート
+      id: SRC-TEMPLATE
+      role: template
+      uri: ./sample-template.ideamark.template.md
+relations: {}
+sections:
+  SEC-P2-LOCAL-MEASURES:
+    anchorage:
+      domain:
+        - local-measures
+        - infrastructure
+        - prevention
+      phase: plan
+      view: solution
+    occurrences:
+      - OCC-P2-MEASURE-PREVENTION
+      - OCC-P2-MEASURE-RECOVERY
+  SEC-P2-NATIONAL-POLICY:
+    anchorage:
+      domain:
+        - policy
+        - planning
+        - national
+      phase: confirmed
+      view: decision
+    occurrences:
+      - OCC-P2-POLICY-FIVE-PILLARS
+      - OCC-P2-POLICY-INTERNATIONAL
+  SEC-P2-REFERENCES:
+    anchorage:
+      domain:
+        - references
+        - citation
+      phase: confirmed
+      view: background
+    occurrences:
+      - OCC-P2-REF-PDF
+      - OCC-P2-CITATION
+      - OCC-P2-SOURCE-TEXT
+  SEC-P2-SCOPE:
+    anchorage:
+      domain:
+        - knowledge-extraction
+        - whitepaper
+        - part-002
+      phase: plan
+      view: background
+    occurrences:
+      - OCC-P2-SCOPE-OBJECTIVE
+status:
+  state: in_progress
+structure:
+  sections:
+    - SEC-P2-SCOPE
+    - SEC-P2-NATIONAL-POLICY
+    - SEC-P2-LOCAL-MEASURES
+    - SEC-P2-REFERENCES
+template:
+  id: imtpl.disaster.whitepaper.extraction
+  name: Disaster Whitepaper Extraction Template
+  version: "1.1"
+updated_at: 2026-03-05

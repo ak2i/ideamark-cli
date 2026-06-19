@@ -1,0 +1,145 @@
+created_at: 2026-03-05
+doc_id: DOC-NASA-19660000361-ADS-003
+doc_type: derived
+entities:
+  IE-NASA-ADS-OUTCOME:
+    kind: outcome
+    payload:
+      body: Complex diagrams were produced in about 3-4 hours, and one program projected savings above $140,000 over approximately 6,600 D-size drawings.
+      format:
+        media_type: text/plain
+  IE-NASA-ADS-PROBLEM:
+    kind: observation
+    payload:
+      body: Complex schematic and block diagrams were manually drafted from freehand design sketches, taking about 12-15 hours per complex diagram.
+      format:
+        media_type: text/plain
+  IE-NASA-ADS-PROCESS:
+    kind: mechanism
+    payload:
+      body: Marked sketch codes were translated to machine language, converted to raw tape, expanded by computer, then punched into output tape for photocomposition control.
+      format:
+        media_type: text/plain
+  IE-NASA-ADS-PROVENANCE:
+    kind: context
+    payload:
+      body: Source attribution includes Donald H. Millenson, NASA Tech Brief 66-10362 (MFS-788), and Marshall Space Flight Center contract context.
+      format:
+        media_type: text/plain
+  IE-NASA-ADS-SOLUTION:
+    kind: solution
+    payload:
+      body: An automated drafting system encoded conventional symbols and coordinates and drove a high-speed photocomposition machine.
+      format:
+        media_type: text/plain
+  IE-NASA-ADS-SOURCE-TEXT:
+    kind: evidence
+    payload:
+      body: Extracted text from NTRS citation 19660000361 and its PDF document.
+      format:
+        media_type: text/plain
+ideamark_version: 1.1.1
+lang: en-US
+occurrences:
+  OCC-NASA-ADS-OUTCOME-SAVINGS:
+    entity: IE-NASA-ADS-OUTCOME
+    occurrence_id: OCC-NASA-ADS-OUTCOME-SAVINGS
+    role: observation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-NASA-ADS-SOURCE-TEXT
+  OCC-NASA-ADS-PROBLEM-TIME:
+    entity: IE-NASA-ADS-PROBLEM
+    occurrence_id: OCC-NASA-ADS-PROBLEM-TIME
+    role: observation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-NASA-ADS-SOURCE-TEXT
+  OCC-NASA-ADS-PROCESS-PIPELINE:
+    entity: IE-NASA-ADS-PROCESS
+    occurrence_id: OCC-NASA-ADS-PROCESS-PIPELINE
+    role: explanation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-NASA-ADS-SOURCE-TEXT
+    target: IE-NASA-ADS-SOLUTION
+  OCC-NASA-ADS-PROVENANCE:
+    entity: IE-NASA-ADS-PROVENANCE
+    occurrence_id: OCC-NASA-ADS-PROVENANCE
+    role: citation
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-NASA-ADS-SOURCE-TEXT
+    target: IE-NASA-ADS-SOURCE-TEXT
+  OCC-NASA-ADS-SOURCE-TEXT:
+    entity: IE-NASA-ADS-SOURCE-TEXT
+    occurrence_id: OCC-NASA-ADS-SOURCE-TEXT
+    role: evidence
+    status:
+      state: confirmed
+  OCC-NASA-ADS-SOLUTION-SYSTEM:
+    entity: IE-NASA-ADS-SOLUTION
+    occurrence_id: OCC-NASA-ADS-SOLUTION-SYSTEM
+    role: solution
+    status:
+      state: confirmed
+    supporting_evidence:
+      - IE-NASA-ADS-SOURCE-TEXT
+perspectives: {}
+refs:
+  sources:
+    - description: NASA NTRS citation record
+      id: SRC-NASA-19660000361
+      role: source_material
+      uri: https://ntrs.nasa.gov/citations/19660000361
+    - description: NASA Tech Brief PDF
+      id: SRC-NASA-19660000361-PDF
+      role: evidence
+      uri: https://ntrs.nasa.gov/api/citations/19660000361/downloads/19660000361.pdf
+relations: {}
+sections:
+  SEC-NASA-ADS-OUTCOME:
+    anchorage:
+      domain:
+        - nasa
+        - cost
+        - productivity
+      phase: confirmed
+      view: background
+    occurrences:
+      - OCC-NASA-ADS-OUTCOME-SAVINGS
+      - OCC-NASA-ADS-PROVENANCE
+      - OCC-NASA-ADS-SOURCE-TEXT
+  SEC-NASA-ADS-PROBLEM:
+    anchorage:
+      domain:
+        - nasa
+        - drafting
+        - automation
+      phase: confirmed
+      view: problem
+    occurrences:
+      - OCC-NASA-ADS-PROBLEM-TIME
+  SEC-NASA-ADS-SOLUTION:
+    anchorage:
+      domain:
+        - nasa
+        - drafting
+        - automation
+      phase: confirmed
+      view: solution
+    occurrences:
+      - OCC-NASA-ADS-SOLUTION-SYSTEM
+      - OCC-NASA-ADS-PROCESS-PIPELINE
+status:
+  state: in_progress
+structure:
+  sections:
+    - SEC-NASA-ADS-PROBLEM
+    - SEC-NASA-ADS-SOLUTION
+    - SEC-NASA-ADS-OUTCOME
+updated_at: 2026-03-05
