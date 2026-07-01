@@ -44,6 +44,15 @@ For `validate` stdout (and ops stdin validate), the runner parses NDJSON and com
 - `TC-PUB-CANON-COVERAGE-001`: publish canonicalizes all supported reference paths (entity/target/supporting_evidence/derived_from.entity) and strict validate passes.
 - `TC-COM-CONFLICT-MIX-001`: compose simultaneous ENT+OCC+SEC conflicts; rename+aliases applied and references/structure remain consistent.
 
+## v1.1.1 reference corpus
+
+`tests/fixtures/v1.1.1/` contains the Core v1.1.1 reference corpus: valid
+documents (payload combinations, multi-role entities, external entity reuse,
+normalization, forward compatibility) and invalid documents mapped one-to-one
+to the error/warning classes of Core Constraints §7.15. See
+`tests/fixtures/v1.1.1/README.md` for the full mapping. The corpus is driven
+by `tests/internal/validate-v111-corpus.test.js` (runs as part of `npm test`).
+
 ## Internal tests
 
 Run internal unit tests:

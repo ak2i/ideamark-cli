@@ -105,6 +105,12 @@ function mergeRegistry(base, incoming, diagnostics, renamePolicy) {
   for (const [id, def] of Object.entries(incoming.sections || {})) {
     if (detectConflict(id, def, out.sections[id])) renameMap[id] = renamePolicy(id);
   }
+  for (const [id, def] of Object.entries(incoming.relations || {})) {
+    if (detectConflict(id, def, out.relations[id])) renameMap[id] = renamePolicy(id);
+  }
+  for (const [id, def] of Object.entries(incoming.perspectives || {})) {
+    if (detectConflict(id, def, out.perspectives[id])) renameMap[id] = renamePolicy(id);
+  }
 
   let inc = deepClone(incoming);
   if (Object.keys(renameMap).length) {
@@ -136,6 +142,8 @@ function mergeRegistry(base, incoming, diagnostics, renamePolicy) {
   inc.entities = renameKeys(inc.entities || {});
   inc.occurrences = renameKeys(inc.occurrences || {});
   inc.sections = renameKeys(inc.sections || {});
+  inc.relations = renameKeys(inc.relations || {});
+  inc.perspectives = renameKeys(inc.perspectives || {});
 
   for (const [id, def] of Object.entries(inc.entities || {})) {
     if (!out.entities[id]) out.entities[id] = def;
@@ -145,6 +153,12 @@ function mergeRegistry(base, incoming, diagnostics, renamePolicy) {
   }
   for (const [id, def] of Object.entries(inc.sections || {})) {
     if (!out.sections[id]) out.sections[id] = def;
+  }
+  for (const [id, def] of Object.entries(inc.relations || {})) {
+    if (!out.relations[id]) out.relations[id] = def;
+  }
+  for (const [id, def] of Object.entries(inc.perspectives || {})) {
+    if (!out.perspectives[id]) out.perspectives[id] = def;
   }
 
   return { registry: out, renameMap };
@@ -163,7 +177,8 @@ function composeDocuments(docs, options) {
     entities: {},
     occurrences: {},
     sections: {},
-    relations: [],
+    relations: {},
+    perspectives: {},
     structure: { sections: [] },
   };
 

@@ -14,7 +14,18 @@ function sortRegistry(registry) {
   out.entities = sortObj(registry.entities || {});
   out.occurrences = sortObj(registry.occurrences || {});
   out.sections = sortObj(registry.sections || {});
-  if (Array.isArray(registry.relations)) out.relations = registry.relations;
+  delete out.relations;
+  delete out.perspectives;
+  if (registry.relations && typeof registry.relations === 'object' && !Array.isArray(registry.relations)) {
+    if (Object.keys(registry.relations).length) out.relations = sortObj(registry.relations);
+  } else if (registry.relations !== undefined) {
+    out.relations = registry.relations;
+  }
+  if (registry.perspectives && typeof registry.perspectives === 'object' && !Array.isArray(registry.perspectives)) {
+    if (Object.keys(registry.perspectives).length) out.perspectives = sortObj(registry.perspectives);
+  } else if (registry.perspectives !== undefined) {
+    out.perspectives = registry.perspectives;
+  }
   out.structure = registry.structure || { sections: [] };
   return out;
 }

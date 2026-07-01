@@ -38,7 +38,10 @@ test('diff: include-meta reports updated_at change', () => {
 test('diff: add entity appears as add operation', () => {
   const dir = tempDir();
   const a = minimalDoc();
-  const b = a.replace('content: "test"', 'content: "test"\n  IE-2:\n    kind: "note"\n    content: "new"');
+  const b = a.replace(
+    'body: "test"',
+    'body: "test"\n  IE-2:\n    kind: "note"\n    payload:\n      body: "new"'
+  );
   const pa = writeTempFile(dir, 'a.md', a);
   const pb = writeTempFile(dir, 'b.md', b);
 

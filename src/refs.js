@@ -45,7 +45,9 @@ function normalizeRefsInObject(obj, docId, idSets) {
       continue;
     }
     if (k === 'from' || k === 'to') {
-      out[k] = normalizeRefValue(v, docId, idSets.entities, 'entities');
+      // Core Spec §6.2: relations accept entity_ref and section_ref.
+      const asEntity = normalizeRefValue(v, docId, idSets.entities, 'entities');
+      out[k] = asEntity !== v ? asEntity : normalizeRefValue(v, docId, idSets.sections, 'sections');
       continue;
     }
     out[k] = normalizeRefsInObject(v, docId, idSets);

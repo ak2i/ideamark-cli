@@ -79,10 +79,48 @@ function classifyBlock(obj, isFrontmatter) {
   if (isFrontmatter) return 'header';
   const hasHeaderKeys = obj.ideamark_version !== undefined && obj.doc_id && obj.doc_type;
   if (hasHeaderKeys) return 'header';
-  if (obj.section_id && obj.anchorage) return 'section';
+  if (obj.section_id) return 'section';
   if (obj.occurrence_id) return 'occurrence';
-  if (obj.entities || obj.occurrences || obj.sections || obj.structure || obj.relations) return 'registry';
+  if (
+    obj.entities ||
+    obj.occurrences ||
+    obj.sections ||
+    obj.structure ||
+    obj.relations ||
+    obj.perspectives
+  ) {
+    return 'registry';
+  }
   return 'other';
+}
+
+function isPlainObject(v) {
+  return v && typeof v === 'object' && !Array.isArray(v);
+}
+
+// Core Constraints §7.13: perspectives / perspective_scope / anchorage.view /
+// anchorage.phase accept a single value but are normalized to arrays.
+function normalizeMultiValue(v) {
+  if (v === undefined || v === null) return v;
+  if (Array.isArray(v)) return v;
+  if (typeof v === 'object') return v;
+  return [v];
+}
+
+function normalizeRegistry(registry) {
+  for (const sec of Object.values(registry.sections || {})) {
+    if (!isPlainObject(sec)) continue;
+    if (sec.perspectives !== undefined) sec.perspectives = normalizeMultiValue(sec.perspectives);
+    if (isPlainObject(sec.anchorage)) {
+      if (sec.anchorage.view !== undefined) sec.anchorage.view = normalizeMultiValue(sec.anchorage.view);
+      if (sec.anchorage.phase !== undefined) sec.anchorage.phase = normalizeMultiValue(sec.anchorage.phase);
+    }
+  }
+  for (const ent of Object.values(registry.entities || {})) {
+    if (!isPlainObject(ent)) continue;
+    if (ent.perspective_scope !== undefined) ent.perspective_scope = normalizeMultiValue(ent.perspective_scope);
+  }
+  return registry;
 }
 
 function parseDocument(text) {
@@ -125,19 +163,49 @@ function parseDocument(text) {
     entities: {},
     occurrences: {},
     sections: {},
-    relations: [],
+    relations: {},
+    perspectives: {},
     structure: { sections: [] },
   };
-  const duplicates = { entities: new Set(), occurrences: new Set(), sections: new Set() };
+  const duplicates = {
+    entities: new Set(),
+    occurrences: new Set(),
+    sections: new Set(),
+    relations: new Set(),
+    perspectives: new Set(),
+  };
   const seenSectionBlocks = new Set();
   const seenOccurrenceBlocks = new Set();
 
-  if (registryBlocks.length) {
-    const r = registryBlocks[0];
-    if (r.entities) registry.entities = r.entities;
-    if (r.occurrences) registry.occurrences = r.occurrences;
-    if (r.sections) registry.sections = r.sections;
-    if (r.relations) registry.relations = r.relations;
+  // Core Constraints §7.5: identifiers are unique within their namespace.
+  // Merge every registry block; a key already present counts as a duplicate.
+  const mergeNamespace = (key, source) => {
+    if (!isPlainObject(source)) return;
+    for (const [id, value] of Object.entries(source)) {
+      if (Object.prototype.hasOwnProperty.call(registry[key], id)) duplicates[key].add(id);
+      registry[key][id] = value;
+    }
+  };
+
+  for (const r of registryBlocks) {
+    mergeNamespace('entities', r.entities);
+    mergeNamespace('occurrences', r.occurrences);
+    mergeNamespace('sections', r.sections);
+    if (r.relations !== undefined) {
+      if (isPlainObject(r.relations) && isPlainObject(registry.relations)) {
+        mergeNamespace('relations', r.relations);
+      } else {
+        // Non-mapping shape is kept as-is; validate reports it.
+        registry.relations = r.relations;
+      }
+    }
+    if (r.perspectives !== undefined) {
+      if (isPlainObject(r.perspectives) && isPlainObject(registry.perspectives)) {
+        mergeNamespace('perspectives', r.perspectives);
+      } else {
+        registry.perspectives = r.perspectives;
+      }
+    }
     if (r.structure) registry.structure = r.structure;
   }
 
@@ -147,9 +215,8 @@ function parseDocument(text) {
     if (seenSectionBlocks.has(sec.section_id)) duplicates.sections.add(sec.section_id);
     seenSectionBlocks.add(sec.section_id);
     if (!registry.sections[sec.section_id]) registry.sections[sec.section_id] = {};
-    const target = registry.sections[sec.section_id];
-    if (sec.anchorage) target.anchorage = sec.anchorage;
-    if (sec.occurrences) target.occurrences = sec.occurrences;
+    const { section_id, ...rest } = sec;
+    registry.sections[section_id] = { ...registry.sections[section_id], ...rest };
   }
 
   // Merge occurrence blocks into registry
@@ -160,6 +227,8 @@ function parseDocument(text) {
     if (!registry.occurrences[occ.occurrence_id]) registry.occurrences[occ.occurrence_id] = {};
     registry.occurrences[occ.occurrence_id] = { ...registry.occurrences[occ.occurrence_id], ...occ };
   }
+
+  normalizeRegistry(registry);
 
   return {
     text,
@@ -192,4 +261,5 @@ module.exports = {
   parseDocument,
   stringifyYaml,
   normalizeYamlObject,
+  normalizeMultiValue,
 };
