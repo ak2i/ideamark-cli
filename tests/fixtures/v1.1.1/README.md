@@ -50,7 +50,7 @@ warning — §7.15 keeps these as warnings, never errors.
 | `warn-missing-media-type.ideamark.md` | missing media_type | `payload_media_type_missing` |
 | `warn-missing-captured-at.ideamark.md` | missing captured_at | `payload_captured_at_missing` |
 | `warn-unused-entity.ideamark.md` | unused entities | `entity_unused` |
-| `warn-unused-section.ideamark.md` | unused sections | `section_unused` |
+| `warn-unused-section.ideamark.md` | CLI hygiene warning (§7.17 / ADR-0004; removed from Core §7.15) | `section_unused` |
 | `warn-ambiguous-relation-ref.ideamark.md` | ambiguous relation references (Core Spec §6.3 / ADR-0001) | `relation_ref_ambiguous` |
 | `warn-unresolved-perspective-ref.ideamark.md` | unresolved perspective references (Core Spec §2.4 / ADR-0002) | `perspective_ref_unresolved` |
 
@@ -59,6 +59,6 @@ Notes:
 - Duplicate-id fixtures declare the same id in two registry blocks, because
   duplicate keys inside a single YAML mapping are already rejected by the YAML
   parser (`yaml_parse_error`).
-- "Unused section" has no Core definition of *use*; the CLI interprets it as
-  "omitted from an explicit `structure.sections` listing" (see the spec
-  ambiguity issue on unused sections).
+- `section_unused` is a CLI hygiene warning (ADR-0004), not a Core §7.15 item:
+  the v1.1.1 model has no definition of section "use", so the CLI warns only
+  when an explicit `structure.sections` listing omits the section.

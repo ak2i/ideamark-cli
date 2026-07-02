@@ -33,7 +33,7 @@
 | §7.13 多値フィールドの配列必須・単一値正規化 | ✅ parser で正規化、mapping は正規化不能のためエラー | `multi_value_field_invalid` | error | valid/normalization-single-values / validate.test.js |
 | §7.14 relations / perspectives は空・欠落可 | ✅ | — | — | valid/minimal-body |
 | §7.15 unused entities | ✅ | `entity_unused` | warning | warn-unused-entity |
-| §7.15 unused sections | ⚠️ 「使用」の定義が仕様に無い。CLI 解釈: `structure.sections`(CLI 拡張の順序リスト)があり、そこに載っていない section を警告 | `section_unused` | warning | warn-unused-section(ambiguity issue 参照) |
+| §7.15 unused sections | 🗑️ Core から削除(ADR-0004: v1.1.1 モデルでは「使用」が定義不能)。CLI は下記の実装拡張として警告を維持 | — | — | — |
 | §7.16 payload 意味検証・profile 意味論・URI 到達性の禁止 | ✅ validate は payload.body の中身を一切解釈しない | — | — | valid/unknown-fields-profile |
 | §7.18 未知フィールド無視・未知 profile で無効化しない | ✅ | — | — | valid/unknown-fields-profile |
 
@@ -47,6 +47,7 @@ Core v1.1.1 は文書ヘッダを規定しないため、以下は CLI 契約と
 - `relations_mapping_required` / `perspectives_mapping_required` — v1.1.1 の id キー付きマップ形の強制
 - `evidence_mapping` — Evidence Block(v0.1.2 CLI 拡張)
 - `occurrence_unused`(warning)— §7.15 に無い実装警告(hygiene)
+- `section_unused`(warning)— `structure.sections` リストに載っていない section(ADR-0004 で Core §7.15 から削除された項目の実装拡張版。フィクスチャ: warn-unused-section)
 
 ## v1.1.1 対応で削除した旧仕様チェック
 

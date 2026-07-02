@@ -373,9 +373,9 @@ function validateDocument(doc, options) {
     }
   }
 
-  // "Unused sections" (§7.15) has no Core definition of "use"; as a CLI
-  // interpretation, a section is unused when a structure.sections listing
-  // exists and omits it (see spec ambiguity issue).
+  // section_unused is a CLI hygiene warning (§7.17 / ADR-0004), not a Core
+  // §7.15 item: a section is unused when a structure.sections listing (CLI
+  // ordering extension) exists and omits it.
   if (Array.isArray(struct.sections) && struct.sections.length) {
     const listed = new Set();
     for (const secRef of struct.sections) {
@@ -385,7 +385,7 @@ function validateDocument(doc, options) {
     }
     for (const id of idSets.sections) {
       if (!listed.has(id)) {
-        push('warning', 'section_unused', 'Section is not listed in structure.sections (§7.15)', { scope: 'section', id });
+        push('warning', 'section_unused', 'Section is not listed in structure.sections (CLI extension, ADR-0004)', { scope: 'section', id });
       }
     }
   }
