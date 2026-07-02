@@ -314,9 +314,10 @@ The following MAY be empty or absent:
 - missing captured_at
 - missing optional fields
 - unused entities
-- unused sections
 - ambiguous relation references
 - unresolved perspective references
+
+Implementations MAY add further hygiene warnings (§7.17); such warnings are outside the Core list above.
 
 ---
 
