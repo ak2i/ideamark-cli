@@ -1,0 +1,108 @@
+{
+  "contract": {
+    "name": "doc-cli-contract",
+    "version": "1.1.1"
+  },
+  "tool": {
+    "name": "ideamark-cli",
+    "version": "0.2.0"
+  },
+  "document": {
+    "name": "ideamark",
+    "version": "1.1.1",
+    "representation": "yaml-based"
+  },
+  "prompt_authoring": {
+    "overview": "Generate external LLM prompts that preserve IdeaMark v1.1.1 YAML validity and structural reference integrity.",
+    "ownership": {
+      "inside_cli": [
+        "describe guidance distribution",
+        "validate/lint execution",
+        "vocab/checklist publication"
+      ],
+      "outside_cli": [
+        "final prompt assembly",
+        "model invocation",
+        "retry strategy"
+      ]
+    },
+    "required_inputs": [
+      "source_materials",
+      "output_path",
+      "target_spec_version",
+      "audience"
+    ],
+    "output_contract": {
+      "required_yaml_units": [
+        "header",
+        "registry.entities",
+        "registry.occurrences",
+        "registry.sections"
+      ],
+      "ordering_requirements": [
+        "Keep the document structurally coherent so section occurrence references are easy to trace.",
+        "If `structure.sections` is emitted, keep it aligned with the actual section IDs.",
+        "Do not emit references to entities, occurrences, or sections that are not defined."
+      ],
+      "payload_requirements": [
+        "Every entity must contain `payload`.",
+        "Each payload must include at least one of `body`, `ref`, or `cache`.",
+        "If `payload.ref` exists, include `payload.ref.uri`."
+      ],
+      "prohibitions": [
+        "unresolved local references",
+        "duplicate IDs",
+        "empty entity payloads"
+      ]
+    },
+    "reference_mapping_rules": {
+      "local_reference_baseline": {
+        "required": [
+          "Occurrence `entity` must resolve to an entity ID.",
+          "Section `occurrences[]` must resolve to occurrence IDs.",
+          "Relation endpoints may target entity or section refs."
+        ]
+      },
+      "external_reference_baseline": {
+        "policy": "carry only source-backed references",
+        "required": [
+          "Use `payload.ref.uri` for explicit external references.",
+          "Do not invent URLs, citation identifiers, or bibliographic entries.",
+          "Use payload/body/cache according to available source fidelity."
+        ]
+      },
+      "template_extensions": {
+        "policy": "extend_not_replace",
+        "required": [
+          "If a template adds fields, keep base payload and local reference rules intact.",
+          "Record template usage in header metadata when relevant."
+        ]
+      }
+    },
+    "generation_flow": [
+      "describe(ai-authoring + params + checklist)",
+      "prompt_assembly",
+      "generate",
+      "validate(working)",
+      "repair_loop",
+      "validate(strict)"
+    ],
+    "prompt_template_hints": {
+      "system": [
+        "You are generating IdeaMark v1.1.1 documents.",
+        "YAML validity and resolvable local references are mandatory."
+      ],
+      "task": [
+        "Produce a valid header and registry namespaces.",
+        "Ensure each entity has payload content.",
+        "Ensure each occurrence points to an existing entity.",
+        "Ensure each section lists existing occurrences."
+      ],
+      "quality_gate": [
+        "Must pass ideamark validate --mode strict.",
+        "Must not contain unresolved local references."
+      ]
+    }
+  }
+}
+

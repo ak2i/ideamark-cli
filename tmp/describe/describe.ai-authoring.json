@@ -1,0 +1,103 @@
+{
+  "contract": {
+    "name": "doc-cli-contract",
+    "version": "1.1.1"
+  },
+  "tool": {
+    "name": "ideamark-cli",
+    "version": "0.2.0"
+  },
+  "document": {
+    "name": "ideamark",
+    "version": "1.1.1",
+    "representation": "yaml-based"
+  },
+  "guidance": {
+    "overview": "Generate valid IdeaMark v1.1.1 documents for structural validation, routing-aware discovery, and reusable knowledge capture.",
+    "principles": [
+      "Produce YAML-based IdeaMark documents that parse cleanly.",
+      "Keep IDs stable and unique within a document.",
+      "Use concise, factual language and avoid inventing unsupported claims or references.",
+      "Treat entities, occurrences, and sections as the minimum structural units.",
+      "Use validation early in working loops and strict validation before handoff."
+    ],
+    "do": [
+      "Include a valid header with the target `ideamark_version`.",
+      "Create at least one entity, one occurrence, and one section.",
+      "Give every entity a `payload` with `body`, `ref`, or `cache`.",
+      "Make every occurrence point to an existing entity and declare a `role`.",
+      "Make every section list at least one occurrence.",
+      "Use `relations` and `perspectives` only when you can keep references resolvable.",
+      "Use `payload.format.media_type` when payload format matters for routing or downstream processing."
+    ],
+    "dont": [
+      "Invent IDs that collide with existing ones.",
+      "Emit empty entity payloads.",
+      "Point `payload.ref` at a missing `uri`.",
+      "Reference entities, occurrences, or sections that do not exist.",
+      "Treat optional metadata such as `anchorage` as a substitute for required structure.",
+      "Invent external references, URLs, or citations that are not present in source materials."
+    ],
+    "checklist": [
+      "Header matches IdeaMark `1.1.1`.",
+      "Registry includes `entities`, `occurrences`, and `sections`.",
+      "Every entity has non-empty payload content.",
+      "Every occurrence has `entity` and `role`.",
+      "Every section has a non-empty `occurrences` array.",
+      "All local references resolve.",
+      "Run `validate` in working mode during drafting and strict mode before handoff."
+    ],
+    "examples": [
+      "Minimal valid pattern: one entity with `payload.body`, one occurrence pointing to that entity, and one section listing that occurrence."
+    ],
+    "profiles": {
+      "ai_small": {
+        "goal": "maximize first-pass validity with a fixed recipe",
+        "steps": [
+          "create_header",
+          "create_entity_payload",
+          "create_occurrence",
+          "create_section",
+          "validate_working",
+          "repair",
+          "validate_strict"
+        ],
+        "followup_topics": [
+          "params",
+          "checklist",
+          "routing"
+        ]
+      },
+      "ai_large": {
+        "framework": [
+          "PLAN",
+          "AUTHOR",
+          "VALIDATE",
+          "TRANSFORM"
+        ],
+        "decision_points": [
+          "payload body vs ref vs cache",
+          "relation usage",
+          "strictness level"
+        ],
+        "completion_criteria": [
+          "requested structure produced",
+          "validation passes",
+          "references remain resolvable"
+        ]
+      },
+      "human": {
+        "default_lang": "ja-JP",
+        "variants": [
+          "easy",
+          "advanced"
+        ]
+      }
+    },
+    "routing_hints": [
+      "If the task centers on stable knowledge structure and local reference integrity, route to IdeaMark.",
+      "If the task centers on iterative task execution, route to FlowMark first."
+    ]
+  }
+}
+

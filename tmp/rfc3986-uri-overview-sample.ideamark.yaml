@@ -1,0 +1,89 @@
+ideamark_version: "1.1.1"
+doc_id: "DOC-RFC3986-URI-OVERVIEW-SAMPLE"
+doc_type: "source"
+status:
+  state: "published"
+created_at: "2026-06-19T00:00:00Z"
+updated_at: "2026-06-19T00:00:00Z"
+lang: "ja-JP"
+title: "RFC 3986 URI Overview Sample"
+summary: "RFC 3986 Section 1.1 の URI 概要を再構成したサンプル文書"
+entities:
+  IE-URI:
+    kind: "concept"
+    atomicity_basis: "interpretive"
+    payload:
+      body: "URIは資源を識別するためのコンパクトな文字列であり、Web資源に限定されない。"
+  IE-RESOURCE:
+    kind: "concept"
+    atomicity_basis: "interpretive"
+    payload:
+      body: "資源は文書、画像、サービス、人物、概念など識別対象となるあらゆるものを指す。"
+  IE-IDENTIFIER:
+    kind: "concept"
+    atomicity_basis: "interpretive"
+    payload:
+      body: "識別子は一定の範囲内で他の資源と区別するための情報であり、アクセスとは異なる。"
+  IE-SCHEME:
+    kind: "concept"
+    atomicity_basis: "structural"
+    payload:
+      body: "URIはschemeを通じて解釈される。http、mailto、ftp、file、urnなどが例である。"
+  IE-GENERIC-SYNTAX:
+    kind: "concept"
+    atomicity_basis: "structural"
+    payload:
+      body: "RFC 3986はURI scheme間で共有される汎用構文を定義する。"
+  IE-URL-URN:
+    kind: "concept"
+    atomicity_basis: "interpretive"
+    payload:
+      body: "URLは主に位置特定機構を示すURI、URNは永続的名称として利用されるURIとして理解される。"
+  IE-SOURCE:
+    kind: "reference"
+    atomicity_basis: "lexical"
+    payload:
+      ref:
+        uri: "https://datatracker.ietf.org/doc/html/rfc3986"
+occurrences:
+  OCC-1:
+    entity: "IE-URI"
+    role: "claim"
+  OCC-2:
+    entity: "IE-RESOURCE"
+    role: "claim"
+  OCC-3:
+    entity: "IE-IDENTIFIER"
+    role: "claim"
+  OCC-4:
+    entity: "IE-SCHEME"
+    role: "explanation"
+  OCC-5:
+    entity: "IE-GENERIC-SYNTAX"
+    role: "explanation"
+  OCC-6:
+    entity: "IE-URL-URN"
+    role: "observation"
+sections:
+  SEC-OVERVIEW:
+    title: "URIの概要"
+    occurrences:
+      - "OCC-1"
+      - "OCC-2"
+      - "OCC-3"
+  SEC-SYNTAX:
+    title: "Schemeと汎用構文"
+    occurrences:
+      - "OCC-4"
+      - "OCC-5"
+  SEC-CLASSIFICATION:
+    title: "URLとURN"
+    occurrences:
+      - "OCC-6"
+relations: {}
+perspectives: {}
+structure:
+  sections:
+    - "SEC-OVERVIEW"
+    - "SEC-SYNTAX"
+    - "SEC-CLASSIFICATION"

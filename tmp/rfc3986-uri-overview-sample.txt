@@ -1,0 +1,66 @@
+RFC 3986 URI Overview - Sample Text for IdeaMark
+=================================================
+
+Source basis:
+- RFC 3986, "Uniform Resource Identifier (URI): Generic Syntax"
+- Section 1.1, "Overview of URIs"
+- Original RFC page: https://datatracker.ietf.org/doc/html/rfc3986
+- Reference page used for extraction check: https://tex2e.github.io/rfc-translater/html/rfc3986.html
+
+Note:
+This file is an English sample text prepared for IdeaMark-Core / IdeaMark-CLI
+examples. It is a compact restatement of the URI overview concepts rather than
+a full verbatim copy of RFC 3986 section 1.1.
+
+-------------------------------------------------
+
+Overview of URIs
+
+A Uniform Resource Identifier, or URI, is a compact character sequence used to
+identify a resource. The idea of a URI is intentionally broad: it is not limited
+to web pages, network services, or things that can be retrieved over the
+Internet. A resource may be a document, an image, a service, a collection, a
+person, an organization, a book, a concept, a relationship type, or even a
+numeric value.
+
+The word "uniform" indicates that different kinds of identifiers can be handled
+within a shared syntactic framework. This uniformity allows applications and
+protocols to use identifiers in common contexts even when the mechanisms for
+accessing the identified resources differ. It also allows new identifier schemes
+to be introduced without disrupting the use of existing schemes.
+
+The word "resource" refers to whatever is being identified. A resource does not
+need to be physically accessible, network-accessible, or singular. The same
+identified resource may vary over time, and some identifiers may refer to
+abstract things rather than concrete objects.
+
+The word "identifier" means information that distinguishes one resource from
+other resources within a given scope. Identification should not be confused with
+access. A URI may be used to denote a resource without implying that software
+will retrieve it or interact with it.
+
+A URI is interpreted through a scheme, such as http, mailto, ftp, file, or urn.
+Each scheme defines how identifiers within that scheme are assigned and how
+their scheme-specific details should be understood. RFC 3986 defines the generic
+syntax shared by URI schemes, while individual scheme specifications may add
+further restrictions or semantics.
+
+Generic URI syntax makes it possible to parse a URI reference into major
+components before scheme-specific processing is required. This separates the
+common parsing task from the specialized interpretation performed by each
+scheme. As a result, protocols and data formats can refer to a single generic
+URI syntax while still allowing new schemes to evolve independently.
+
+A URI may function as a locator, a name, or both. A URL is commonly understood as
+a URI that identifies a resource and also describes a primary access mechanism
+for locating it. A URN is commonly understood as a URI intended to serve as a
+persistent name. However, a scheme does not have to be classified exclusively as
+a locator or a name; instances of the same scheme may behave differently
+depending on how identifiers are assigned and maintained.
+
+This overview is useful for IdeaMark examples because the same concepts recur in
+multiple roles. For example, "URI" can appear as a general concept, as a syntax
+mechanism, as a constraint for parsing, as an example-bearing object, and as a
+bridge between identification and access. Likewise, "resource", "identifier",
+"scheme", "generic syntax", "URL", and "URN" can be represented as reusable
+entities whose occurrences vary by section and role.
