@@ -3,7 +3,7 @@ const assert = require('node:assert');
 const { runCli, tempDir, writeTempFile, minimalDoc } = require('./helpers');
 
 function docWithEntity(id, content) {
-  return minimalDoc().replace(/IE-1/g, id).replace('content: "test"', `content: "${content}"`);
+  return minimalDoc().replace(/IE-1/g, id).replace('body: "test"', `body: "${content}"`);
 }
 
 function docWithSectionNarrative(docId, narrative) {

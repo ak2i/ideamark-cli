@@ -82,7 +82,8 @@ function extractDocument(doc, options) {
     entities: {},
     occurrences: {},
     sections: {},
-    relations: [],
+    relations: {},
+    perspectives: {},
     structure: { sections: [] },
   };
 

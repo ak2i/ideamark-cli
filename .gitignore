@@ -137,3 +137,6 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# test scratch dirs created by tests/internal/helpers.js tempDir()
+tests/internal/tmp-*/

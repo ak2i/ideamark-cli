@@ -51,6 +51,12 @@ All internal references MUST be valid.
 
 Invalid references MUST be treated as errors.
 
+For relations.from / relations.to, a bare identifier is resolved against the entity namespace first, then the section namespace. An identifier present in both namespaces is ambiguous: implementations SHOULD emit a warning, and authors SHOULD disambiguate using a typed reference form.
+
+Reference integrity intentionally excludes perspective_ref. A bare perspective_ref that does not resolve within the document SHOULD be reported as a warning, never as an error (see Core Spec §2.4).
+
+Reference integrity applies to references within the containing document only. A reference qualified with another document's doc_id (Core Spec §9.2) is opaque to validation: reusing an element id from another document is a normal case, never an error.
+
 ---
 
 ### 7.5 Identifier Uniqueness
@@ -244,6 +250,10 @@ If optional fields are omitted:
 - profile MAY be omitted
 - definition_ref MAY be omitted
 
+atomicity_basis is an enumeration: `interpretive | lexical | structural`.
+
+A value outside this enumeration MUST be reported as a warning, not an error. The value is preserved (§7.17); Core assigns it no semantics.
+
 ---
 
 ### 7.12 Type Flexibility
@@ -274,6 +284,8 @@ The following MUST be arrays if present:
 
 Single values MUST be normalized as single-element arrays.
 
+A value that cannot be normalized to an array (e.g. a mapping) MUST be treated as an error.
+
 ---
 
 ### 7.14 Empty Structures
@@ -293,6 +305,8 @@ The following MAY be empty or absent:
 
 ### 7.15 Error vs Warning
 
+Errors protect structural processability; warnings flag deviations in interpretive metadata.
+
 #### Errors
 
 - invalid references
@@ -301,6 +315,7 @@ The following MAY be empty or absent:
 - missing payload
 - payload without body/ref/cache
 - ref without uri
+- multi-value fields that cannot be normalized (§7.13)
 
 #### Warnings
 
@@ -308,7 +323,11 @@ The following MAY be empty or absent:
 - missing captured_at
 - missing optional fields
 - unused entities
-- unused sections
+- ambiguous relation references
+- unresolved perspective references
+- unknown atomicity_basis values (§7.11)
+
+Implementations MAY add further hygiene warnings (§7.17); such warnings are outside the Core list above.
 
 ---
 

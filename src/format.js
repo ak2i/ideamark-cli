@@ -10,6 +10,11 @@ function formatDocument(text, options) {
     entities: new Set(Object.keys(doc.registry.entities || {})),
     occurrences: new Set(Object.keys(doc.registry.occurrences || {})),
     sections: new Set(Object.keys(doc.registry.sections || {})),
+    perspectives: new Set(
+      doc.registry.perspectives && !Array.isArray(doc.registry.perspectives)
+        ? Object.keys(doc.registry.perspectives)
+        : []
+    ),
   };
   const docId = doc.header && doc.header.doc_id;
 

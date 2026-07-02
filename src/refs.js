@@ -45,12 +45,41 @@ function normalizeRefsInObject(obj, docId, idSets) {
       continue;
     }
     if (k === 'from' || k === 'to') {
-      out[k] = normalizeRefValue(v, docId, idSets.entities, 'entities');
+      out[k] = normalizeRelationEndpoint(v, docId, idSets);
+      continue;
+    }
+    if (k === 'perspectives' || k === 'perspective_scope') {
+      // Arrays hold perspective_refs (section.perspectives /
+      // entity.perspective_scope); a mapping is the definitions namespace.
+      if (Array.isArray(v)) {
+        out[k] = v.map((x) => normalizeRefValue(x, docId, idSets.perspectives, 'perspectives'));
+      } else if (v && typeof v === 'object') {
+        out[k] = normalizeRefsInObject(v, docId, idSets);
+      } else {
+        out[k] = v;
+      }
+      continue;
+    }
+    if (k === 'base') {
+      out[k] = normalizeRefValue(v, docId, idSets.perspectives, 'perspectives');
       continue;
     }
     out[k] = normalizeRefsInObject(v, docId, idSets);
   }
   return out;
+}
+
+// Core Spec §6.3 / ADR-0001: relation endpoints accept entity_ref and
+// section_ref. An already-typed reference is kept as-is (idempotent); a bare
+// identifier resolves entity namespace first, then section namespace.
+function normalizeRelationEndpoint(value, docId, idSets) {
+  if (typeof value !== 'string') return value;
+  const ref = parseRef(value, docId);
+  if (ref.kind !== 'local') return value;
+  if (ref.type) return value;
+  if (idSets.entities.has(ref.id)) return canonicalUri(docId, 'entities', ref.id);
+  if (idSets.sections.has(ref.id)) return canonicalUri(docId, 'sections', ref.id);
+  return value;
 }
 
 function normalizeRefValue(value, docId, idSet, type) {

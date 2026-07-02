@@ -113,6 +113,22 @@ Perspective MAY exist at:
 
 Perspective does not guarantee future meaning outcomes.
 
+### 2.4 Perspective Reference Resolution
+
+perspective_ref appears in:
+
+- perspectives.{id}.base
+- sections.{id}.perspectives
+- entities.{id}.perspective_scope
+
+A bare perspective_ref SHOULD resolve to a perspective defined in the same document.
+
+An unresolved bare perspective_ref is NOT an error. Implementations SHOULD report it as a warning.
+
+External reference forms are opaque to Core validation.
+
+Reference integrity (§7.4) intentionally excludes perspective_ref: perspectives are interpretive clues, not structural references.
+
 ---
 
 ## 3. Entity
@@ -253,6 +269,16 @@ Supported references:
 - entity_ref
 - section_ref
 
+### 6.3 Reference Resolution
+
+A reference in `from` / `to` MAY be written in a typed form or as a bare identifier.
+
+- A typed reference form (as defined by tooling, addressing `entities/...` or `sections/...`) resolves within the indicated namespace.
+- A bare identifier resolves against the entity namespace first, then the section namespace.
+- An identifier present in both namespaces is ambiguous: implementations SHOULD report the ambiguity, and authors SHOULD disambiguate using a typed reference form.
+
+Canonicalizing tools SHOULD rewrite bare identifiers into typed reference forms following the same resolution order.
+
 ---
 
 ## 7. Validation / Constraints
@@ -347,3 +373,57 @@ Compatibility and migration behavior are considered tooling concerns.
 Within the v1.1.x series, differences MAY be resolved through normalization tools or LLM-assisted rewriting.
 
 Future major conceptual changes SHOULD define migration guidance when transitioning across larger version boundaries.
+
+---
+
+## 9. Document Identity and External References
+
+Logically this section extends §3.5 Identity and §7.6 Validation Boundary.
+
+### 9.1 Document Identity
+
+Every IdeaMark document declares a document identifier:
+
+```yaml
+doc_id: string
+```
+
+- `doc_id` is an opaque string. Core does not prescribe its internal structure: a human-readable name, a UUID, or an authority-qualified path are all equally valid.
+- `doc_id` is immutable once assigned. Canonicalization bakes `doc_id` into every reference, so changing it breaks both internal canonical references and inbound references from other documents.
+- The uniqueness scope of `doc_id` is its resolution context (a corpus, a repository, a registry). Guaranteeing uniqueness within that scope is the responsibility of the corpus operator or registry, not of Core validation.
+- Documents intended for publication or global registration SHOULD use collision-resistant identifiers (e.g. UUID).
+- Display naming belongs to other fields; `doc_id` is an identifier, not a title.
+
+### 9.2 Canonical External Reference Form
+
+The canonical form for referencing an element of a document is:
+
+```
+ideamark://docs/{doc_id}#/{entities|occurrences|sections|perspectives}/{element_id}
+```
+
+A shorthand form MAY be used where element type information is not needed:
+
+```
+{doc_id}#{element_id}
+```
+
+Element identity across documents is determined by exact string comparison of the `(doc_id, element_id)` pair.
+
+- No URI normalization is applied.
+- No equivalence inference (sameAs-style entity resolution) is performed.
+
+> Referencing the same `(doc_id, entity_id)` pair activates the same Entity.
+> Copying a payload under a new id creates a different Entity.
+
+This is the normative expression of authorial identity declaration: identity is declared by reference, never inferred.
+
+### 9.3 Resolution
+
+Resolving a `doc_id` to a document instance is outside Core.
+
+A local corpus index and a global registry are different resolvers for the same reference syntax; documents move between contexts without rewriting.
+
+External references are opaque to Core validation: no existence, reachability, or type checks are performed (§7.6 Validation Boundary).
+
+Other URI schemes MAY appear in reference positions. They are opaque to Core and outside the identity comparison rule of §9.2.

@@ -30,20 +30,34 @@ test('lint: strict fails on error diagnostics', () => {
   assert.strictEqual(summary.ok, false);
 });
 
+function docWithoutAnchorage() {
+  return minimalDoc()
+    .replace('anchorage:\n  view: ["design"]\n  phase: ["implementation"]\n', '')
+    .replace('    anchorage: { view: ["design"], phase: ["implementation"] }\n', '');
+}
+
 test('lint: minimal profile excludes recommended warnings', () => {
-  const res = runCli(['lint', '--profile', 'minimal'], minimalDoc());
+  const res = runCli(['lint', '--profile', 'minimal'], docWithoutAnchorage());
   assert.strictEqual(res.status, 0);
   const lines = parseNdjson(res.stdout);
   const diags = lines.filter((x) => x.type === 'diagnostic');
   assert.ok(!diags.some((x) => x.code === 'IM-LINT-104'));
 });
 
-test('lint: diagnostic profile emits domain sparse warning', () => {
-  const res = runCli(['lint', '--profile', 'diagnostic'], minimalDoc());
+test('lint: diagnostic profile warns on sections without anchorage signals', () => {
+  const res = runCli(['lint', '--profile', 'diagnostic'], docWithoutAnchorage());
   assert.strictEqual(res.status, 0);
   const lines = parseNdjson(res.stdout);
   const diags = lines.filter((x) => x.type === 'diagnostic');
   assert.ok(diags.some((x) => x.code === 'IM-LINT-104'));
+});
+
+test('lint: anchorage view/phase satisfies IM-LINT-104', () => {
+  const res = runCli(['lint', '--profile', 'diagnostic'], minimalDoc());
+  assert.strictEqual(res.status, 0);
+  const lines = parseNdjson(res.stdout);
+  const diags = lines.filter((x) => x.type === 'diagnostic');
+  assert.ok(!diags.some((x) => x.code === 'IM-LINT-104'));
 });
 
 test('lint: json format', () => {
@@ -56,7 +70,7 @@ test('lint: json format', () => {
 });
 
 test('lint: md format', () => {
-  const res = runCli(['lint', '--format', 'md', '--profile', 'diagnostic'], minimalDoc());
+  const res = runCli(['lint', '--format', 'md', '--profile', 'diagnostic'], docWithoutAnchorage());
   assert.strictEqual(res.status, 0);
   assert.match(res.stdout, /# lint report/);
   assert.match(res.stdout, /IM-LINT-104/);

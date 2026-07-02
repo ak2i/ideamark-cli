@@ -81,10 +81,6 @@ function referencedEntityIds(registry, docId) {
       const ref = parseRef(occ.entity, docId);
       if (ref.kind === 'local' && ref.id) ids.add(ref.id);
     }
-    if (typeof occ.target === 'string') {
-      const ref = parseRef(occ.target, docId);
-      if (ref.kind === 'local' && ref.id) ids.add(ref.id);
-    }
   }
   return ids;
 }
@@ -155,21 +151,6 @@ function lintDocument(doc, options) {
         const ref = parseRef(occ.entity, docId);
         if (ref.kind === 'local' && !idSets.entities.has(ref.id) && !occ.inline) {
           brokenRefs.push({ scope: 'occurrence', path: 'entity', id: occId });
-        }
-      }
-      if (typeof occ.target === 'string') {
-        const ref = parseRef(occ.target, docId);
-        if (ref.kind === 'local' && !idSets.entities.has(ref.id)) {
-          brokenRefs.push({ scope: 'occurrence', path: 'target', id: occId });
-        }
-      }
-      if (Array.isArray(occ.supporting_evidence)) {
-        for (const ev of occ.supporting_evidence) {
-          if (typeof ev !== 'string') continue;
-          const ref = parseRef(ev, docId);
-          if (ref.kind === 'local' && !idSets.entities.has(ref.id) && !idSets.occurrences.has(ref.id)) {
-            brokenRefs.push({ scope: 'occurrence', path: 'supporting_evidence', id: occId });
-          }
         }
       }
     }
@@ -280,18 +261,22 @@ function lintDocument(doc, options) {
       }
     }
 
+    // IM-LINT-104: anchorage lacks retrieval signals. anchorage itself stays
+    // optional (Core v1.1.1); this only flags degraded search quality, and
+    // never constrains the vocabulary used in view/phase (§7.12).
     for (const [secId, sec] of Object.entries(registry.sections || {})) {
-      const anchorage = sec && sec.anchorage ? sec.anchorage : null;
-      const domain = anchorage && Array.isArray(anchorage.domain) ? anchorage.domain : [];
-      if (domain.length === 0) {
+      const anchorage = sec && typeof sec.anchorage === 'object' && !Array.isArray(sec.anchorage) ? sec.anchorage : null;
+      const view = anchorage && Array.isArray(anchorage.view) ? anchorage.view : [];
+      const phase = anchorage && Array.isArray(anchorage.phase) ? anchorage.phase : [];
+      if (view.length === 0 && phase.length === 0) {
         diagnostics.push(
           d(
             'warning',
             'IM-LINT-104',
-            'Section anchorage.domain is empty; routing/discovery quality may degrade.',
-            { scope: 'section', id: secId, path: 'anchorage.domain' },
+            'Section has no anchorage view/phase signals; retrieval quality may degrade.',
+            { scope: 'section', id: secId, path: 'anchorage' },
             mode,
-            'Add one or more domain tags for routing discovery.'
+            'Add anchorage.view / anchorage.phase entries to improve retrieval recall.'
           )
         );
       }
