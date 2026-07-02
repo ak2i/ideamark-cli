@@ -16,6 +16,7 @@
 | §7.4 section.occurrences 参照整合 | ✅ | `occurrence_ref_invalid` | error | err-ref-section-occurrence |
 | §7.4 relations.from / relations.to 参照整合(裸IDは entity→section の順で解決、Core Spec §6.3 / ADR-0001) | ✅ | `relation_from_invalid` / `relation_to_invalid` / `relation_from_required` / `relation_to_required` | error | err-ref-relation-from / err-ref-relation-to |
 | §6.3/§7.15 relation 裸IDが entity と section の両方に存在(ambiguous) | ✅ | `relation_ref_ambiguous` | warning | warn-ambiguous-relation-ref |
+| §2.4/§7.15 未解決の裸 perspective_ref(base / section.perspectives / perspective_scope、ADR-0002) | ✅ | `perspective_ref_unresolved` | warning | warn-unresolved-perspective-ref |
 | §7.5 識別子一意性(entity/occurrence/section/relation/perspective) | ✅ | `id_duplicate` | error | err-dup-* ×5 |
 | §7.6 occurrence.entity / occurrence.role 必須 | ✅ | `occurrence_entity_required` / `occurrence_role_required` | error | err-missing-occurrence-* |
 | §7.6 section.occurrences 非空配列必須 | ✅ | `section_occurrences_required` | error | err-empty-section-occurrences |
@@ -44,7 +45,6 @@ Core v1.1.1 は文書ヘッダを規定しないため、以下は CLI 契約と
 - `header_required` / `header_singleton` — 文書同一性(doc_id)の確保。strict では必須ヘッダフィールドも検査
 - `section_ref_invalid` — `structure.sections`(CLI 拡張)内の迷子参照
 - `relations_mapping_required` / `perspectives_mapping_required` — v1.1.1 の id キー付きマップ形の強制
-- `perspective_ref_unresolved`(warning)— §7.4 の参照整合対象に perspective_ref が含まれないため error にしない(ambiguity issue 参照)
 - `evidence_mapping` — Evidence Block(v0.1.2 CLI 拡張)
 - `occurrence_unused`(warning)— §7.15 に無い実装警告(hygiene)
 

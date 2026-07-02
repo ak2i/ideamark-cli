@@ -91,6 +91,7 @@ const WARNING_CASES = {
   'warn-unused-entity.ideamark.md': 'entity_unused',
   'warn-unused-section.ideamark.md': 'section_unused',
   'warn-ambiguous-relation-ref.ideamark.md': 'relation_ref_ambiguous',
+  'warn-unresolved-perspective-ref.ideamark.md': 'perspective_ref_unresolved',
 };
 
 for (const [file, code] of Object.entries(WARNING_CASES)) {

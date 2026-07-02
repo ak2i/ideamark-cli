@@ -51,6 +51,7 @@ warning — §7.15 keeps these as warnings, never errors.
 | `warn-unused-entity.ideamark.md` | unused entities | `entity_unused` |
 | `warn-unused-section.ideamark.md` | unused sections | `section_unused` |
 | `warn-ambiguous-relation-ref.ideamark.md` | ambiguous relation references (Core Spec §6.3 / ADR-0001) | `relation_ref_ambiguous` |
+| `warn-unresolved-perspective-ref.ideamark.md` | unresolved perspective references (Core Spec §2.4 / ADR-0002) | `perspective_ref_unresolved` |
 
 Notes:
 

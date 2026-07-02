@@ -304,9 +304,9 @@ function validateDocument(doc, options) {
     }
   }
 
-  // Perspective references: Core Constraints §7.4 does not list them under
-  // reference integrity, so unresolved local perspective refs are warnings
-  // only (see spec ambiguity issue on perspective_ref resolution).
+  // Perspective references: Core Spec §2.4 / ADR-0002 — reference integrity
+  // (§7.4) intentionally excludes perspective_ref. A bare ref SHOULD resolve
+  // within the document; unresolved refs are warnings, never errors.
   const checkPerspectiveRefs = (values, scope, id, path) => {
     if (!Array.isArray(values)) return;
     for (const value of values) {
@@ -322,6 +322,11 @@ function validateDocument(doc, options) {
   }
   for (const [entId, ent] of Object.entries(registry.entities || {})) {
     if (isObject(ent)) checkPerspectiveRefs(ent.perspective_scope, 'entity', entId, 'perspective_scope');
+  }
+  if (isObject(registry.perspectives)) {
+    for (const [pid, p] of Object.entries(registry.perspectives)) {
+      if (isObject(p) && p.base !== undefined) checkPerspectiveRefs([p.base], 'perspective', pid, 'base');
+    }
   }
 
   // §7.15 warnings: unused entities / unused sections.

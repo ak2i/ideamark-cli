@@ -198,7 +198,7 @@ test('validate: publish canonicalizes ambiguous endpoint as entity (§6.3 order)
   assert.match(res.stdout, /from: ideamark:\/\/docs\/DOC-V111-WARN-AMBIGUOUS-REL#\/entities\/X-AMB/);
 });
 
-test('validate: unresolved local perspective ref is warning (§7.4 scope)', () => {
+test('validate: unresolved local perspective ref is warning (§2.4)', () => {
   const doc = minimalDoc().replace(
     '  SEC-1:\n    anchorage:',
     '  SEC-1:\n    perspectives: ["P-NOWHERE"]\n    anchorage:'
@@ -208,6 +208,20 @@ test('validate: unresolved local perspective ref is warning (§7.4 scope)', () =
   const diag = diagnosticsOf(res).find((d) => d.code === 'perspective_ref_unresolved');
   assert.ok(diag);
   assert.strictEqual(diag.severity, 'warning');
+});
+
+test('validate: perspective_ref checked at all three sites including base (§2.4)', () => {
+  const doc = fs.readFileSync(
+    path.join('tests', 'fixtures', 'v1.1.1', 'invalid', 'warn-unresolved-perspective-ref.ideamark.md'),
+    'utf8'
+  );
+  const res = runCli(['validate', '--strict'], doc);
+  assert.strictEqual(res.status, 0);
+  const paths = diagnosticsOf(res)
+    .filter((d) => d.code === 'perspective_ref_unresolved')
+    .map((d) => d.location.path)
+    .sort();
+  assert.deepStrictEqual(paths, ['base', 'perspective_scope', 'perspectives']);
 });
 
 test('validate: evidence block must be mapping', () => {
