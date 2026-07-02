@@ -32,3 +32,5 @@ perspective_ref は `perspectives.{id}.base` / `sections.{id}.perspectives` / `e
 ## 未決事項(スコープ外)
 
 外部 perspective カタログ(組織共通語彙)を参照する正規URI規約は、entity 参照の規約と合わせて [issue #9](https://github.com/ak2i/ideamark-cli/issues/9) で扱う。
+
+→ **ADR-0003 で解決**(2026-07-02): `ideamark://docs/{doc_id}#/perspectives/{id}` が Core Spec §9.2 の正規形に含まれた。

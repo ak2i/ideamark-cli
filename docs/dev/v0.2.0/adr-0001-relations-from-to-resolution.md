@@ -32,3 +32,5 @@ Core Spec v1.1.1 §6.2 は relations の from/to に entity_ref と section_ref 
 ## 未決事項(スコープ外)
 
 typed form の正規URI規約(`ideamark://docs/...` を Core に昇格させるか、doc_id の一意性担保を含む)は [issue #9](https://github.com/ak2i/ideamark-cli/issues/9) で別途扱う。本ADRは「typed form で曖昧性を解消できる」ことだけを規定する。
+
+→ **ADR-0003 で解決**(2026-07-02): `ideamark://docs/{doc_id}#/{type}/{id}` を Core Spec §9.2 の正規形に昇格。

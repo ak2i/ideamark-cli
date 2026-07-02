@@ -55,6 +55,8 @@ For relations.from / relations.to, a bare identifier is resolved against the ent
 
 Reference integrity intentionally excludes perspective_ref. A bare perspective_ref that does not resolve within the document SHOULD be reported as a warning, never as an error (see Core Spec §2.4).
 
+Reference integrity applies to references within the containing document only. A reference qualified with another document's doc_id (Core Spec §9.2) is opaque to validation: reusing an element id from another document is a normal case, never an error.
+
 ---
 
 ### 7.5 Identifier Uniqueness

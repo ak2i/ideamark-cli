@@ -114,6 +114,13 @@ Entity identity is determined by:
 
 not by payload location.
 
+Across documents, an Entity is identified by the pair `(doc_id, entity_id)` (Core Spec §9.2).
+
+- Referencing the same pair activates the same Entity.
+- Copying a payload under a new id creates a different Entity.
+
+Identity is declared by the author through reference; it is never inferred by tooling.
+
 ---
 
 ## 4. Occurrence
