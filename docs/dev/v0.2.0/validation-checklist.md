@@ -27,10 +27,10 @@
 | §7.9 ref があれば ref.uri 必須(selector 任意) | ✅ | `payload_ref_uri_required` | error | err-ref-without-uri / valid/payload-ref-only |
 | §7.10 cache.captured_at SHOULD | ✅ | `payload_captured_at_missing` | warning | warn-missing-captured-at |
 | §7.11 atomicity_basis 省略時 default = interpretive | ✅ | (診断なし、`getAtomicityBasis()` で解決) | — | validate.test.js |
-| §7.11 atomicity_basis enum 外の値 | ✅ | `atomicity_basis_unknown` | warning(§7.15 の error 一覧に無いため) | validate.test.js |
+| §7.11 atomicity_basis enum 外の値 | ✅ | `atomicity_basis_unknown` | warning(§7.15 に明文化、ADR-0005。値は保存) | warn-unknown-atomicity-basis / validate.test.js |
 | §7.11 anchorage / perspective / discourse_frame 省略可 | ✅ | (旧 `anchorage_required` エラーを削除) | — | validate.test.js |
 | §7.12 語彙非統制(kind/role/type/view/phase/profile) | ✅ 値の検証を一切行わない | — | — | valid/unknown-fields-profile |
-| §7.13 多値フィールドの配列必須・単一値正規化 | ✅ parser で正規化、mapping は正規化不能のためエラー | `multi_value_field_invalid` | error | valid/normalization-single-values / validate.test.js |
+| §7.13 多値フィールドの配列必須・単一値正規化 | ✅ parser で正規化、mapping は正規化不能のため error(§7.15 に明文化、ADR-0005) | `multi_value_field_invalid` | error | valid/normalization-single-values / err-multi-value-mapping / validate.test.js |
 | §7.14 relations / perspectives は空・欠落可 | ✅ | — | — | valid/minimal-body |
 | §7.15 unused entities | ✅ | `entity_unused` | warning | warn-unused-entity |
 | §7.15 unused sections | 🗑️ Core から削除(ADR-0004: v1.1.1 モデルでは「使用」が定義不能)。CLI は下記の実装拡張として警告を維持 | — | — | — |

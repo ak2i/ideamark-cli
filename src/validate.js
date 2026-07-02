@@ -276,15 +276,18 @@ function validateDocument(doc, options) {
         push('warning', 'payload_captured_at_missing', 'payload.cache.captured_at is recommended (§7.10)', { scope: 'entity', id: entId, path: 'payload.cache.captured_at' });
       }
     }
-    // §7.11: atomicity_basis is an enum with default interpretive. An unknown
-    // value is reported as a warning; §7.15 does not list it as an error.
+    // §7.11 / §7.15 / ADR-0005: atomicity_basis is an enum with default
+    // interpretive. An unknown value is a warning; it is preserved as-is and
+    // Core assigns it no semantics.
     if (ent.atomicity_basis !== undefined && !ATOMICITY_BASIS_VALUES.includes(ent.atomicity_basis)) {
       push('warning', 'atomicity_basis_unknown', `atomicity_basis should be one of ${ATOMICITY_BASIS_VALUES.join('|')} (§7.11)`, { scope: 'entity', id: entId, path: 'atomicity_basis' });
     }
   }
 
-  // §7.13: multi-value fields must be arrays. Single scalars are already
-  // normalized by the parser; a mapping cannot be normalized.
+  // §7.13 / §7.15 / ADR-0005: multi-value fields must be arrays. Single
+  // scalars are already normalized by the parser; a value that cannot be
+  // normalized (a mapping) is an error — it breaks every consumer that
+  // iterates these fields.
   for (const [secId, sec] of Object.entries(registry.sections || {})) {
     if (!isObject(sec)) continue;
     if (sec.perspectives !== undefined && !Array.isArray(sec.perspectives)) {

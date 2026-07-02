@@ -61,6 +61,7 @@ const ERROR_CASES = {
   'err-missing-payload.ideamark.md': 'payload_required',
   'err-empty-payload.ideamark.md': 'payload_content_required',
   'err-ref-without-uri.ideamark.md': 'payload_ref_uri_required',
+  'err-multi-value-mapping.ideamark.md': 'multi_value_field_invalid',
 };
 
 const DUP_SCOPES = {
@@ -92,6 +93,7 @@ const WARNING_CASES = {
   'warn-unused-section.ideamark.md': 'section_unused',
   'warn-ambiguous-relation-ref.ideamark.md': 'relation_ref_ambiguous',
   'warn-unresolved-perspective-ref.ideamark.md': 'perspective_ref_unresolved',
+  'warn-unknown-atomicity-basis.ideamark.md': 'atomicity_basis_unknown',
 };
 
 for (const [file, code] of Object.entries(WARNING_CASES)) {

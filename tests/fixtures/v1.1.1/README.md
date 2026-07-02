@@ -47,12 +47,14 @@ warning — §7.15 keeps these as warnings, never errors.
 | `err-missing-payload.ideamark.md` | missing payload | `payload_required` |
 | `err-empty-payload.ideamark.md` | payload without body/ref/cache | `payload_content_required` |
 | `err-ref-without-uri.ideamark.md` | ref without uri | `payload_ref_uri_required` |
+| `err-multi-value-mapping.ideamark.md` | multi-value fields that cannot be normalized (§7.13 / ADR-0005) | `multi_value_field_invalid` |
 | `warn-missing-media-type.ideamark.md` | missing media_type | `payload_media_type_missing` |
 | `warn-missing-captured-at.ideamark.md` | missing captured_at | `payload_captured_at_missing` |
 | `warn-unused-entity.ideamark.md` | unused entities | `entity_unused` |
 | `warn-unused-section.ideamark.md` | CLI hygiene warning (§7.17 / ADR-0004; removed from Core §7.15) | `section_unused` |
 | `warn-ambiguous-relation-ref.ideamark.md` | ambiguous relation references (Core Spec §6.3 / ADR-0001) | `relation_ref_ambiguous` |
 | `warn-unresolved-perspective-ref.ideamark.md` | unresolved perspective references (Core Spec §2.4 / ADR-0002) | `perspective_ref_unresolved` |
+| `warn-unknown-atomicity-basis.ideamark.md` | unknown atomicity_basis values (§7.11 / ADR-0005) | `atomicity_basis_unknown` |
 
 Notes:
 
