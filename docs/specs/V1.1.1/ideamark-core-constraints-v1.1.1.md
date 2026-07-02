@@ -250,6 +250,10 @@ If optional fields are omitted:
 - profile MAY be omitted
 - definition_ref MAY be omitted
 
+atomicity_basis is an enumeration: `interpretive | lexical | structural`.
+
+A value outside this enumeration MUST be reported as a warning, not an error. The value is preserved (§7.17); Core assigns it no semantics.
+
 ---
 
 ### 7.12 Type Flexibility
@@ -280,6 +284,8 @@ The following MUST be arrays if present:
 
 Single values MUST be normalized as single-element arrays.
 
+A value that cannot be normalized to an array (e.g. a mapping) MUST be treated as an error.
+
 ---
 
 ### 7.14 Empty Structures
@@ -299,6 +305,8 @@ The following MAY be empty or absent:
 
 ### 7.15 Error vs Warning
 
+Errors protect structural processability; warnings flag deviations in interpretive metadata.
+
 #### Errors
 
 - invalid references
@@ -307,6 +315,7 @@ The following MAY be empty or absent:
 - missing payload
 - payload without body/ref/cache
 - ref without uri
+- multi-value fields that cannot be normalized (§7.13)
 
 #### Warnings
 
@@ -316,6 +325,7 @@ The following MAY be empty or absent:
 - unused entities
 - ambiguous relation references
 - unresolved perspective references
+- unknown atomicity_basis values (§7.11)
 
 Implementations MAY add further hygiene warnings (§7.17); such warnings are outside the Core list above.
 
