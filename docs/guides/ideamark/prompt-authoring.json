@@ -13,7 +13,7 @@
     "representation": "yaml-based"
   },
   "prompt_authoring": {
-    "overview": "Generate external LLM prompts that preserve IdeaMark v1.1.1 YAML validity and structural reference integrity.",
+    "overview": "Generate external LLM prompts that preserve IdeaMark v1.1.1 YAML validity, structural reference integrity, and projection-driven interpretation for reusable knowledge capture.",
     "ownership": {
       "inside_cli": [
         "describe guidance distribution",
@@ -28,16 +28,42 @@
     },
     "required_inputs": [
       "source_materials",
+      "projection",
       "output_path",
       "target_spec_version",
       "audience"
     ],
+    "projection_requirements": {
+      "policy": "interpret_before_extract",
+      "required": [
+        "projection.role",
+        "projection.reuse_goal",
+        "projection.primary_interests"
+      ],
+      "recommended": [
+        "projection.projection_id",
+        "projection.domain",
+        "projection.preferred_entity_kinds",
+        "projection.preferred_occurrence_roles",
+        "projection.ignore_unless_relevant"
+      ],
+      "rules": [
+        "Never summarize the source text as a neutral document unless the projection explicitly asks for summarization.",
+        "Interpret the source text from the specified projection before extracting entities, occurrences, sections, relations, or perspectives.",
+        "Extract reusable knowledge components that would be useful for the projection's future search, decision, or action context.",
+        "The same source text may produce different valid IdeaMark documents under different projections.",
+        "Represent the interpretation stance in the output `perspectives` namespace whenever the output depends on that stance."
+      ]
+    },
     "output_contract": {
       "required_yaml_units": [
         "header",
         "top-level entities",
         "top-level occurrences",
         "top-level sections"
+      ],
+      "recommended_yaml_units": [
+        "top-level perspectives that record the projection used for extraction"
       ],
       "ordering_requirements": [
         "Keep the document structurally coherent so section occurrence references are easy to trace.",
@@ -50,6 +76,7 @@
         "If `payload.ref` exists, include `payload.ref.uri`."
       ],
       "prohibitions": [
+        "neutral source summarization when a projection is supplied",
         "unresolved local references",
         "duplicate IDs",
         "empty entity payloads"
@@ -71,6 +98,14 @@
           "Use payload/body/cache according to available source fidelity."
         ]
       },
+      "projection_mapping_rules": {
+        "policy": "projection_to_perspectives",
+        "required": [
+          "When a projection is supplied, record it under top-level `perspectives` using a stable perspective ID.",
+          "Use the projection to decide which source details become reusable entities and which details are ignored.",
+          "If a section or entity is strongly projection-dependent, attach the perspective ID through the supported `perspectives` field when practical."
+        ]
+      },
       "template_extensions": {
         "policy": "extend_not_replace",
         "required": [
@@ -80,8 +115,10 @@
       }
     },
     "generation_flow": [
-      "describe(ai-authoring + params + checklist)",
+      "collect(source_materials + projection)",
+      "describe(prompt-authoring + ai-authoring + params + checklist + vocab)",
       "prompt_assembly",
+      "interpret_source_from_projection",
       "generate",
       "validate(working)",
       "repair_loop",
@@ -90,18 +127,23 @@
     "prompt_template_hints": {
       "system": [
         "You are generating IdeaMark v1.1.1 documents.",
-        "YAML validity and resolvable local references are mandatory."
+        "YAML validity and resolvable local references are mandatory.",
+        "Projection-driven interpretation is mandatory when a projection is supplied."
       ],
       "task": [
+        "Read the projection before reading the source text.",
         "Produce a valid header and top-level namespaces.",
+        "Represent the projection in `perspectives`.",
         "Ensure each entity has payload content.",
         "Ensure each occurrence points to an existing entity.",
         "Ensure each section lists existing occurrences.",
-        "Do not create a top-level registry wrapper."
+        "Do not create a top-level registry wrapper.",
+        "Do not produce a generic summary unless explicitly requested by the projection."
       ],
       "quality_gate": [
         "Must pass ideamark validate --mode strict.",
-        "Must not contain unresolved local references."
+        "Must not contain unresolved local references.",
+        "Must reflect the supplied projection in extraction choices."
       ]
     }
   }
