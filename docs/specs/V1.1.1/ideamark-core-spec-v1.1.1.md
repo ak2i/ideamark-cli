@@ -113,6 +113,22 @@ Perspective MAY exist at:
 
 Perspective does not guarantee future meaning outcomes.
 
+### 2.4 Perspective Reference Resolution
+
+perspective_ref appears in:
+
+- perspectives.{id}.base
+- sections.{id}.perspectives
+- entities.{id}.perspective_scope
+
+A bare perspective_ref SHOULD resolve to a perspective defined in the same document.
+
+An unresolved bare perspective_ref is NOT an error. Implementations SHOULD report it as a warning.
+
+External reference forms are opaque to Core validation.
+
+Reference integrity (§7.4) intentionally excludes perspective_ref: perspectives are interpretive clues, not structural references.
+
 ---
 
 ## 3. Entity
