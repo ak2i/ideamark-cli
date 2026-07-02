@@ -1,5 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert');
+const fs = require('fs');
+const path = require('path');
 const { runCli, minimalDoc } = require('./helpers');
 const { parseDocument } = require('../../src/parser');
 const { getAtomicityBasis, ATOMICITY_BASIS_DEFAULT } = require('../../src/validate');
@@ -162,6 +164,38 @@ test('validate: relations as array is error (v1.1.1 map form)', () => {
   const res = runCli(['validate', '--strict'], doc);
   assert.strictEqual(res.status, 1);
   assert.match(res.stdout, /relations_mapping_required/);
+});
+
+const AMBIGUOUS_REL_FIXTURE = path.join(
+  'tests', 'fixtures', 'v1.1.1', 'invalid', 'warn-ambiguous-relation-ref.ideamark.md'
+);
+
+test('validate: bare relation id in both namespaces warns (Core Spec §6.3)', () => {
+  const doc = fs.readFileSync(AMBIGUOUS_REL_FIXTURE, 'utf8');
+  const res = runCli(['validate', '--strict'], doc);
+  assert.strictEqual(res.status, 0);
+  const diag = diagnosticsOf(res).find((d) => d.code === 'relation_ref_ambiguous');
+  assert.ok(diag);
+  assert.strictEqual(diag.severity, 'warning');
+});
+
+test('validate: typed reference form disambiguates relation endpoint (§6.3)', () => {
+  const doc = fs
+    .readFileSync(AMBIGUOUS_REL_FIXTURE, 'utf8')
+    .replace(
+      'from: "X-AMB"',
+      'from: "ideamark://docs/DOC-V111-WARN-AMBIGUOUS-REL#/sections/X-AMB"'
+    );
+  const res = runCli(['validate', '--strict'], doc);
+  assert.strictEqual(res.status, 0);
+  assert.doesNotMatch(res.stdout, /relation_ref_ambiguous/);
+});
+
+test('validate: publish canonicalizes ambiguous endpoint as entity (§6.3 order)', () => {
+  const doc = fs.readFileSync(AMBIGUOUS_REL_FIXTURE, 'utf8');
+  const res = runCli(['publish'], doc);
+  assert.strictEqual(res.status, 0);
+  assert.match(res.stdout, /from: ideamark:\/\/docs\/DOC-V111-WARN-AMBIGUOUS-REL#\/entities\/X-AMB/);
 });
 
 test('validate: unresolved local perspective ref is warning (§7.4 scope)', () => {

@@ -50,6 +50,7 @@ warning — §7.15 keeps these as warnings, never errors.
 | `warn-missing-captured-at.ideamark.md` | missing captured_at | `payload_captured_at_missing` |
 | `warn-unused-entity.ideamark.md` | unused entities | `entity_unused` |
 | `warn-unused-section.ideamark.md` | unused sections | `section_unused` |
+| `warn-ambiguous-relation-ref.ideamark.md` | ambiguous relation references (Core Spec §6.3 / ADR-0001) | `relation_ref_ambiguous` |
 
 Notes:
 

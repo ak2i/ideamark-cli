@@ -45,14 +45,25 @@ function normalizeRefsInObject(obj, docId, idSets) {
       continue;
     }
     if (k === 'from' || k === 'to') {
-      // Core Spec §6.2: relations accept entity_ref and section_ref.
-      const asEntity = normalizeRefValue(v, docId, idSets.entities, 'entities');
-      out[k] = asEntity !== v ? asEntity : normalizeRefValue(v, docId, idSets.sections, 'sections');
+      out[k] = normalizeRelationEndpoint(v, docId, idSets);
       continue;
     }
     out[k] = normalizeRefsInObject(v, docId, idSets);
   }
   return out;
+}
+
+// Core Spec §6.3 / ADR-0001: relation endpoints accept entity_ref and
+// section_ref. An already-typed reference is kept as-is (idempotent); a bare
+// identifier resolves entity namespace first, then section namespace.
+function normalizeRelationEndpoint(value, docId, idSets) {
+  if (typeof value !== 'string') return value;
+  const ref = parseRef(value, docId);
+  if (ref.kind !== 'local') return value;
+  if (ref.type) return value;
+  if (idSets.entities.has(ref.id)) return canonicalUri(docId, 'entities', ref.id);
+  if (idSets.sections.has(ref.id)) return canonicalUri(docId, 'sections', ref.id);
+  return value;
 }
 
 function normalizeRefValue(value, docId, idSet, type) {

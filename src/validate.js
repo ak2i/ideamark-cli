@@ -192,9 +192,10 @@ function validateDocument(doc, options) {
     }
   }
 
-  // §7.4: relations.from / relations.to MUST refer to a valid target.
-  // Core Spec §6.2 allows entity_ref and section_ref; a bare local id is
-  // resolved against the union of both namespaces (see spec ambiguity issue).
+  // §7.4 / Core Spec §6.3: relations.from / relations.to MUST refer to a valid
+  // target (entity_ref or section_ref). A bare local id resolves against the
+  // entity namespace first, then the section namespace; an id present in both
+  // namespaces is ambiguous and reported as a warning (ADR-0001).
   if (isObject(registry.relations)) {
     for (const [relId, rel] of Object.entries(registry.relations)) {
       for (const end of ['from', 'to']) {
@@ -207,9 +208,18 @@ function validateDocument(doc, options) {
         const ref = parseRef(value, docId);
         if (ref.kind !== 'local') continue;
         let resolved;
-        if (ref.type === 'entities') resolved = idSets.entities.has(ref.id);
-        else if (ref.type === 'sections') resolved = idSets.sections.has(ref.id);
-        else resolved = idSets.entities.has(ref.id) || idSets.sections.has(ref.id);
+        if (ref.type === 'entities') {
+          resolved = idSets.entities.has(ref.id);
+        } else if (ref.type === 'sections') {
+          resolved = idSets.sections.has(ref.id);
+        } else {
+          const inEntities = idSets.entities.has(ref.id);
+          const inSections = idSets.sections.has(ref.id);
+          resolved = inEntities || inSections;
+          if (inEntities && inSections) {
+            push('warning', 'relation_ref_ambiguous', `Relation ${end} id exists as both entity and section; resolved as entity — use a typed reference form to disambiguate (§6.3)`, { scope: 'relation', id: relId, path: end });
+          }
+        }
         if (!resolved) {
           push('error', `relation_${end}_invalid`, `Relation ${end} reference not found: ${value} (§7.4)`, { scope: 'relation', id: relId, path: end });
         }

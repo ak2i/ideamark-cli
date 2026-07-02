@@ -14,7 +14,8 @@
 | §7.3/§7.14 entities/occurrences/sections 必須・非空 | ✅ | `entities_required` / `occurrences_required` / `sections_required` | strict: error / working: warning | validate.test.js |
 | §7.4 occurrence.entity 参照整合 | ✅ | `entity_ref_invalid` | error | err-ref-occurrence-entity |
 | §7.4 section.occurrences 参照整合 | ✅ | `occurrence_ref_invalid` | error | err-ref-section-occurrence |
-| §7.4 relations.from / relations.to 参照整合 | ✅ | `relation_from_invalid` / `relation_to_invalid` / `relation_from_required` / `relation_to_required` | error | err-ref-relation-from / err-ref-relation-to |
+| §7.4 relations.from / relations.to 参照整合(裸IDは entity→section の順で解決、Core Spec §6.3 / ADR-0001) | ✅ | `relation_from_invalid` / `relation_to_invalid` / `relation_from_required` / `relation_to_required` | error | err-ref-relation-from / err-ref-relation-to |
+| §6.3/§7.15 relation 裸IDが entity と section の両方に存在(ambiguous) | ✅ | `relation_ref_ambiguous` | warning | warn-ambiguous-relation-ref |
 | §7.5 識別子一意性(entity/occurrence/section/relation/perspective) | ✅ | `id_duplicate` | error | err-dup-* ×5 |
 | §7.6 occurrence.entity / occurrence.role 必須 | ✅ | `occurrence_entity_required` / `occurrence_role_required` | error | err-missing-occurrence-* |
 | §7.6 section.occurrences 非空配列必須 | ✅ | `section_occurrences_required` | error | err-empty-section-occurrences |
