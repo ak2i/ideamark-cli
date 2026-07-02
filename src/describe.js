@@ -7,8 +7,8 @@ const { diag, makeMeta, makeSummary } = require('./diagnostics');
 
 const pkg = require('../package.json');
 
-const CONTRACT_VERSION = '1.0.3';
-const DOCUMENT_SPEC_VERSION = '1.0.3';
+const CONTRACT_VERSION = '1.1.1';
+const DOCUMENT_SPEC_VERSION = '1.1.1';
 
 const PROFILE_MAP = {
   'ai-small': { audience: 'ai', model: 'small', lang: 'en-US' },
@@ -23,16 +23,16 @@ const BUILTIN_GUIDE_SOURCES = {
     '..',
     'docs',
     'dev',
-    'v0.1.3',
-    'ideamark-builtin-guides-sample.v0.1.3.ideamark.md'
+    'v0.2.0',
+    'ideamark-builtin-guides-sample.v0.2.0.ideamark.yaml'
   ),
   'ja-JP': path.join(
     __dirname,
     '..',
     'docs',
     'dev',
-    'v0.1.3',
-    'ideamark-builtin-guides-sample.v0.1.3.ja-JP.ideamark.md'
+    'v0.2.0',
+    'ideamark-builtin-guides-sample.v0.2.0.ja-JP.ideamark.yaml'
   ),
 };
 
@@ -43,34 +43,32 @@ const CHECKLIST = {
     'header_required',
     'header_singleton',
     'yaml_parseable',
+    'entity_required',
     'id_unique_within_doc',
-    'anchorage_required',
     'occurrence_required',
+    'section_required',
+    'entity_payload_required',
+    'entity_payload_content_required',
+    'entity_payload_ref_uri_required',
+    'occurrence_entity_required',
+    'occurrence_role_required',
     'entity_ref_valid',
     'occurrence_ref_valid',
-    'section_ref_valid',
-    'structure_sections_exist',
+    'section_occurrences_required',
+    'relation_ref_valid',
   ],
 };
 
 const VOCAB = {
-  anchorage_view: [
-    'problem',
-    'solution',
-    'comparison',
-    'discussion',
-    'decision',
-    'background',
-    'pending',
-    'structural_hypothesis',
-    'observation_series',
-    'causal_network',
-    'state_transition',
-    'event_sequence',
+  atomicity_basis: [
+    'interpretive',
+    'lexical',
+    'structural',
   ],
-  anchorage_phase: ['hypothesis', 'exploration', 'plan', 'outcome', 'confirmed', 'evolving'],
   doc_type: ['source', 'derived', 'evolving', 'pattern'],
   status_state: ['in_progress', 'paused', 'completed', 'published'],
+  occurrence_role_examples: ['claim', 'evidence', 'observation', 'assumption', 'constraint', 'objective'],
+  relation_ref_targets: ['entity_ref', 'section_ref'],
 };
 
 const TEMPLATE_DIR = path.join(__dirname, '..', 'docs', 'guides', 'ideamark');
@@ -155,6 +153,11 @@ function buildCapabilities() {
       name: 'ideamark-cli',
       version: pkg.version,
     },
+    document: {
+      name: 'ideamark',
+      version: DOCUMENT_SPEC_VERSION,
+      representation: 'yaml-based',
+    },
     features: {
       evidence: {
         emit: ['yaml', 'ndjson'],
@@ -164,7 +167,7 @@ function buildCapabilities() {
       routing: {
         supported: true,
         entrypoints: ['describe routing', 'describe ls'],
-        selectors: ['view', 'domain', 'role'],
+        selectors: ['role', 'kind', 'payload.format.media_type'],
         fallback_search: true,
       },
       languages: {
@@ -358,7 +361,7 @@ function loadBuiltinGuide(language) {
   }
 
   const guide = {
-    id: 'ideamark.guides.builtin.v0.1.3.sample',
+    id: 'ideamark.guides.builtin.v0.2.0.sample',
     language: lang,
     views: Array.from(views).sort(),
     domains: Array.from(domains).sort(),
@@ -498,7 +501,7 @@ function describeRouting(format, context) {
     topic: 'routing',
     audience: context.audience,
     language: loaded.guide.language,
-    selectors: ['view', 'domain', 'role'],
+    selectors: ['role', 'kind', 'payload.format.media_type'],
     ...narrative,
     source: {
       target: 'guides',
@@ -588,9 +591,10 @@ function toMarkdown(topic, data, context) {
       `# ${toolName}`,
       `**Tool Version:** ${toolVersion}`,
       `**Doc CLI Contract:** ${contractVersion}`,
+      `**Document Spec:** ${data.document.version} (${data.document.representation})`,
       '',
       '## Summary',
-      'IdeaMark CLI for authoring support, validation, transformation, and routing-aware guidance discovery.',
+      'IdeaMark CLI for v1.1.1 structural validation, transformation, and guidance discovery.',
       '',
       '## Commands',
       '### describe',
@@ -615,10 +619,11 @@ function toMarkdown(topic, data, context) {
       '### validate',
       `**Description:** ${data.commands.validate.description}`,
       '**Does:**',
-      '- Checks required fields, references, and structural constraints.',
+      '- Checks required fields, references, entity payload structure, and structural constraints.',
       '**Does not:**',
       '- Modify input files.',
       '- Resolve external references.',
+      '- Validate payload meaning or external profile semantics.',
       `**Formats:** \`${data.commands.validate.formats.join('`, `')}\``,
       '**Input:** file path, `-` (stdin)',
       '',
@@ -701,17 +706,20 @@ function toMarkdown(topic, data, context) {
   return [
     '# vocab',
     '',
-    'anchorage.view:',
-    ...data.anchorage_view.map((c) => `- ${c}`),
-    '',
-    'anchorage.phase:',
-    ...data.anchorage_phase.map((c) => `- ${c}`),
+    'atomicity_basis:',
+    ...data.atomicity_basis.map((c) => `- ${c}`),
     '',
     'doc_type:',
     ...data.doc_type.map((c) => `- ${c}`),
     '',
     'status.state:',
     ...data.status_state.map((c) => `- ${c}`),
+    '',
+    'occurrence.role examples:',
+    ...data.occurrence_role_examples.map((c) => `- ${c}`),
+    '',
+    'relation ref targets:',
+    ...data.relation_ref_targets.map((c) => `- ${c}`),
     '',
   ].join('\n');
 }

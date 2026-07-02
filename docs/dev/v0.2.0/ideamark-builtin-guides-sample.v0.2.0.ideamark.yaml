@@ -1,0 +1,87 @@
+ideamark_version: "1.1.1"
+doc_id: "ideamark.guides.builtin.v0.2.0.sample.v0.0.1"
+doc_type: "pattern"
+status:
+  state: "in_progress"
+created_at: "2026-06-19T00:00:00Z"
+updated_at: "2026-06-19T00:00:00Z"
+lang: "en-US"
+entities:
+  IE-IMK-SCOPE-001:
+    kind: "concept"
+    payload:
+      body: "IdeaMark focuses on stabilizing reusable structure."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-IMK-PROBLEM-001:
+    kind: "observation"
+    payload:
+      body: "Use IdeaMark when traceability and structural validation matter."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-ROUTING-DECISION-001:
+    kind: "decision"
+    payload:
+      body: "Route structural knowledge stabilization to IdeaMark first."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-BREAKDOWN-EN-001:
+    kind: "plan"
+    payload:
+      body: "Use extract and strict validate for section-level breakdown workflows."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+occurrences:
+  OCC-IMK-SCOPE-001:
+    entity: "IE-IMK-SCOPE-001"
+    role: "explanation"
+  OCC-IMK-PROBLEM-001:
+    entity: "IE-IMK-PROBLEM-001"
+    role: "observation"
+  OCC-ROUTING-DECISION-001:
+    entity: "IE-ROUTING-DECISION-001"
+    role: "decision"
+  OCC-BREAKDOWN-EN-001:
+    entity: "IE-BREAKDOWN-EN-001"
+    role: "objective"
+sections:
+  SEC-IMK-SCOPE-BACKGROUND:
+    title: "IdeaMark scope background"
+    anchorage:
+      view: "background"
+      phase: "confirmed"
+      domain: ["guides", "routing", "scope"]
+    occurrences: ["OCC-IMK-SCOPE-001"]
+  SEC-IMK-SCOPE-PROBLEM:
+    title: "IdeaMark scope problem"
+    anchorage:
+      view: "problem"
+      phase: "confirmed"
+      domain: ["guides", "routing", "problem-space"]
+    occurrences: ["OCC-IMK-PROBLEM-001"]
+  SEC-ROUTING-DECISION:
+    title: "Routing decision"
+    anchorage:
+      view: "decision"
+      phase: "confirmed"
+      domain: ["guides", "routing", "decision"]
+    occurrences: ["OCC-ROUTING-DECISION-001"]
+  SEC-SOLUTION-BREAKDOWN:
+    title: "Breakdown guidance"
+    anchorage:
+      view: "solution"
+      phase: "confirmed"
+      domain: ["guides", "breakdown", "solution"]
+    occurrences: ["OCC-BREAKDOWN-EN-001"]
+relations: {}
+perspectives: {}
+structure:
+  sections:
+    - "SEC-IMK-SCOPE-BACKGROUND"
+    - "SEC-IMK-SCOPE-PROBLEM"
+    - "SEC-ROUTING-DECISION"
+    - "SEC-SOLUTION-BREAKDOWN"

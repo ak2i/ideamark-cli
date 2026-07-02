@@ -1,11 +1,13 @@
 const test = require('node:test');
 const assert = require('node:assert');
-const { runCli } = require('./helpers');
+const { describe } = require('../../src/describe');
 
 test('describe: capabilities json', () => {
-  const res = runCli(['describe', 'capabilities', '--format', 'json']);
-  const payload = JSON.parse(res.stdout);
-  assert.strictEqual(payload.contract.version, '1.0.3');
+  const res = describe('capabilities', 'json', {});
+  const payload = JSON.parse(res.output);
+  assert.strictEqual(payload.contract.version, '1.1.1');
+  assert.strictEqual(payload.document.version, '1.1.1');
+  assert.strictEqual(payload.document.representation, 'yaml-based');
   assert.ok(payload.commands.describe.topics.includes('ls'));
   assert.ok(payload.commands.describe.topics.includes('routing'));
   assert.ok(payload.commands.describe.topics.includes('prompt-authoring'));
@@ -15,68 +17,59 @@ test('describe: capabilities json', () => {
 });
 
 test('describe: checklist yaml', () => {
-  const res = runCli(['describe', 'checklist', '--format', 'yaml']);
-  assert.match(res.stdout, /header_required/);
+  const res = describe('checklist', 'yaml', {});
+  assert.match(res.output, /header_required/);
 });
 
 test('describe: vocab md', () => {
-  const res = runCli(['describe', 'vocab']);
-  assert.match(res.stdout, /anchorage\.view/);
+  const res = describe('vocab', 'md', {});
+  assert.match(res.output, /atomicity_basis/);
 });
 
-test('describe: unknown topic exit 2', () => {
-  const res = runCli(['describe', 'unknown']);
-  assert.strictEqual(res.status, 2);
+test('describe: unknown topic returns error', () => {
+  const res = describe('unknown', 'md', {});
+  assert.strictEqual(res.ok, false);
+  assert.strictEqual(res.error, 'unknown_topic');
 });
 
 test('describe: default md for checklist', () => {
-  const res = runCli(['describe', 'checklist']);
-  assert.match(res.stdout, /strict checklist/);
+  const res = describe('checklist', 'md', {});
+  assert.match(res.output, /strict checklist/);
 });
 
 test('describe: routing json', () => {
-  const res = runCli(['describe', 'routing', '--format', 'json']);
-  const payload = JSON.parse(res.stdout);
+  const res = describe('routing', 'json', {});
+  const payload = JSON.parse(res.output);
   assert.strictEqual(payload.topic, 'routing');
   assert.ok(Array.isArray(payload.source.section_ids));
   assert.ok(payload.source.section_ids.length > 0);
 });
 
 test('describe: ls guides with sections', () => {
-  const res = runCli([
-    'describe',
-    'ls',
-    '--target',
-    'guides',
-    '--sections',
-    '--format',
-    'json',
-    '--lang',
-    'en-US',
-  ]);
-  const payload = JSON.parse(res.stdout);
+  const res = describe('ls', 'json', { target: 'guides', sections: true, lang: 'en-US' });
+  const payload = JSON.parse(res.output);
   assert.strictEqual(payload.target, 'guides');
   assert.ok(Array.isArray(payload.guides[0].sections));
   assert.ok(payload.guides[0].sections.some((s) => String(s.id).includes('SEC-IMK-SCOPE-BACKGROUND')));
 });
 
 test('describe: model requires ai audience', () => {
-  const res = runCli(['describe', 'capabilities', '--audience', 'human', '--model', 'small']);
-  assert.strictEqual(res.status, 2);
+  const res = describe('capabilities', 'md', { audience: 'human', model: 'small' });
+  assert.strictEqual(res.ok, false);
+  assert.strictEqual(res.error, 'model_requires_ai');
 });
 
 test('describe: prompt-authoring md', () => {
-  const res = runCli(['describe', 'prompt-authoring', '--format', 'md']);
-  assert.match(res.stdout, /Prompt Authoring Guide/);
-  assert.match(res.stdout, /After each section YAML block/);
+  const res = describe('prompt-authoring', 'md', {});
+  assert.match(res.output, /Prompt Authoring Guide/);
+  assert.match(res.output, /Every occurrence must point to an existing entity/);
 });
 
 test('describe: prompt-authoring json includes reference mapping rules', () => {
-  const res = runCli(['describe', 'prompt-authoring', '--format', 'json']);
-  const payload = JSON.parse(res.stdout);
+  const res = describe('prompt-authoring', 'json', {});
+  const payload = JSON.parse(res.output);
   assert.ok(payload.prompt_authoring.reference_mapping_rules);
-  assert.ok(payload.prompt_authoring.reference_mapping_rules.core_standard);
+  assert.ok(payload.prompt_authoring.reference_mapping_rules.local_reference_baseline);
   assert.ok(payload.prompt_authoring.reference_mapping_rules.template_extensions);
-  assert.ok(payload.prompt_authoring.reference_mapping_rules.reference_mode);
-  assert.ok(payload.prompt_authoring.reference_mapping_rules.minimum_reference_set);
+  assert.ok(payload.prompt_authoring.reference_mapping_rules.external_reference_baseline);
 });

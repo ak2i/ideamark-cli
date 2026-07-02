@@ -1,6 +1,6 @@
 {
   "name": "ideamark-cli",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "IdeaMark CLI",
   "private": false,
   "keywords": [
@@ -36,6 +36,7 @@
   },
   "scripts": {
     "test": "node --test",
+    "build:chatgpt-prompt": "node scripts/build-chatgpt-conversion-prompt.js",
     "smoke:v0.1.3": "node tests/run-smoke-v0.1.3.js",
     "llm-metrics:v0.1.3": "node tests/run-llm-metrics-v0.1.3.js"
   },
