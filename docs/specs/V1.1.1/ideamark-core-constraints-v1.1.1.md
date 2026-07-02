@@ -51,6 +51,8 @@ All internal references MUST be valid.
 
 Invalid references MUST be treated as errors.
 
+For relations.from / relations.to, a bare identifier is resolved against the entity namespace first, then the section namespace. An identifier present in both namespaces is ambiguous: implementations SHOULD emit a warning, and authors SHOULD disambiguate using a typed reference form.
+
 ---
 
 ### 7.5 Identifier Uniqueness
@@ -309,6 +311,7 @@ The following MAY be empty or absent:
 - missing optional fields
 - unused entities
 - unused sections
+- ambiguous relation references
 
 ---
 

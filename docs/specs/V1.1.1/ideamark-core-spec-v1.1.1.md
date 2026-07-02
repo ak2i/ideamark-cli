@@ -253,6 +253,16 @@ Supported references:
 - entity_ref
 - section_ref
 
+### 6.3 Reference Resolution
+
+A reference in `from` / `to` MAY be written in a typed form or as a bare identifier.
+
+- A typed reference form (as defined by tooling, addressing `entities/...` or `sections/...`) resolves within the indicated namespace.
+- A bare identifier resolves against the entity namespace first, then the section namespace.
+- An identifier present in both namespaces is ambiguous: implementations SHOULD report the ambiguity, and authors SHOULD disambiguate using a typed reference form.
+
+Canonicalizing tools SHOULD rewrite bare identifiers into typed reference forms following the same resolution order.
+
 ---
 
 ## 7. Validation / Constraints
