@@ -35,9 +35,9 @@
     "output_contract": {
       "required_yaml_units": [
         "header",
-        "registry.entities",
-        "registry.occurrences",
-        "registry.sections"
+        "top-level entities",
+        "top-level occurrences",
+        "top-level sections"
       ],
       "ordering_requirements": [
         "Keep the document structurally coherent so section occurrence references are easy to trace.",
@@ -93,10 +93,11 @@
         "YAML validity and resolvable local references are mandatory."
       ],
       "task": [
-        "Produce a valid header and registry namespaces.",
+        "Produce a valid header and top-level namespaces.",
         "Ensure each entity has payload content.",
         "Ensure each occurrence points to an existing entity.",
-        "Ensure each section lists existing occurrences."
+        "Ensure each section lists existing occurrences.",
+        "Do not create a top-level registry wrapper."
       ],
       "quality_gate": [
         "Must pass ideamark validate --mode strict.",

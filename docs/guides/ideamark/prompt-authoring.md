@@ -19,9 +19,9 @@ Use this topic to build external LLM prompts that stay aligned with IdeaMark v1.
 
 Required YAML units:
 - header
-- `registry.entities`
-- `registry.occurrences`
-- `registry.sections`
+- top-level `entities`
+- top-level `occurrences`
+- top-level `sections`
 
 Ordering and coherence requirements:
 - Keep section and occurrence references easy to trace.
@@ -62,6 +62,7 @@ Template extension policy:
 ## Prompt Snippets
 
 - "Generate IdeaMark v1.1.1 YAML with valid header, entities, occurrences, and sections."
+- "Do not create a top-level `registry:` wrapper."
 - "Every occurrence must point to an existing entity."
 - "Every section must list existing occurrences."
 - "Do not invent external references or unresolved local IDs."

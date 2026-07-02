@@ -1,0 +1,164 @@
+ideamark_version: "1.1.1"
+doc_id: "DOC-JP-DISASTER-WP-PART-001"
+doc_type: "derived"
+status:
+  state: "in_progress"
+created_at: "2026-03-05T00:00:00Z"
+updated_at: "2026-03-05T00:00:00Z"
+lang: "ja-JP"
+template:
+  id: "imtpl.disaster.whitepaper.extraction"
+  name: "Disaster Whitepaper Extraction Template"
+  version: "1.1"
+refs:
+  sources:
+    - id: "SRC-P1-PDF"
+      uri: "./r6_dai1bu1.pdf"
+      role: "source_material"
+      description: "令和6年版防災白書 第1部第1章など"
+    - id: "SRC-TEMPLATE"
+      uri: "./sample-template.ideamark.template.md"
+      role: "template"
+      description: "抽出テンプレート"
+entities:
+  IE-P1-SCOPE-OBJECTIVE:
+    kind: "context"
+    payload:
+      body: "第1部から自助・共助・公助と事前防災行動を抽出する。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P1-CONTEXT-RISK:
+    kind: "risk"
+    payload:
+      body: "巨大地震や激甚化する気象災害を背景に被害軽減が課題。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P1-CONTEXT-PUBLIC-LIMIT:
+    kind: "constraint"
+    payload:
+      body: "広域災害時には公助のみで十分な対応が難しい。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P1-MEASURE-HARD-SOFT:
+    kind: "measure"
+    payload:
+      body: "ハード対策とソフト対策の両輪で防災力を高める。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P1-MEASURE-TIMELINE:
+    kind: "measure"
+    payload:
+      body: "マイ・タイムライン等の個人行動計画を平時に準備する。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P1-REF-PDF:
+    kind: "evidence"
+    payload:
+      body: "Source PDF: ./r6_dai1bu1.pdf"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P1-CITATION:
+    kind: "context"
+    payload:
+      body: "令和6年版防災白書 第1部第1章周辺の抽出結果。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P1-SOURCE-TEXT:
+    kind: "evidence"
+    payload:
+      body: "pdftotextで抽出した第1部テキスト。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+occurrences:
+  OCC-P1-SCOPE-OBJECTIVE:
+    entity: "IE-P1-SCOPE-OBJECTIVE"
+    role: "observation"
+    supporting_evidence:
+      - "IE-P1-SOURCE-TEXT"
+  OCC-P1-CONTEXT-RISK:
+    entity: "IE-P1-CONTEXT-RISK"
+    role: "observation"
+    supporting_evidence:
+      - "IE-P1-SOURCE-TEXT"
+  OCC-P1-CONTEXT-PUBLIC-LIMIT:
+    entity: "IE-P1-CONTEXT-PUBLIC-LIMIT"
+    role: "constraint"
+    supporting_evidence:
+      - "IE-P1-SOURCE-TEXT"
+  OCC-P1-MEASURE-HARD-SOFT:
+    entity: "IE-P1-MEASURE-HARD-SOFT"
+    role: "solution"
+    supporting_evidence:
+      - "IE-P1-SOURCE-TEXT"
+  OCC-P1-MEASURE-TIMELINE:
+    entity: "IE-P1-MEASURE-TIMELINE"
+    role: "solution"
+    supporting_evidence:
+      - "IE-P1-SOURCE-TEXT"
+  OCC-P1-REF-PDF:
+    entity: "IE-P1-REF-PDF"
+    role: "citation"
+    supporting_evidence:
+      - "IE-P1-REF-PDF"
+  OCC-P1-CITATION:
+    entity: "IE-P1-CITATION"
+    role: "citation"
+    target: "IE-P1-SOURCE-TEXT"
+    supporting_evidence:
+      - "IE-P1-REF-PDF"
+  OCC-P1-SOURCE-TEXT:
+    entity: "IE-P1-SOURCE-TEXT"
+    role: "evidence"
+sections:
+  SEC-P1-SCOPE:
+    title: "Scope"
+    anchorage:
+      view: "background"
+      phase: "plan"
+      domain: ["knowledge-extraction", "whitepaper", "part-001"]
+    occurrences:
+      - "OCC-P1-SCOPE-OBJECTIVE"
+  SEC-P1-HAZARD-CONTEXT:
+    title: "Hazard And Preparedness Context"
+    anchorage:
+      view: "problem"
+      phase: "confirmed"
+      domain: ["hazard", "preparedness", "jijo-kyojo-kojo"]
+    occurrences:
+      - "OCC-P1-CONTEXT-RISK"
+      - "OCC-P1-CONTEXT-PUBLIC-LIMIT"
+  SEC-P1-LOCAL-MEASURES:
+    title: "Community Actions"
+    anchorage:
+      view: "solution"
+      phase: "plan"
+      domain: ["local-measures", "preparedness", "community"]
+    occurrences:
+      - "OCC-P1-MEASURE-HARD-SOFT"
+      - "OCC-P1-MEASURE-TIMELINE"
+  SEC-P1-REFERENCES:
+    title: "References"
+    anchorage:
+      view: "background"
+      phase: "confirmed"
+      domain: ["references", "citation"]
+    occurrences:
+      - "OCC-P1-REF-PDF"
+      - "OCC-P1-CITATION"
+      - "OCC-P1-SOURCE-TEXT"
+relations: {}
+perspectives: {}
+structure:
+  sections:
+    - "SEC-P1-SCOPE"
+    - "SEC-P1-HAZARD-CONTEXT"
+    - "SEC-P1-LOCAL-MEASURES"
+    - "SEC-P1-REFERENCES"

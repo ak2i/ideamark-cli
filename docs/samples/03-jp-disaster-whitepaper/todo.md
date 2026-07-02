@@ -1,7 +1,7 @@
 # TODO: 03-jp-disaster-whitepaper (PDF -> per-file IdeaMark -> compose)
 
 目的:
-- 複数PDFをマルチモーダルLLMに1本ずつ入力し、テンプレート準拠のIdeaMarkを個別生成する。
+- 複数PDFをマルチモーダルLLMに1本ずつ入力し、テンプレート準拠の IdeaMark v1.1.1 YAML-first 文書を個別生成する。
 - 生成した複数IdeaMarkを `ideamark compose` で統合し、strict validate可能な統合文書を得る。
 
 前提:
@@ -47,10 +47,10 @@ Status: Done
 - 各promptに以下が明記される:
   - strict必須ヘッダ
   - section-local ordering
-  - YAML直後本文
   - reference_mode auto
   - explicit reference時の最小参照セット
   - template extension policy
+  - top-level namespace と payload 要件
 
 ---
 
@@ -63,9 +63,9 @@ Status: Done
 3. 参照が明示される場合のみ `SEC-...-REFERENCES` / `OCC-REF-*` を生成。
 
 出力（予定）:
-- `doc.part-001.ideamark.md`
-- `doc.part-002.ideamark.md`
-- `doc.part-003.ideamark.md`
+- `doc.part-001.ideamark.yaml`
+- `doc.part-002.ideamark.yaml`
+- `doc.part-003.ideamark.yaml`
 
 完了条件:
 - 3文書とも `ideamark validate --mode strict` を通過。
@@ -90,13 +90,12 @@ Status: Done
 Status: Done
 
 実施:
-1. `ideamark compose doc.part-001.ideamark.md doc.part-002.ideamark.md doc.part-003.ideamark.md -o doc.composed.ideamark.md`
-1.1 本文保持が必要な場合は `--preserve-markdown` を付けて `doc.composed.with-narrative.ideamark.md` を生成する。
+1. `ideamark compose doc.part-001.ideamark.yaml doc.part-002.ideamark.yaml doc.part-003.ideamark.yaml -o doc.composed.ideamark.yaml`
 2. 統合後strict validate。
 3. 必要なら `--doc-id` と `--inherit` 方針を固定して再compose。
 
 完了条件:
-- `doc.composed.ideamark.md` が strict validate通過。
+- `doc.composed.ideamark.yaml` が strict validate通過。
 - section/occurrence/entity 参照整合が維持される。
 
 ---
@@ -107,7 +106,6 @@ Status: Done
 実施:
 1. `ideamark diff` で part -> composed の構造差分を確認。
 2. references/citationの欠落・重複を確認。
-3. YAML-onlyになっていないかを目視確認。
 
 完了条件:
 - 参照構造が意図どおり（あるときは明示、ないときは省略）である。
@@ -127,8 +125,11 @@ Status: Done
 1. describe出力を保存: `describe.prompt-authoring.json`, `describe.ai-authoring.json`, `describe.checklist.md`, `describe.vocab.md`
 2. PDFテキスト抽出: `r6_dai1bu1.txt`, `r6_dai3bu.txt`, `r6_tokushu2_1.txt`
 3. part別 prompt生成: `prompt.part-001.md`, `prompt.part-002.md`, `prompt.part-003.md`
-4. part別 IdeaMark生成: `doc.part-001.ideamark.md`, `doc.part-002.ideamark.md`, `doc.part-003.ideamark.md`
+4. part別 IdeaMark生成: `doc.part-001.ideamark.yaml`, `doc.part-002.ideamark.yaml`, `doc.part-003.ideamark.yaml`
 5. 個別 strict validate: 3/3 成功（error=0, warning=0）
-6. compose統合: `doc.composed.ideamark.md` を生成し strict validate成功（error=0, warning=0）
-6.1 `--preserve-markdown` 付き compose により `doc.composed.with-narrative.ideamark.md` も生成・strict validate成功
+6. compose統合: `doc.composed.ideamark.yaml` を生成し strict validate成功（error=0, warning=0）
 7. reference_mode auto方針で、各partで明示参照（PDF）を `SEC-*-REFERENCES` + `OCC-*-REF-PDF` + `OCC-*-CITATION` として構造化
+
+補足:
+- 既存の `*.ideamark.md` 群は旧 v1.0.3 / Markdown 埋め込みフローの履歴です。
+- 現行の生成対象は `*.ideamark.yaml` です。

@@ -1,0 +1,164 @@
+ideamark_version: "1.1.1"
+doc_id: "DOC-JP-DISASTER-WP-PART-002"
+doc_type: "derived"
+status:
+  state: "in_progress"
+created_at: "2026-03-05T00:00:00Z"
+updated_at: "2026-03-05T00:00:00Z"
+lang: "ja-JP"
+template:
+  id: "imtpl.disaster.whitepaper.extraction"
+  name: "Disaster Whitepaper Extraction Template"
+  version: "1.1"
+refs:
+  sources:
+    - id: "SRC-P2-PDF"
+      uri: "./r6_dai3bu.pdf"
+      role: "source_material"
+      description: "令和6年度の防災に関する計画"
+    - id: "SRC-TEMPLATE"
+      uri: "./sample-template.ideamark.template.md"
+      role: "template"
+      description: "抽出テンプレート"
+entities:
+  IE-P2-SCOPE-OBJECTIVE:
+    kind: "context"
+    payload:
+      body: "第3部の計画体系と施策分野を抽出する。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P2-POLICY-FIVE-PILLARS:
+    kind: "policy"
+    payload:
+      body: "科学技術、予防、国土保全、復旧、国際協力の5分野で防災計画を構成。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P2-POLICY-INTERNATIONAL:
+    kind: "policy"
+    payload:
+      body: "仙台防災枠組の普及・定着と国際防災協力を推進。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P2-MEASURE-PREVENTION:
+    kind: "measure"
+    payload:
+      body: "教育訓練、施設整備、耐震化、浸水対策等の予防施策。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P2-MEASURE-RECOVERY:
+    kind: "measure"
+    payload:
+      body: "救助体制整備、被災者支援、公共施設復旧等の復旧復興施策。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P2-REF-PDF:
+    kind: "evidence"
+    payload:
+      body: "Source PDF: ./r6_dai3bu.pdf"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P2-CITATION:
+    kind: "context"
+    payload:
+      body: "令和6年版防災白書 第3部抽出結果。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-P2-SOURCE-TEXT:
+    kind: "evidence"
+    payload:
+      body: "pdftotextで抽出した第3部テキスト。"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+occurrences:
+  OCC-P2-SCOPE-OBJECTIVE:
+    entity: "IE-P2-SCOPE-OBJECTIVE"
+    role: "observation"
+    supporting_evidence:
+      - "IE-P2-SOURCE-TEXT"
+  OCC-P2-POLICY-FIVE-PILLARS:
+    entity: "IE-P2-POLICY-FIVE-PILLARS"
+    role: "decision"
+    supporting_evidence:
+      - "IE-P2-SOURCE-TEXT"
+  OCC-P2-POLICY-INTERNATIONAL:
+    entity: "IE-P2-POLICY-INTERNATIONAL"
+    role: "decision"
+    supporting_evidence:
+      - "IE-P2-SOURCE-TEXT"
+  OCC-P2-MEASURE-PREVENTION:
+    entity: "IE-P2-MEASURE-PREVENTION"
+    role: "solution"
+    supporting_evidence:
+      - "IE-P2-SOURCE-TEXT"
+  OCC-P2-MEASURE-RECOVERY:
+    entity: "IE-P2-MEASURE-RECOVERY"
+    role: "solution"
+    supporting_evidence:
+      - "IE-P2-SOURCE-TEXT"
+  OCC-P2-REF-PDF:
+    entity: "IE-P2-REF-PDF"
+    role: "citation"
+    supporting_evidence:
+      - "IE-P2-REF-PDF"
+  OCC-P2-CITATION:
+    entity: "IE-P2-CITATION"
+    role: "citation"
+    target: "IE-P2-SOURCE-TEXT"
+    supporting_evidence:
+      - "IE-P2-REF-PDF"
+  OCC-P2-SOURCE-TEXT:
+    entity: "IE-P2-SOURCE-TEXT"
+    role: "evidence"
+sections:
+  SEC-P2-SCOPE:
+    title: "Scope"
+    anchorage:
+      view: "background"
+      phase: "plan"
+      domain: ["knowledge-extraction", "whitepaper", "part-002"]
+    occurrences:
+      - "OCC-P2-SCOPE-OBJECTIVE"
+  SEC-P2-NATIONAL-POLICY:
+    title: "National Planning Structure"
+    anchorage:
+      view: "decision"
+      phase: "confirmed"
+      domain: ["policy", "planning", "national"]
+    occurrences:
+      - "OCC-P2-POLICY-FIVE-PILLARS"
+      - "OCC-P2-POLICY-INTERNATIONAL"
+  SEC-P2-LOCAL-MEASURES:
+    title: "Local Implementation And Infrastructure"
+    anchorage:
+      view: "solution"
+      phase: "plan"
+      domain: ["local-measures", "infrastructure", "prevention"]
+    occurrences:
+      - "OCC-P2-MEASURE-PREVENTION"
+      - "OCC-P2-MEASURE-RECOVERY"
+  SEC-P2-REFERENCES:
+    title: "References"
+    anchorage:
+      view: "background"
+      phase: "confirmed"
+      domain: ["references", "citation"]
+    occurrences:
+      - "OCC-P2-REF-PDF"
+      - "OCC-P2-CITATION"
+      - "OCC-P2-SOURCE-TEXT"
+relations: {}
+perspectives: {}
+structure:
+  sections:
+    - "SEC-P2-SCOPE"
+    - "SEC-P2-NATIONAL-POLICY"
+    - "SEC-P2-LOCAL-MEASURES"
+    - "SEC-P2-REFERENCES"

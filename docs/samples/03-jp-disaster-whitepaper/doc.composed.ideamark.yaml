@@ -1,0 +1,731 @@
+---
+created_at: 2026-03-05T00:00:00Z
+doc_id: 10ba89f0-85e2-448d-abda-76fd8453044c
+doc_type: derived
+ideamark_version: 1.1.1
+lang: ja-JP
+refs:
+  sources:
+    - description: 令和6年版防災白書 第1部第1章など
+      id: SRC-P1-PDF
+      role: source_material
+      uri: ./r6_dai1bu1.pdf
+    - description: 抽出テンプレート
+      id: SRC-TEMPLATE
+      role: template
+      uri: ./sample-template.ideamark.template.md
+    - id: src-DOC-JP-DISASTER-WP-PART-001
+      role: source
+      uri: DOC-JP-DISASTER-WP-PART-001
+    - id: src-DOC-JP-DISASTER-WP-PART-002
+      role: source
+      uri: DOC-JP-DISASTER-WP-PART-002
+    - id: src-DOC-JP-DISASTER-WP-PART-003
+      role: source
+      uri: DOC-JP-DISASTER-WP-PART-003
+status:
+  state: in_progress
+template:
+  id: imtpl.disaster.whitepaper.extraction
+  name: Disaster Whitepaper Extraction Template
+  version: "1.1"
+updated_at: 2026-07-02
+---
+
+## SEC-P1-SCOPE
+```yaml
+anchorage:
+  domain:
+    - knowledge-extraction
+    - whitepaper
+    - part-001
+  phase:
+    - plan
+  view:
+    - background
+occurrences:
+  - OCC-P1-SCOPE-OBJECTIVE
+section_id: SEC-P1-SCOPE
+title: Scope
+```
+
+## SEC-P1-HAZARD-CONTEXT
+```yaml
+anchorage:
+  domain:
+    - hazard
+    - preparedness
+    - jijo-kyojo-kojo
+  phase:
+    - confirmed
+  view:
+    - problem
+occurrences:
+  - OCC-P1-CONTEXT-RISK
+  - OCC-P1-CONTEXT-PUBLIC-LIMIT
+section_id: SEC-P1-HAZARD-CONTEXT
+title: Hazard And Preparedness Context
+```
+
+## SEC-P1-LOCAL-MEASURES
+```yaml
+anchorage:
+  domain:
+    - local-measures
+    - preparedness
+    - community
+  phase:
+    - plan
+  view:
+    - solution
+occurrences:
+  - OCC-P1-MEASURE-HARD-SOFT
+  - OCC-P1-MEASURE-TIMELINE
+section_id: SEC-P1-LOCAL-MEASURES
+title: Community Actions
+```
+
+## SEC-P1-REFERENCES
+```yaml
+anchorage:
+  domain:
+    - references
+    - citation
+  phase:
+    - confirmed
+  view:
+    - background
+occurrences:
+  - OCC-P1-REF-PDF
+  - OCC-P1-CITATION
+  - OCC-P1-SOURCE-TEXT
+section_id: SEC-P1-REFERENCES
+title: References
+```
+
+## SEC-P2-SCOPE
+```yaml
+anchorage:
+  domain:
+    - knowledge-extraction
+    - whitepaper
+    - part-002
+  phase:
+    - plan
+  view:
+    - background
+occurrences:
+  - OCC-P2-SCOPE-OBJECTIVE
+section_id: SEC-P2-SCOPE
+title: Scope
+```
+
+## SEC-P2-NATIONAL-POLICY
+```yaml
+anchorage:
+  domain:
+    - policy
+    - planning
+    - national
+  phase:
+    - confirmed
+  view:
+    - decision
+occurrences:
+  - OCC-P2-POLICY-FIVE-PILLARS
+  - OCC-P2-POLICY-INTERNATIONAL
+section_id: SEC-P2-NATIONAL-POLICY
+title: National Planning Structure
+```
+
+## SEC-P2-LOCAL-MEASURES
+```yaml
+anchorage:
+  domain:
+    - local-measures
+    - infrastructure
+    - prevention
+  phase:
+    - plan
+  view:
+    - solution
+occurrences:
+  - OCC-P2-MEASURE-PREVENTION
+  - OCC-P2-MEASURE-RECOVERY
+section_id: SEC-P2-LOCAL-MEASURES
+title: Local Implementation And Infrastructure
+```
+
+## SEC-P2-REFERENCES
+```yaml
+anchorage:
+  domain:
+    - references
+    - citation
+  phase:
+    - confirmed
+  view:
+    - background
+occurrences:
+  - OCC-P2-REF-PDF
+  - OCC-P2-CITATION
+  - OCC-P2-SOURCE-TEXT
+section_id: SEC-P2-REFERENCES
+title: References
+```
+
+## SEC-P3-SCOPE
+```yaml
+anchorage:
+  domain:
+    - knowledge-extraction
+    - whitepaper
+    - part-003
+  phase:
+    - plan
+  view:
+    - background
+occurrences:
+  - OCC-P3-SCOPE-OBJECTIVE
+section_id: SEC-P3-SCOPE
+title: Scope
+```
+
+## SEC-P3-HAZARD
+```yaml
+anchorage:
+  domain:
+    - hazard
+    - earthquake
+    - noto
+  phase:
+    - confirmed
+  view:
+    - problem
+occurrences:
+  - OCC-P3-HAZARD-EVENT
+  - OCC-P3-HAZARD-DAMAGE
+section_id: SEC-P3-HAZARD
+title: Hazard Context
+```
+
+## SEC-P3-GUIDANCE
+```yaml
+anchorage:
+  domain:
+    - response
+    - recovery
+    - guidance
+  phase:
+    - confirmed
+  view:
+    - decision
+occurrences:
+  - OCC-P3-RESPONSE-EMERGENCY
+  - OCC-P3-RESPONSE-RECOVERY
+  - OCC-P3-GUIDANCE-NEXT
+section_id: SEC-P3-GUIDANCE
+title: Response And Guidance
+```
+
+## SEC-P3-REFERENCES
+```yaml
+anchorage:
+  domain:
+    - references
+    - citation
+  phase:
+    - confirmed
+  view:
+    - background
+occurrences:
+  - OCC-P3-REF-PDF
+  - OCC-P3-CITATION
+  - OCC-P3-SOURCE-TEXT
+section_id: SEC-P3-REFERENCES
+title: References
+```
+
+## Registry
+```yaml
+entities:
+  IE-P1-CITATION:
+    atomicity_basis: interpretive
+    kind: context
+    payload:
+      body: 令和6年版防災白書 第1部第1章周辺の抽出結果。
+      format:
+        media_type: text/plain
+  IE-P1-CONTEXT-PUBLIC-LIMIT:
+    atomicity_basis: interpretive
+    kind: constraint
+    payload:
+      body: 広域災害時には公助のみで十分な対応が難しい。
+      format:
+        media_type: text/plain
+  IE-P1-CONTEXT-RISK:
+    atomicity_basis: interpretive
+    kind: risk
+    payload:
+      body: 巨大地震や激甚化する気象災害を背景に被害軽減が課題。
+      format:
+        media_type: text/plain
+  IE-P1-MEASURE-HARD-SOFT:
+    atomicity_basis: interpretive
+    kind: measure
+    payload:
+      body: ハード対策とソフト対策の両輪で防災力を高める。
+      format:
+        media_type: text/plain
+  IE-P1-MEASURE-TIMELINE:
+    atomicity_basis: interpretive
+    kind: measure
+    payload:
+      body: マイ・タイムライン等の個人行動計画を平時に準備する。
+      format:
+        media_type: text/plain
+  IE-P1-REF-PDF:
+    atomicity_basis: interpretive
+    kind: evidence
+    payload:
+      body: "Source PDF: ./r6_dai1bu1.pdf"
+      format:
+        media_type: text/plain
+  IE-P1-SCOPE-OBJECTIVE:
+    atomicity_basis: interpretive
+    kind: context
+    payload:
+      body: 第1部から自助・共助・公助と事前防災行動を抽出する。
+      format:
+        media_type: text/plain
+  IE-P1-SOURCE-TEXT:
+    atomicity_basis: interpretive
+    kind: evidence
+    payload:
+      body: pdftotextで抽出した第1部テキスト。
+      format:
+        media_type: text/plain
+  IE-P2-CITATION:
+    atomicity_basis: interpretive
+    kind: context
+    payload:
+      body: 令和6年版防災白書 第3部抽出結果。
+      format:
+        media_type: text/plain
+  IE-P2-MEASURE-PREVENTION:
+    atomicity_basis: interpretive
+    kind: measure
+    payload:
+      body: 教育訓練、施設整備、耐震化、浸水対策等の予防施策。
+      format:
+        media_type: text/plain
+  IE-P2-MEASURE-RECOVERY:
+    atomicity_basis: interpretive
+    kind: measure
+    payload:
+      body: 救助体制整備、被災者支援、公共施設復旧等の復旧復興施策。
+      format:
+        media_type: text/plain
+  IE-P2-POLICY-FIVE-PILLARS:
+    atomicity_basis: interpretive
+    kind: policy
+    payload:
+      body: 科学技術、予防、国土保全、復旧、国際協力の5分野で防災計画を構成。
+      format:
+        media_type: text/plain
+  IE-P2-POLICY-INTERNATIONAL:
+    atomicity_basis: interpretive
+    kind: policy
+    payload:
+      body: 仙台防災枠組の普及・定着と国際防災協力を推進。
+      format:
+        media_type: text/plain
+  IE-P2-REF-PDF:
+    atomicity_basis: interpretive
+    kind: evidence
+    payload:
+      body: "Source PDF: ./r6_dai3bu.pdf"
+      format:
+        media_type: text/plain
+  IE-P2-SCOPE-OBJECTIVE:
+    atomicity_basis: interpretive
+    kind: context
+    payload:
+      body: 第3部の計画体系と施策分野を抽出する。
+      format:
+        media_type: text/plain
+  IE-P2-SOURCE-TEXT:
+    atomicity_basis: interpretive
+    kind: evidence
+    payload:
+      body: pdftotextで抽出した第3部テキスト。
+      format:
+        media_type: text/plain
+  IE-P3-CITATION:
+    atomicity_basis: interpretive
+    kind: context
+    payload:
+      body: 令和6年版防災白書 特集2抽出結果。
+      format:
+        media_type: text/plain
+  IE-P3-GUIDANCE-NEXT:
+    atomicity_basis: interpretive
+    kind: decision
+    payload:
+      body: 検証と教訓抽出を踏まえ今後の防災対策へ反映。
+      format:
+        media_type: text/plain
+  IE-P3-HAZARD-DAMAGE:
+    atomicity_basis: interpretive
+    kind: risk
+    payload:
+      body: 人的・住家・ライフライン等に甚大な被害が発生。
+      format:
+        media_type: text/plain
+  IE-P3-HAZARD-EVENT:
+    atomicity_basis: interpretive
+    kind: risk
+    payload:
+      body: 令和6年能登半島地震は震度7観測を含む広域地震。
+      format:
+        media_type: text/plain
+  IE-P3-REF-PDF:
+    atomicity_basis: interpretive
+    kind: evidence
+    payload:
+      body: "Source PDF: ./r6_tokushu2_1.pdf"
+      format:
+        media_type: text/plain
+  IE-P3-RESPONSE-EMERGENCY:
+    atomicity_basis: interpretive
+    kind: measure
+    payload:
+      body: 非常災害対策本部の下で被災者支援を継続。
+      format:
+        media_type: text/plain
+  IE-P3-RESPONSE-RECOVERY:
+    atomicity_basis: interpretive
+    kind: measure
+    payload:
+      body: 復旧・復興支援本部による再生対応を推進。
+      format:
+        media_type: text/plain
+  IE-P3-SCOPE-OBJECTIVE:
+    atomicity_basis: interpretive
+    kind: context
+    payload:
+      body: 特集2から被害と対応を抽出する。
+      format:
+        media_type: text/plain
+  IE-P3-SOURCE-TEXT:
+    atomicity_basis: interpretive
+    kind: evidence
+    payload:
+      body: pdftotextで抽出した特集2テキスト。
+      format:
+        media_type: text/plain
+occurrences:
+  OCC-P1-CITATION:
+    entity: IE-P1-CITATION
+    role: citation
+    supporting_evidence:
+      - IE-P1-REF-PDF
+    target: IE-P1-SOURCE-TEXT
+  OCC-P1-CONTEXT-PUBLIC-LIMIT:
+    entity: IE-P1-CONTEXT-PUBLIC-LIMIT
+    role: constraint
+    supporting_evidence:
+      - IE-P1-SOURCE-TEXT
+  OCC-P1-CONTEXT-RISK:
+    entity: IE-P1-CONTEXT-RISK
+    role: observation
+    supporting_evidence:
+      - IE-P1-SOURCE-TEXT
+  OCC-P1-MEASURE-HARD-SOFT:
+    entity: IE-P1-MEASURE-HARD-SOFT
+    role: solution
+    supporting_evidence:
+      - IE-P1-SOURCE-TEXT
+  OCC-P1-MEASURE-TIMELINE:
+    entity: IE-P1-MEASURE-TIMELINE
+    role: solution
+    supporting_evidence:
+      - IE-P1-SOURCE-TEXT
+  OCC-P1-REF-PDF:
+    entity: IE-P1-REF-PDF
+    role: citation
+    supporting_evidence:
+      - IE-P1-REF-PDF
+  OCC-P1-SCOPE-OBJECTIVE:
+    entity: IE-P1-SCOPE-OBJECTIVE
+    role: observation
+    supporting_evidence:
+      - IE-P1-SOURCE-TEXT
+  OCC-P1-SOURCE-TEXT:
+    entity: IE-P1-SOURCE-TEXT
+    role: evidence
+  OCC-P2-CITATION:
+    entity: IE-P2-CITATION
+    role: citation
+    supporting_evidence:
+      - IE-P2-REF-PDF
+    target: IE-P2-SOURCE-TEXT
+  OCC-P2-MEASURE-PREVENTION:
+    entity: IE-P2-MEASURE-PREVENTION
+    role: solution
+    supporting_evidence:
+      - IE-P2-SOURCE-TEXT
+  OCC-P2-MEASURE-RECOVERY:
+    entity: IE-P2-MEASURE-RECOVERY
+    role: solution
+    supporting_evidence:
+      - IE-P2-SOURCE-TEXT
+  OCC-P2-POLICY-FIVE-PILLARS:
+    entity: IE-P2-POLICY-FIVE-PILLARS
+    role: decision
+    supporting_evidence:
+      - IE-P2-SOURCE-TEXT
+  OCC-P2-POLICY-INTERNATIONAL:
+    entity: IE-P2-POLICY-INTERNATIONAL
+    role: decision
+    supporting_evidence:
+      - IE-P2-SOURCE-TEXT
+  OCC-P2-REF-PDF:
+    entity: IE-P2-REF-PDF
+    role: citation
+    supporting_evidence:
+      - IE-P2-REF-PDF
+  OCC-P2-SCOPE-OBJECTIVE:
+    entity: IE-P2-SCOPE-OBJECTIVE
+    role: observation
+    supporting_evidence:
+      - IE-P2-SOURCE-TEXT
+  OCC-P2-SOURCE-TEXT:
+    entity: IE-P2-SOURCE-TEXT
+    role: evidence
+  OCC-P3-CITATION:
+    entity: IE-P3-CITATION
+    role: citation
+    supporting_evidence:
+      - IE-P3-REF-PDF
+    target: IE-P3-SOURCE-TEXT
+  OCC-P3-GUIDANCE-NEXT:
+    entity: IE-P3-GUIDANCE-NEXT
+    role: decision
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+  OCC-P3-HAZARD-DAMAGE:
+    entity: IE-P3-HAZARD-DAMAGE
+    role: observation
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+  OCC-P3-HAZARD-EVENT:
+    entity: IE-P3-HAZARD-EVENT
+    role: observation
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+  OCC-P3-REF-PDF:
+    entity: IE-P3-REF-PDF
+    role: citation
+    supporting_evidence:
+      - IE-P3-REF-PDF
+  OCC-P3-RESPONSE-EMERGENCY:
+    entity: IE-P3-RESPONSE-EMERGENCY
+    role: solution
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+  OCC-P3-RESPONSE-RECOVERY:
+    entity: IE-P3-RESPONSE-RECOVERY
+    role: solution
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+  OCC-P3-SCOPE-OBJECTIVE:
+    entity: IE-P3-SCOPE-OBJECTIVE
+    role: observation
+    supporting_evidence:
+      - IE-P3-SOURCE-TEXT
+  OCC-P3-SOURCE-TEXT:
+    entity: IE-P3-SOURCE-TEXT
+    role: evidence
+sections:
+  SEC-P1-HAZARD-CONTEXT:
+    anchorage:
+      domain:
+        - hazard
+        - preparedness
+        - jijo-kyojo-kojo
+      phase:
+        - confirmed
+      view:
+        - problem
+    occurrences:
+      - OCC-P1-CONTEXT-RISK
+      - OCC-P1-CONTEXT-PUBLIC-LIMIT
+    title: Hazard And Preparedness Context
+  SEC-P1-LOCAL-MEASURES:
+    anchorage:
+      domain:
+        - local-measures
+        - preparedness
+        - community
+      phase:
+        - plan
+      view:
+        - solution
+    occurrences:
+      - OCC-P1-MEASURE-HARD-SOFT
+      - OCC-P1-MEASURE-TIMELINE
+    title: Community Actions
+  SEC-P1-REFERENCES:
+    anchorage:
+      domain:
+        - references
+        - citation
+      phase:
+        - confirmed
+      view:
+        - background
+    occurrences:
+      - OCC-P1-REF-PDF
+      - OCC-P1-CITATION
+      - OCC-P1-SOURCE-TEXT
+    title: References
+  SEC-P1-SCOPE:
+    anchorage:
+      domain:
+        - knowledge-extraction
+        - whitepaper
+        - part-001
+      phase:
+        - plan
+      view:
+        - background
+    occurrences:
+      - OCC-P1-SCOPE-OBJECTIVE
+    title: Scope
+  SEC-P2-LOCAL-MEASURES:
+    anchorage:
+      domain:
+        - local-measures
+        - infrastructure
+        - prevention
+      phase:
+        - plan
+      view:
+        - solution
+    occurrences:
+      - OCC-P2-MEASURE-PREVENTION
+      - OCC-P2-MEASURE-RECOVERY
+    title: Local Implementation And Infrastructure
+  SEC-P2-NATIONAL-POLICY:
+    anchorage:
+      domain:
+        - policy
+        - planning
+        - national
+      phase:
+        - confirmed
+      view:
+        - decision
+    occurrences:
+      - OCC-P2-POLICY-FIVE-PILLARS
+      - OCC-P2-POLICY-INTERNATIONAL
+    title: National Planning Structure
+  SEC-P2-REFERENCES:
+    anchorage:
+      domain:
+        - references
+        - citation
+      phase:
+        - confirmed
+      view:
+        - background
+    occurrences:
+      - OCC-P2-REF-PDF
+      - OCC-P2-CITATION
+      - OCC-P2-SOURCE-TEXT
+    title: References
+  SEC-P2-SCOPE:
+    anchorage:
+      domain:
+        - knowledge-extraction
+        - whitepaper
+        - part-002
+      phase:
+        - plan
+      view:
+        - background
+    occurrences:
+      - OCC-P2-SCOPE-OBJECTIVE
+    title: Scope
+  SEC-P3-GUIDANCE:
+    anchorage:
+      domain:
+        - response
+        - recovery
+        - guidance
+      phase:
+        - confirmed
+      view:
+        - decision
+    occurrences:
+      - OCC-P3-RESPONSE-EMERGENCY
+      - OCC-P3-RESPONSE-RECOVERY
+      - OCC-P3-GUIDANCE-NEXT
+    title: Response And Guidance
+  SEC-P3-HAZARD:
+    anchorage:
+      domain:
+        - hazard
+        - earthquake
+        - noto
+      phase:
+        - confirmed
+      view:
+        - problem
+    occurrences:
+      - OCC-P3-HAZARD-EVENT
+      - OCC-P3-HAZARD-DAMAGE
+    title: Hazard Context
+  SEC-P3-REFERENCES:
+    anchorage:
+      domain:
+        - references
+        - citation
+      phase:
+        - confirmed
+      view:
+        - background
+    occurrences:
+      - OCC-P3-REF-PDF
+      - OCC-P3-CITATION
+      - OCC-P3-SOURCE-TEXT
+    title: References
+  SEC-P3-SCOPE:
+    anchorage:
+      domain:
+        - knowledge-extraction
+        - whitepaper
+        - part-003
+      phase:
+        - plan
+      view:
+        - background
+    occurrences:
+      - OCC-P3-SCOPE-OBJECTIVE
+    title: Scope
+structure:
+  sections:
+    - SEC-P1-SCOPE
+    - SEC-P1-HAZARD-CONTEXT
+    - SEC-P1-LOCAL-MEASURES
+    - SEC-P1-REFERENCES
+    - SEC-P2-SCOPE
+    - SEC-P2-NATIONAL-POLICY
+    - SEC-P2-LOCAL-MEASURES
+    - SEC-P2-REFERENCES
+    - SEC-P3-SCOPE
+    - SEC-P3-HAZARD
+    - SEC-P3-GUIDANCE
+    - SEC-P3-REFERENCES
+```

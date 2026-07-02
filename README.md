@@ -192,3 +192,4 @@ npm run build:chatgpt-prompt -- \
 注意:
 - 現行の生成指示は `entities`, `occurrences`, `sections` を top-level に置く前提です。
 - `registry:` で包むと `validate` が期待どおりに解釈しません。
+- Markdown 埋め込み型の旧 `*.ideamark.md` は現行の生成対象ではありません。`v0.2.0` では `*.ideamark.yaml` の YAML-first 形式を使ってください。

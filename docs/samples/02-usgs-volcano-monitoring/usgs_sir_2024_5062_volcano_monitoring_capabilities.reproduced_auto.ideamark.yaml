@@ -1,0 +1,231 @@
+ideamark_version: "1.1.1"
+doc_id: "DOC-USGS-SIR-2024-5062-I-REPRO-AUTO-001"
+doc_type: "derived"
+status:
+  state: "in_progress"
+created_at: "2026-03-05T00:00:00Z"
+updated_at: "2026-03-05T00:00:00Z"
+lang: "en-US"
+refs:
+  sources:
+    - id: "SRC-USGS-SIR-2024-5062"
+      uri: "https://pubs.usgs.gov/sir/2024/5062/"
+      role: "source_material"
+      description: "USGS SIR 2024-5062 landing page"
+    - id: "SRC-USGS-SIR-2024-5062-I-PDF"
+      uri: "https://pubs.usgs.gov/sir/2024/5062/i/sir20245062i.pdf"
+      role: "evidence"
+      description: "Chapter I PDF"
+    - id: "SRC-USGS-SIR-2024-5062-I-DOI"
+      uri: "https://doi.org/10.3133/sir20245062I"
+      role: "evidence"
+      description: "Chapter I DOI"
+entities:
+  IE-USGS-CONTEXT-CHALLENGES:
+    kind: "context"
+    payload:
+      body: "Submarine monitoring is constrained by marine deployment and telemetry conditions, reducing continuous observability."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-CONTEXT-HAZARDS:
+    kind: "risk"
+    payload:
+      body: "Submarine eruptions may produce hazardous impacts including large plumes and marine disruptions."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-REGIONAL-TPHASE:
+    kind: "mechanism"
+    payload:
+      body: "Hydroacoustic T-phases support long-distance detection of submarine volcanic activity."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-REGIONAL-NETWORKS:
+    kind: "solution"
+    payload:
+      body: "Regional monitoring uses hydrophone arrays and seismic networks, including T-phase-sensitive configurations."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-REGIONAL-REMOTE-SENSING:
+    kind: "solution"
+    payload:
+      body: "Satellite and aerial sensing provide complementary detection of surficial eruption indicators."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-INST-CORE-SENSORS:
+    kind: "solution"
+    payload:
+      body: "Core instrumentation includes ocean-bottom pressure sensors, ocean-bottom seismometers, and hydrophones."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-INST-TELEMETRY-CONSTRAINTS:
+    kind: "constraint"
+    payload:
+      body: "Real-time marine telemetry is often constrained by cost and technical limits."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-INST-EMERGING-OPTIONS:
+    kind: "observation"
+    payload:
+      body: "Emerging approaches include gliders, floats, and fiber-optic sensing methods for future monitoring expansion."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-REF-REPORT-PAGE:
+    kind: "evidence"
+    payload:
+      body: "Reference landing page: https://pubs.usgs.gov/sir/2024/5062/"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-REF-CHAPTER-PDF:
+    kind: "evidence"
+    payload:
+      body: "Reference PDF: https://pubs.usgs.gov/sir/2024/5062/i/sir20245062i.pdf"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-REF-DOI:
+    kind: "evidence"
+    payload:
+      body: "Reference DOI: https://doi.org/10.3133/sir20245062I"
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-CITATION:
+    kind: "context"
+    payload:
+      body: "Auto-reference citation bundle for USGS SIR 2024-5062 Chapter I."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+  IE-USGS-SOURCE-TEXT:
+    kind: "evidence"
+    payload:
+      body: "Extracted source text for USGS SIR 2024-5062 Chapter I used under reference_mode auto."
+      format:
+        media_type: "text/plain"
+    atomicity_basis: "interpretive"
+occurrences:
+  OCC-USGS-CONTEXT-CHALLENGES:
+    entity: "IE-USGS-CONTEXT-CHALLENGES"
+    role: "observation"
+    supporting_evidence:
+      - "IE-USGS-SOURCE-TEXT"
+  OCC-USGS-CONTEXT-HAZARDS:
+    entity: "IE-USGS-CONTEXT-HAZARDS"
+    role: "observation"
+    supporting_evidence:
+      - "IE-USGS-SOURCE-TEXT"
+  OCC-USGS-REGIONAL-TPHASE:
+    entity: "IE-USGS-REGIONAL-TPHASE"
+    role: "explanation"
+    supporting_evidence:
+      - "IE-USGS-SOURCE-TEXT"
+  OCC-USGS-REGIONAL-NETWORKS:
+    entity: "IE-USGS-REGIONAL-NETWORKS"
+    role: "solution"
+    supporting_evidence:
+      - "IE-USGS-SOURCE-TEXT"
+  OCC-USGS-REGIONAL-REMOTE-SENSING:
+    entity: "IE-USGS-REGIONAL-REMOTE-SENSING"
+    role: "solution"
+    supporting_evidence:
+      - "IE-USGS-SOURCE-TEXT"
+  OCC-USGS-INST-CORE-SENSORS:
+    entity: "IE-USGS-INST-CORE-SENSORS"
+    role: "solution"
+    supporting_evidence:
+      - "IE-USGS-SOURCE-TEXT"
+  OCC-USGS-INST-TELEMETRY-CONSTRAINTS:
+    entity: "IE-USGS-INST-TELEMETRY-CONSTRAINTS"
+    role: "constraint"
+    supporting_evidence:
+      - "IE-USGS-SOURCE-TEXT"
+  OCC-USGS-INST-EMERGING-OPTIONS:
+    entity: "IE-USGS-INST-EMERGING-OPTIONS"
+    role: "observation"
+    supporting_evidence:
+      - "IE-USGS-SOURCE-TEXT"
+  OCC-USGS-REF-REPORT-PAGE:
+    entity: "IE-USGS-REF-REPORT-PAGE"
+    role: "citation"
+    supporting_evidence:
+      - "IE-USGS-REF-REPORT-PAGE"
+  OCC-USGS-REF-CHAPTER-PDF:
+    entity: "IE-USGS-REF-CHAPTER-PDF"
+    role: "citation"
+    supporting_evidence:
+      - "IE-USGS-REF-CHAPTER-PDF"
+  OCC-USGS-REF-DOI:
+    entity: "IE-USGS-REF-DOI"
+    role: "citation"
+    supporting_evidence:
+      - "IE-USGS-REF-DOI"
+  OCC-USGS-CITATION:
+    entity: "IE-USGS-CITATION"
+    role: "citation"
+    target: "IE-USGS-SOURCE-TEXT"
+    supporting_evidence:
+      - "IE-USGS-REF-REPORT-PAGE"
+      - "IE-USGS-REF-CHAPTER-PDF"
+      - "IE-USGS-REF-DOI"
+  OCC-USGS-SOURCE-TEXT:
+    entity: "IE-USGS-SOURCE-TEXT"
+    role: "evidence"
+sections:
+  SEC-USGS-CONTEXT:
+    title: "Submarine Monitoring Context"
+    anchorage:
+      view: "background"
+      phase: "confirmed"
+      domain: ["usgs", "marine-volcano", "context"]
+    occurrences:
+      - "OCC-USGS-CONTEXT-CHALLENGES"
+      - "OCC-USGS-CONTEXT-HAZARDS"
+  SEC-USGS-REGIONAL-DETECTION:
+    title: "Regional Detection Capabilities"
+    anchorage:
+      view: "solution"
+      phase: "confirmed"
+      domain: ["usgs", "hydroacoustics", "regional-monitoring"]
+    occurrences:
+      - "OCC-USGS-REGIONAL-TPHASE"
+      - "OCC-USGS-REGIONAL-NETWORKS"
+      - "OCC-USGS-REGIONAL-REMOTE-SENSING"
+  SEC-USGS-INSTRUMENTATION:
+    title: "Instrumentation Recommendations"
+    anchorage:
+      view: "solution"
+      phase: "confirmed"
+      domain: ["usgs", "instrumentation", "recommendations"]
+    occurrences:
+      - "OCC-USGS-INST-CORE-SENSORS"
+      - "OCC-USGS-INST-TELEMETRY-CONSTRAINTS"
+      - "OCC-USGS-INST-EMERGING-OPTIONS"
+  SEC-USGS-REFERENCES:
+    title: "Structured References"
+    anchorage:
+      view: "background"
+      phase: "confirmed"
+      domain: ["usgs", "references", "citation"]
+    occurrences:
+      - "OCC-USGS-REF-REPORT-PAGE"
+      - "OCC-USGS-REF-CHAPTER-PDF"
+      - "OCC-USGS-REF-DOI"
+      - "OCC-USGS-CITATION"
+      - "OCC-USGS-SOURCE-TEXT"
+relations: {}
+perspectives: {}
+structure:
+  sections:
+    - "SEC-USGS-CONTEXT"
+    - "SEC-USGS-REGIONAL-DETECTION"
+    - "SEC-USGS-INSTRUMENTATION"
+    - "SEC-USGS-REFERENCES"

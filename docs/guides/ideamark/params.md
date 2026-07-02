@@ -63,7 +63,7 @@ Relation rules:
 
 Working mode checks:
 - YAML parseability
-- required registry namespaces
+- required top-level namespaces
 - entity payload rules
 - occurrence entity / role rules
 - section occurrence linkage
