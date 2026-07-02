@@ -48,6 +48,22 @@ function normalizeRefsInObject(obj, docId, idSets) {
       out[k] = normalizeRelationEndpoint(v, docId, idSets);
       continue;
     }
+    if (k === 'perspectives' || k === 'perspective_scope') {
+      // Arrays hold perspective_refs (section.perspectives /
+      // entity.perspective_scope); a mapping is the definitions namespace.
+      if (Array.isArray(v)) {
+        out[k] = v.map((x) => normalizeRefValue(x, docId, idSets.perspectives, 'perspectives'));
+      } else if (v && typeof v === 'object') {
+        out[k] = normalizeRefsInObject(v, docId, idSets);
+      } else {
+        out[k] = v;
+      }
+      continue;
+    }
+    if (k === 'base') {
+      out[k] = normalizeRefValue(v, docId, idSets.perspectives, 'perspectives');
+      continue;
+    }
     out[k] = normalizeRefsInObject(v, docId, idSets);
   }
   return out;

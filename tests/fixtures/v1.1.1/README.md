@@ -19,6 +19,7 @@ diagnostics.
 | `payload-body-ref-cache.ideamark.md` | `body + ref + cache` (§7.7) |
 | `multi-role-entity.ideamark.md` | Same entity activated as claim / evidence / constraint (Core Model §4.1) |
 | `external-entity-reuse.ideamark.md` | Occurrence referencing an entity id in ANOTHER document — the recursive usage-log case; external refs are opaque, never errors |
+| `external-shorthand-ref.ideamark.md` | Shorthand external reference form `{doc_id}#{element_id}` (Core Spec §9.2 / ADR-0003) |
 | `relations-perspectives.ideamark.md` | `relations` as relation_id map with entity_ref and section_ref endpoints (Core Spec §6.2); perspectives / perspective_scope |
 | `normalization-single-values.ideamark.md` | Single values in multi-value fields, normalized to arrays (§7.13) |
 | `unknown-fields-profile.ideamark.md` | Unknown fields ignored; unknown payload profile does not invalidate (§7.18); uncontrolled vocabulary (§7.12) |

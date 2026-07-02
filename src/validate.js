@@ -10,9 +10,10 @@ const { stableStringify } = require('./utils');
 //   anchorage.phase / payload.format.profile (§7.12).
 // - Unknown fields are ignored; unknown payload profiles never invalidate a
 //   document (§7.18).
-// - External references (other documents' entity IDs, etc.) are treated as
-//   opaque and are NOT resolved: reusing an entity ID from another document is
-//   a normal case, not an error.
+// - External references (other documents' element ids, Core Spec §9.2 /
+//   ADR-0003) are treated as opaque and are NOT resolved: reusing an element
+//   id from another document is a normal case, not an error. Identity across
+//   documents is exact (doc_id, element_id) comparison — no sameAs inference.
 
 const ATOMICITY_BASIS_VALUES = ['interpretive', 'lexical', 'structural'];
 const ATOMICITY_BASIS_DEFAULT = 'interpretive';

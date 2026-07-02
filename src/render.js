@@ -38,6 +38,11 @@ function renderDocument(model, options) {
     entities: new Set(Object.keys(registry.entities || {})),
     occurrences: new Set(Object.keys(registry.occurrences || {})),
     sections: new Set(Object.keys(registry.sections || {})),
+    perspectives: new Set(
+      registry.perspectives && !Array.isArray(registry.perspectives)
+        ? Object.keys(registry.perspectives)
+        : []
+    ),
   };
   const docId = header.doc_id;
 

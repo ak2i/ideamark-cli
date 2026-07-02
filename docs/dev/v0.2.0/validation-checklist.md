@@ -54,8 +54,14 @@ Core v1.1.1 は文書ヘッダを規定しないため、以下は CLI 契約と
 - occurrence の `target` / `supporting_evidence` 参照検査(v1.0.x occurrence 周辺構造)
 - lint `IM-LINT-104` の `anchorage.domain`(v1.0.x 語彙)依存 → view/phase の検索シグナル有無の警告に置換(語彙自体は非統制のまま)
 
-## 外部参照の扱い(設計哲学 3・6)
+## 外部参照の扱い(設計哲学 3・6、Core Spec §9 / ADR-0003)
 
-`ideamark://docs/<doc>#/entities/<id>` 等で他文書の entity を参照する occurrence は
-正常系であり、参照解決は行わない(opaque)。エンティティの名寄せ・sameAs 推論は
-実装しない。回帰テスト: `valid/external-entity-reuse.ideamark.md`。
+外部参照の正規形は `ideamark://docs/{doc_id}#/{entities|occurrences|sections|perspectives}/{element_id}`、
+短縮形は `{doc_id}#{element_id}`(Core Spec §9.2)。doc_id は opaque・不変で、
+一意性のスコープは解決文脈(コーパス/レジストリ)、担保は運用者の責務(§9.1)。
+他文書の要素を参照する occurrence は正常系であり、参照解決は行わない(opaque、§9.3)。
+同一性判定は (doc_id, element_id) の完全一致のみで、名寄せ・sameAs 推論は実装しない。
+canonical化(publish / format --canonical)は perspective 参照
+(section.perspectives / perspective_scope / base)も `#/perspectives/<id>` 形へ確定する。
+回帰テスト: `valid/external-entity-reuse.ideamark.md` /
+`valid/external-shorthand-ref.ideamark.md` / `tests/internal/refs.test.js`。
