@@ -29,7 +29,7 @@ IdeaMark inherits the ambition of knowledge engineering: to make prior expertise
 
 Information Retrieval shifted the central problem from representing knowledge to locating relevant information.
 
-Rather than requiring knowledge to be formalized in advance, IR systems made large document collections searchable through indexing, ranking, and query processing. Classical IR research developed models and systems for representing documents and queries, matching them, and ranking results according to relevance (Salton, 1989; van Rijsbergen, 1979; Manning, Raghavan, & Schütze, 2008).
+Rather than requiring knowledge to be formalized in advance, IR systems made large document collections searchable through indexing, ranking, and query processing. Classical IR research developed models and systems for representing documents and queries, matching them, and ranking results according to relevance (Salton, 1989; van Rijsbergen, 1979; Manning, Raghavan, & Schuetze, 2008).
 
 In practical retrieval systems, inverted indexes became a fundamental structure for scalable document search. By mapping terms to documents or positions, inverted indexes allowed retrieval systems to avoid scanning every document for every query.
 
@@ -102,11 +102,17 @@ IdeaMark changes what can be reused.
 
 It treats reusable intellectual activity structures as first-class objects. These structures connect future situations and projections to authoritative original sources.
 
-This is the central historical position of IdeaMark.
+This shift is important because AI-enabled systems should not merely produce answers that humans passively accept. If human participants stop thinking, interpreting, acting, and producing new intellectual activities, the shared knowledge environment between humans and AI becomes less capable of growth.
+
+This specification therefore assumes that sustainable AI-enabled knowledge work requires continuous co-evolution between humans and AI.
+
+In this context, co-evolution means the continuous mutual development of humans and AI through shared intellectual activities grounded in authoritative original sources.
+
+IdeaMark supports this co-evolution by making prior intellectual activities discoverable and reusable without fixing a single interpretation in advance. It helps humans and AI find where meaningful thinking can begin, return to authoritative sources, reconstruct meaning under new situations, and produce new intellectual activities that may themselves become future sources.
 
 It is not a new claim that computers can process knowledge, documents, representations, or language.
 
-The proposal is that AI-enabled systems can also benefit from reusable indexes of intellectual activity: structures that preserve how an original source can become useful again under a new situation, without fixing a single interpretation in advance.
+The proposal is that AI-enabled systems can benefit from reusable indexes of intellectual activity: structures that preserve how an original source can become useful again under a new situation while keeping humans engaged as active interpreters and contributors.
 
 ## 2.7 Summary
 
@@ -122,17 +128,17 @@ The historical progression can be summarized as follows:
 
 IdeaMark is therefore best understood as a conservative but distinct architectural extension.
 
-It preserves continuity with prior work while shifting the object of reuse from knowledge, documents, or generated answers to reusable structures that enable future intellectual activities.
+It preserves continuity with prior work while shifting the object of reuse from knowledge, documents, or generated answers to reusable structures that enable future intellectual activities and human-AI co-evolution.
 
 ## Informative References
 
-- Brin, S., & Page, L. (1998). *The Anatomy of a Large-Scale Hypertextual Web Search Engine*. Computer Networks and ISDN Systems, 30(1–7), 107–117.
+- Brin, S., & Page, L. (1998). *The Anatomy of a Large-Scale Hypertextual Web Search Engine*. Computer Networks and ISDN Systems, 30(1-7), 107-117.
 - Brown, T. B., et al. (2020). *Language Models are Few-Shot Learners*. Advances in Neural Information Processing Systems 33.
 - Buchanan, B. G., & Shortliffe, E. H. (Eds.). (1984). *Rule-Based Expert Systems: The MYCIN Experiments of the Stanford Heuristic Programming Project*. Addison-Wesley.
-- Karpukhin, V., Oğuz, B., Min, S., Lewis, P., Wu, L., Edunov, S., Chen, D., & Yih, W. (2020). *Dense Passage Retrieval for Open-Domain Question Answering*. EMNLP 2020.
-- Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., Küttler, H., Lewis, M., Yih, W., Rocktäschel, T., Riedel, S., & Kiela, D. (2020). *Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks*. NeurIPS 2020.
-- Manning, C. D., Raghavan, P., & Schütze, H. (2008). *Introduction to Information Retrieval*. Cambridge University Press.
-- McDermott, J. (1982). *R1: A Rule-Based Configurer of Computer Systems*. Artificial Intelligence, 19(1), 39–88.
+- Karpukhin, V., Oguz, B., Min, S., Lewis, P., Wu, L., Edunov, S., Chen, D., & Yih, W. (2020). *Dense Passage Retrieval for Open-Domain Question Answering*. EMNLP 2020.
+- Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., Kuttler, H., Lewis, M., Yih, W., Rocktaschel, T., Riedel, S., & Kiela, D. (2020). *Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks*. NeurIPS 2020.
+- Manning, C. D., Raghavan, P., & Schuetze, H. (2008). *Introduction to Information Retrieval*. Cambridge University Press.
+- McDermott, J. (1982). *R1: A Rule-Based Configurer of Computer Systems*. Artificial Intelligence, 19(1), 39-88.
 - Salton, G. (1989). *Automatic Text Processing: The Transformation, Analysis, and Retrieval of Information by Computer*. Addison-Wesley.
 - Shortliffe, E. H. (1976). *Computer-Based Medical Consultations: MYCIN*. Elsevier/North-Holland.
 - van Rijsbergen, C. J. (1979). *Information Retrieval* (2nd ed.). Butterworths.
