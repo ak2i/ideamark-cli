@@ -9,7 +9,7 @@ Each part is written as an independently reviewable document set with design rat
 ## Parts
 
 1. [Part 1 — Philosophy](./part1-philosophy/README.md)
-2. Part 2 — Architecture *(planned)*
+2. [Part 2 — Architecture of Human-AI Co-evolution](./part2-architecture/README.md) *(planned)*
 3. Part 3 — Core Model *(planned)*
 4. Part 4 — Core Specification *(planned)*
 5. Part 5 — Projection Specification *(planned)*
@@ -21,6 +21,7 @@ Each part is written as an independently reviewable document set with design rat
 - Record design rationale alongside concepts.
 - Separate normative specification from informative background.
 - Treat IdeaMark as an evolving intellectual activity infrastructure rather than a fixed knowledge representation format.
+- Treat human-AI co-evolution as a central architectural motivation rather than a secondary usage pattern.
 
 ## Current Focus
 
