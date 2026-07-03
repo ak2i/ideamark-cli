@@ -7,6 +7,10 @@ This part will describe the architecture through which humans, AI systems, proje
 
 In this specification, co-evolution means the continuous mutual development of humans and AI through shared intellectual activities grounded in authoritative original sources.
 
+Part 1 explains why IdeaMark uses engineering through separation: reusable structure is separated from meaning so that it can be managed and reused without fixing interpretation.
+
+Part 2 will explain engineering through reconstruction: how Original Source, Projection, IdeaMark, retrieval, AI interpretation, human interpretation, and human action together reconstruct meaning and produce new intellectual activities.
+
 This part will describe the architectural relationship among:
 
 - Original Sources
@@ -18,4 +22,4 @@ This part will describe the architectural relationship among:
 - Human action
 - New original sources produced by future intellectual activities
 
-Part 2 should explain the system-level flow before the Core Model is specified.
+Part 2 should explain the system-level reconstruction flow before the Core Model is specified.
