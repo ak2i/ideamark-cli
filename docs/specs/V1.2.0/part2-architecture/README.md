@@ -3,7 +3,7 @@
 **Version:** IdeaMark Core v1.2.0  
 **Status:** Planned
 
-This part describes the architecture through which humans, AI systems, projections, IdeaMark documents, retrieval systems, and authoritative original sources participate in continuous co-evolution.
+This part describes the architecture through which humans, AI systems, projections, IdeaMark documents, retrieval systems, and authoritative original sources may participate in continuous co-evolution.
 
 In this specification, co-evolution means the continuous mutual development of humans and AI through shared intellectual activities grounded in authoritative original sources.
 
@@ -11,13 +11,17 @@ Part 1 explains why IdeaMark uses engineering through separation: reusable struc
 
 Part 2 explains engineering through reconstruction at the ecosystem level.
 
-The architecture is organized as a two-plus-one layer model:
+The architecture described in this part is a reference architecture for explaining how IdeaMark may be used.
+
+It does not prescribe a required system implementation, retrieval interface, projection selection method, or database architecture.
+
+The reference architecture is organized as a two-plus-one layer model:
 
 1. Index Construction Layer
 2. Reconstruction Layer
 3. Ecosystem Feedback Layer
 
-The first two layers describe the main operational architecture. The third layer describes how projections, sources, IdeaMark documents, retrieval behavior, and human-AI practices improve over time.
+The first two layers describe common operational concerns. The third layer describes how projections, sources, IdeaMark documents, retrieval behavior, and human-AI practices may improve over time.
 
 ## Proposed Sections
 
@@ -50,13 +54,33 @@ IdeaMark Generation
 IdeaMark Repository / DB
 ```
 
-For example, if an organization has 100,000 source files and 30 projections, the ecosystem may eventually generate up to 3,000,000 source-projection IdeaMark combinations.
+This is a reference pattern, not a required implementation.
 
-This generation may occur through background processing, prioritized processing, or on-demand generation when a missing combination is needed.
+For example, if an organization has 100,000 source files and 30 projections, an implementation may eventually generate up to 3,000,000 source-projection IdeaMark combinations.
+
+This generation may occur through background processing, prioritized processing, on-demand generation when a missing combination is needed, or another implementation-specific strategy.
+
+## Projection Sources
+
+Projection may be created, selected, shared, or standardized in many ways.
+
+For example, Projection may be:
+
+- created by an individual;
+- shared within an organization;
+- maintained as an organizational standard;
+- published through an open-source Projection library;
+- provided by consultants or domain experts;
+- standardized by an industry group;
+- generated or refined by AI systems.
+
+IdeaMark Core should not privilege one origin of Projection over another.
+
+The architectural requirement is that Projection can guide the construction or retrieval of IdeaMark structures in an interoperable way.
 
 ## Layer 2: Reconstruction
 
-The Reconstruction Layer uses the IdeaMark Repository to support future intellectual activity.
+The Reconstruction Layer uses IdeaMark structures to support future intellectual activity.
 
 ```text
 User / Situation
@@ -77,6 +101,12 @@ New Original Source
 ```
 
 This layer reconstructs meaning from authoritative original sources under current situations and projections.
+
+The diagram does not define a required retrieval interface.
+
+A system may accept a situation description, a selected Projection, a generated Projection, multiple Projections, a query, a task, a workflow state, an API request, or another implementation-specific input.
+
+Part 2 should explain architectural responsibilities without constraining how retrieval input is provided.
 
 ## Plus-one Layer: Ecosystem Feedback
 
@@ -100,4 +130,6 @@ This layer explains why Projection should be treated as a reusable intellectual 
 
 Part 2 should explain the system-level architecture before the Core Model is specified.
 
-It should not define YAML fields, validation rules, storage engines, queueing systems, database schemas, or implementation-specific retrieval algorithms.
+It should not define YAML fields, validation rules, storage engines, queueing systems, database schemas, retrieval input methods, user interfaces, Projection governance models, or implementation-specific retrieval algorithms.
+
+The purpose of Part 2 is to describe architectural relationships, not to specify a particular IdeaMark DB system or internal knowledge-management product.
