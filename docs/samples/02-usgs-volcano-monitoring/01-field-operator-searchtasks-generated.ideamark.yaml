@@ -1,0 +1,196 @@
+entities:
+  - id: CAP-001
+    kind: capability
+    payload:
+      name: Regional eruption detection
+      purpose:
+        - detect submarine volcanic unrest
+        - detect submarine eruptions over large regions
+      primary_signals:
+        - hydroacoustic
+        - seismic
+
+  - id: INS-001
+    kind: instrument
+    payload:
+      name: Small-aperture hydrophone array
+      characteristics:
+        - three_to_four_hydrophones
+        - deployed_in_SOFAR_channel
+        - regional_detection
+      supports:
+        - T-phase monitoring
+
+  - id: INS-002
+    kind: instrument
+    payload:
+      name: T-phase optimized land seismic station
+      characteristics:
+        - optimized_for_T_phase_detection
+        - regional_monitoring
+      supports:
+        - submarine_volcano_monitoring
+
+  - id: INS-003
+    kind: instrument
+    payload:
+      name: Satellite observation
+      characteristics:
+        - detects_surface_manifestations
+      limitations:
+        - limited_preeruptive_monitoring
+
+  - id: CON-001
+    kind: constraint
+    payload:
+      name: Real-time marine telemetry cost
+      description:
+        - marine arrays require cables or telemetry
+        - expensive to deploy and operate
+
+  - id: CON-002
+    kind: constraint
+    payload:
+      name: Land seismic distance limitation
+      description:
+        - optimal within_about_30km
+        - distant stations detect only strongest phases_or_T_phases
+
+  - id: REC-001
+    kind: recommendation
+    payload:
+      name: Level 1-2 regional deployment
+      actions:
+        - deploy_1_to_3_T_phase_optimized_land_stations
+        - temporary_hydrophone_campaigns_in_higher_risk_regions
+        - routine_satellite_monitoring
+
+  - id: REC-002
+    kind: recommendation
+    payload:
+      name: Level 3-4 regional deployment
+      actions:
+        - one_or_two_real_time_cabled_small_aperture_arrays
+        - additional_T_phase_stations
+        - supplemental_satellite_monitoring
+
+  - id: EVD-001
+    kind: evidence
+    payload:
+      name: Existing operational systems
+      observations:
+        - IMS_real_time_hydrophone_arrays_used_for_volcano_monitoring
+        - RSP_detected_submarine_activity_across_Pacific
+        - Northern_Mariana_network_detected_multiple_eruptions
+
+occurrences:
+  - id: OCC-001
+    entity: CAP-001
+    payload:
+      context: regional_scale_monitoring
+
+  - id: OCC-002
+    entity: INS-001
+    payload:
+      role: primary_regional_sensor
+
+  - id: OCC-003
+    entity: INS-002
+    payload:
+      role: complementary_land_sensor
+
+  - id: OCC-004
+    entity: CON-001
+    payload:
+      affects:
+        - INS-001
+
+  - id: OCC-005
+    entity: CON-002
+    payload:
+      affects:
+        - INS-002
+
+  - id: OCC-006
+    entity: REC-001
+    payload:
+      applies_to:
+        - threat_levels_1_2
+
+  - id: OCC-007
+    entity: REC-002
+    payload:
+      applies_to:
+        - threat_levels_3_4
+
+  - id: OCC-008
+    entity: EVD-001
+    payload:
+      supports:
+        - REC-001
+        - REC-002
+
+  - id: OCC-009
+    entity: INS-003
+    payload:
+      role: supplementary_observation
+
+sections:
+  - id: SEC-001
+    title: Initial Deployment Strategy
+    occurrences:
+      - OCC-006
+      - OCC-002
+      - OCC-003
+      - OCC-009
+
+  - id: SEC-002
+    title: Operational Constraints
+    occurrences:
+      - OCC-004
+      - OCC-005
+
+  - id: SEC-003
+    title: Advanced Regional Capability
+    occurrences:
+      - OCC-007
+      - OCC-002
+      - OCC-003
+
+  - id: SEC-004
+    title: Supporting Operational Evidence
+    occurrences:
+      - OCC-008
+
+relations:
+  - from: REC-001
+    to: INS-002
+    type: recommends
+
+  - from: REC-001
+    to: INS-001
+    type: recommends
+
+  - from: REC-002
+    to: INS-001
+    type: expands
+
+  - from: CON-001
+    to: REC-002
+    type: constrains
+
+  - from: EVD-001
+    to: REC-001
+    type: supports
+
+perspectives:
+  projection:
+    projection_version: "0.2.0"
+    projection_id: "PERS-FIELD-SEARCH"
+    title: "Field Operation Knowledge Retrieval"
+
+structure:
+  retrieval_focus:
+    - deployment_priority
+    - operational_constraints
+    - recommendation_evidence

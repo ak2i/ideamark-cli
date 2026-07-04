@@ -1,0 +1,101 @@
+# IdeaMark v1.1.1 Projection Evaluation Prompt (Entity Model Edition)
+
+You are generating an IdeaMark v1.1.1 YAML document.
+
+## Purpose
+
+Evaluate whether a Projection (Knowledge Reuse Strategy) changes not only *which* knowledge is extracted, but also *how that knowledge is decomposed into reusable Entities*.
+
+Use ONLY the section:
+
+"Regional-Scale Monitoring of Submarine Eruptions"
+
+from the attached file:
+
+- sir20245062i.raw.txt
+
+Ignore the remainder of the report.
+
+## General Rules
+
+- Do NOT summarize.
+- Read the Projection first.
+- The Projection determines:
+  - reusable knowledge
+  - entity boundaries
+  - section organization
+  - future search support
+- Output YAML only.
+- Use top-level namespaces:
+  entities, occurrences, sections
+- Optional:
+  relations, perspectives, structure
+- Record the Projection in `perspectives`.
+
+## Entity Modeling
+
+The Projection includes an `entity_model`.
+
+Treat it as the definition of Entity atomicity.
+
+Do NOT create large "summary entities".
+
+Instead:
+
+- split entities according to the entity_model
+- one recommendation = one actionable recommendation
+- one evidence = one independent evidence item
+- one instrument = one reusable physical capability
+- one constraint = one independently reusable constraint
+
+When uncertain, prefer smaller reusable entities.
+
+Target:
+
+Entities: 10-18
+Occurrences: 8-15
+Sections: 3-6
+Relations: <=8
+
+
+## Projection
+
+```yaml
+projection_version: "0.3.0"
+projection_id: "PERS-RESEARCH-SEARCH"
+title: "Scientific Knowledge Retrieval"
+search_tasks:
+  - What hypotheses emerge?
+  - What evidence supports each hypothesis?
+  - What observation gaps remain?
+
+entity_model:
+  hypothesis:
+    atomicity: one_testable_hypothesis
+  evidence:
+    atomicity: one_independent_observation
+  mechanism:
+    atomicity: one_causal_mechanism
+  observation:
+    atomicity: one_measurement
+primary_interests:
+  - hypothesis
+  - mechanism
+  - evidence
+```
+
+## Final Instruction
+
+Interpret the source through the Projection.
+
+The entity_model defines the desired reusable granularity.
+
+If one source paragraph contains three independent recommendations,
+create three recommendation entities.
+
+If one paragraph contains multiple independent evidence items,
+create multiple evidence entities.
+
+Optimize the resulting IdeaMark for future execution of the search_tasks.
+
+Return only one valid IdeaMark v1.1.1 YAML document.

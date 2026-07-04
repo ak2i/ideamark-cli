@@ -1,0 +1,316 @@
+ideamark_version: "1.1.1"
+document_id: "im:sir20245062i:regional-scale-monitoring-submarine-eruptions"
+title: "Regional-Scale Monitoring of Submarine Eruptions -- Field Operation Projection"
+source:
+  document: "sir20245062i"
+  full_title: "Recommended Capabilities and Instrumentation for Volcano Monitoring in the United States"
+  chapter: "Chapter I -- Monitoring Marine Eruptions"
+  section: "Regional-Scale Monitoring of Submarine Eruptions"
+  publisher: "U.S. Geological Survey, Scientific Investigations Report 2024-5062-I"
+
+perspectives:
+  - projection_version: "0.3.0"
+    projection_id: "PERS-FIELD-SEARCH"
+    title: "Field Operation Knowledge Retrieval"
+    search_tasks:
+      - "What monitoring equipment should be deployed first?"
+      - "What operational constraints affect deployment?"
+      - "What evidence supports each recommendation?"
+    entity_model:
+      recommendation: { atomicity: "one_action" }
+      evidence: { atomicity: "one_independent_case" }
+      instrument: { atomicity: "one_physical_capability" }
+      constraint: { atomicity: "one_constraint" }
+    primary_interests: ["deployment", "constraints", "evidence"]
+    applied_to: "im:sir20245062i:regional-scale-monitoring-submarine-eruptions"
+
+entities:
+
+  # ---------- INSTRUMENTS ----------
+  - id: "ent-inst-tphase-station"
+    type: "instrument"
+    title: "Land-based T-phase-optimized seismic station"
+    statement: >
+      A land-based seismic station whose recording parameters and site
+      location are optimized for T-phase (hydroacoustic-to-seismic
+      converted signal) detection rather than standard seismic monitoring.
+
+  - id: "ent-inst-hydrophone-array-noncabled"
+    type: "instrument"
+    title: "Short-term non-real-time hydrophone deployment"
+    statement: >
+      A self-contained, battery-powered hydrophone or small-aperture
+      hydrophone array moored without cable or telemetry link; data are
+      recovered only after instrument retrieval.
+
+  - id: "ent-inst-hydrophone-array-cabled"
+    type: "instrument"
+    title: "Cabled/telemetered regional hydrophone array"
+    statement: >
+      A small-aperture hydrophone array (typically four moorings) linked
+      to shore or a receiving facility by cable or a telemetry component
+      (e.g., a satellite buoy), enabling real-time data transmission.
+
+  - id: "ent-inst-satellite-imagery"
+    type: "instrument"
+    title: "Satellite and aerial imagery monitoring"
+    statement: >
+      Remote-sensing capability used to detect surface indicators of
+      submarine volcanic activity such as discolored water, pumice rafts,
+      and subaerial plumes.
+
+  - id: "ent-inst-obs-regional"
+    type: "instrument"
+    title: "Ocean-bottom seismometer (OBS) for regional networks"
+    statement: >
+      A seafloor-deployed seismometer used alongside hydrophones in
+      regional-scale network configurations to detect seismic activity
+      associated with submarine volcanism.
+
+  # ---------- CONSTRAINTS ----------
+  - id: "ent-con-realtime-cabling-cost"
+    type: "constraint"
+    title: "Real-time transmission requires costly cabling/telemetry"
+    statement: >
+      Achieving real-time data transmission from marine instruments
+      requires cabling to a land-based facility or a telemetry component
+      (e.g., satellite buoy); both are costly to operate compared to
+      non-real-time, recovery-based deployments.
+
+  - id: "ent-con-sofar-depth"
+    type: "constraint"
+    title: "Mooring depth must target the SOFAR channel"
+    statement: >
+      Hydrophone instruments must be moored within the SOFAR (Sound
+      Fixing and Ranging) channel depth to achieve the best long-range
+      T-phase detection capability.
+
+  - id: "ent-con-landbased-30km-range"
+    type: "constraint"
+    title: "Land-based sensor effectiveness degrades beyond 30 km"
+    statement: >
+      Land-based seismic monitoring is most successful when sensors are
+      located within about 30 km of submarine activity, allowing
+      detection of most seismic phases; more distant seismometers detect
+      only strong seismic phases or some T-phases.
+
+  # ---------- EVIDENCE ----------
+  - id: "ent-ev-dod-history"
+    type: "evidence"
+    title: "Historical DoD hydrophone detections (1950s–)"
+    statement: >
+      Beginning in the 1950s, hydrophone arrays operated by the
+      Department of Defense recorded at least a dozen submarine
+      eruptions, establishing the long operational history of
+      hydroacoustic monitoring.
+    source_citation: "Dietz and Sheehy, 1954; Dziak and Fox, 2002"
+
+  - id: "ent-ev-tphase-longrange"
+    type: "evidence"
+    title: "T-phase long-range propagation record"
+    statement: >
+      T-phases from volcanic activity have been detected at distances
+      exceeding 15,000 km and even from different ocean basins,
+      demonstrating the low-attenuation, long-range propagation
+      advantage of hydroacoustic signals over seismic signals.
+    source_citation: "Johnson and others, 1963; Metz and others, 2016"
+
+  - id: "ent-ev-rsp-trackrecord"
+    type: "evidence"
+    title: "Polynesian Seismic Network (RSP) detection track record"
+    statement: >
+      The RSP, the longest-operating and most successful T-phase-
+      optimized land-based network, has detected volcanic activity
+      throughout the Pacific Ocean Basin, including submarine volcanoes
+      in the Northern Mariana Islands.
+    source_citation: "Talandier and Kuster, 1976; Talandier, 2004"
+
+  - id: "ent-ev-cnmi-network-cases"
+    type: "evidence"
+    title: "Non-optimized network detections in the Northern Mariana Islands"
+    statement: >
+      A non-optimized land-based seismic network still detected multiple
+      independent submarine volcanic events: precursory seismicity and
+      eruption at South Sarigan seamount (2010); an earthquake swarm,
+      major eruption, and landslide at NW Rota-1 Seamount (2009); and
+      explosive eruptions at Ahyi seamount (2014).
+    source_citation: "Searcy, 2013; Tepp and others, 2019b"
+
+  # ---------- RECOMMENDATIONS (Levels 1 & 2) ----------
+  - id: "ent-rec-l12-landbased-stations"
+    type: "recommendation"
+    title: "Deploy 1–3 T-phase-optimized land-based seismic stations"
+    statement: >
+      Minimum of one to three land-based seismic stations optimized for
+      T-phase detection; distribution determined by the number and
+      location of submarine volcanoes in the region.
+    threat_level: [1, 2]
+
+  - id: "ent-rec-l12-shortterm-hydrophones"
+    type: "recommendation"
+    title: "Deploy short-term non-real-time hydrophones for higher-risk regions"
+    statement: >
+      Short-term (6–12 month) deployments of two to three non-real-time
+      hydrophones for regions with higher risk, more volcanoes, and/or
+      sparser or more distant land-based networks.
+    threat_level: [1, 2]
+
+  - id: "ent-rec-l12-satellite-monitoring"
+    type: "recommendation"
+    title: "Conduct weekly-to-daily regional satellite monitoring"
+    statement: >
+      Weekly to daily regional satellite monitoring for signs of
+      volcanic activity, with frequency dependent on regional risk.
+    threat_level: [1, 2]
+
+  # ---------- RECOMMENDATIONS (Levels 3 & 4) ----------
+  - id: "ent-rec-l34-cabled-array"
+    type: "recommendation"
+    title: "Deploy 1–2 cabled small-aperture hydrophone arrays"
+    statement: >
+      One to two cabled small-aperture hydrophone arrays with four
+      moorings each, enabling real-time detection.
+    threat_level: [3, 4]
+
+  - id: "ent-rec-l34-additional-tphase-shortterm"
+    type: "recommendation"
+    title: "Add T-phase stations and short-term hydrophones as needed"
+    statement: >
+      Additional optimized T-phase stations and short-term hydrophone
+      deployments, deployed dependent on regional situation and activity
+      levels.
+    threat_level: [3, 4]
+
+  - id: "ent-rec-l34-additional-satellite"
+    type: "recommendation"
+    title: "Add satellite/other monitoring as needed"
+    statement: >
+      Additional monitoring via satellite and other methods as needed
+      for understanding eruption hazards.
+    threat_level: [3, 4]
+
+occurrences:
+  - id: "occ-dod-ctbto-history"
+    entity_refs: ["ent-ev-dod-history", "ent-inst-hydrophone-array-cabled"]
+    context: >
+      Historical and current hydroacoustic monitoring lineage: DoD
+      hydrophone arrays (1950s) preceding the CTBTO's cabled IMS
+      hydrophone arrays, some of which (e.g., Wake Island) publish data
+      for volcano monitoring.
+
+  - id: "occ-tphase-physics"
+    entity_refs: ["ent-ev-tphase-longrange", "ent-con-sofar-depth"]
+    context: >
+      Explains why T-phases outperform seismic signals for regional
+      detection: low water attenuation and the SOFAR waveguide enable
+      >15,000 km propagation.
+
+  - id: "occ-rsp-network"
+    entity_refs: ["ent-inst-tphase-station", "ent-ev-rsp-trackrecord"]
+    context: >
+      RSP is presented as the reference implementation of a T-phase-
+      optimized land-based station network.
+
+  - id: "occ-cnmi-nonoptimized-network"
+    entity_refs: ["ent-ev-cnmi-network-cases", "ent-con-landbased-30km-range"]
+    context: >
+      Demonstrates that even non-optimized land networks detect
+      submarine activity, subject to the 30 km effectiveness constraint.
+
+  - id: "occ-satellite-capability"
+    entity_refs: ["ent-inst-satellite-imagery"]
+    context: >
+      Satellite/aerial imagery detects discolored water, pumice rafts,
+      subaerial plumes, and other surficial activity, useful for active
+      or recently-ended eruptions rather than preeruptive unrest.
+
+  - id: "occ-smallaperture-array-spec"
+    entity_refs: ["ent-inst-hydrophone-array-noncabled", "ent-con-sofar-depth"]
+    context: >
+      Small-aperture arrays (3–4 instruments, ~2 km spacing) are moored
+      within the SOFAR channel; self-contained/battery units are
+      non-real-time, recovered after deployment.
+
+  - id: "occ-cabled-array-cost"
+    entity_refs: ["ent-inst-hydrophone-array-cabled", "ent-con-realtime-cabling-cost"]
+    context: >
+      Real-time operation of cabled/telemetered hydrophone arrays is
+      costly to operate compared to non-real-time alternatives.
+
+  - id: "occ-regional-network-feasibility"
+    entity_refs: ["ent-inst-obs-regional", "ent-con-realtime-cabling-cost", "ent-inst-tphase-station"]
+    context: >
+      Regional-scale (large-aperture) hydrophone/OBS networks are costly
+      and difficult to run in real time; only land-based regional-scale
+      networks are recommended for real-time monitoring, incorporating
+      T-phase-optimized stations.
+
+  - id: "occ-recommendations-level12"
+    entity_refs:
+      - "ent-rec-l12-landbased-stations"
+      - "ent-rec-l12-shortterm-hydrophones"
+      - "ent-rec-l12-satellite-monitoring"
+    context: >
+      Minimum recommended capability set for regions with a submarine
+      volcano at or above threat level 1–2, or with unassigned threat
+      level.
+
+  - id: "occ-recommendations-level34"
+    entity_refs:
+      - "ent-rec-l34-cabled-array"
+      - "ent-rec-l34-additional-tphase-shortterm"
+      - "ent-rec-l34-additional-satellite"
+    context: >
+      Escalated capability set for threat level 3–4 regions, aimed at
+      baseline characterization and real-time low-level activity
+      detection.
+
+sections:
+  - id: "sec-detection-methods-context"
+    title: "Hydroacoustic and Seismic Detection Context"
+    occurrence_refs: ["occ-dod-ctbto-history", "occ-tphase-physics", "occ-rsp-network", "occ-cnmi-nonoptimized-network", "occ-satellite-capability"]
+
+  - id: "sec-instrumentation"
+    title: "Instrumentation and Operational Constraints"
+    occurrence_refs: ["occ-smallaperture-array-spec", "occ-cabled-array-cost", "occ-regional-network-feasibility"]
+
+  - id: "sec-recommendations-level12"
+    title: "Recommendations -- Threat Levels 1 & 2"
+    occurrence_refs: ["occ-recommendations-level12"]
+
+  - id: "sec-recommendations-level34"
+    title: "Recommendations -- Threat Levels 3 & 4"
+    occurrence_refs: ["occ-recommendations-level34"]
+
+relations:
+  - type: "requires"
+    source: "ent-rec-l12-landbased-stations"
+    target: "ent-inst-tphase-station"
+
+  - type: "requires"
+    source: "ent-rec-l12-shortterm-hydrophones"
+    target: "ent-inst-hydrophone-array-noncabled"
+
+  - type: "requires"
+    source: "ent-rec-l12-satellite-monitoring"
+    target: "ent-inst-satellite-imagery"
+
+  - type: "requires"
+    source: "ent-rec-l34-cabled-array"
+    target: "ent-inst-hydrophone-array-cabled"
+
+  - type: "requires"
+    source: "ent-rec-l34-additional-satellite"
+    target: "ent-inst-satellite-imagery"
+
+  - type: "constrained_by"
+    source: "ent-inst-hydrophone-array-cabled"
+    target: "ent-con-realtime-cabling-cost"
+
+  - type: "constrained_by"
+    source: "ent-inst-tphase-station"
+    target: "ent-con-landbased-30km-range"
+
+  - type: "supported_by"
+    source: "ent-rec-l12-landbased-stations"
+    target: "ent-ev-rsp-trackrecord"

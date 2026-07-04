@@ -1,0 +1,516 @@
+# IdeaMark v1.1.1 Projection-driven Generation Prompt
+
+You are generating an IdeaMark v1.1.1 YAML document from an attached source text.
+
+The source text to attach with this prompt is:
+
+- `sir20245062i.raw.txt`
+- Title: Monitoring Marine Eruptions
+- Source: USGS Scientific Investigations Report 2024-5062, Chapter I
+
+## Core instruction
+
+You are NOT summarizing the document.
+
+You are interpreting the attached source document through the specified Projection, meaning a Knowledge Reuse Strategy.
+
+The Projection determines:
+
+- what knowledge is reusable
+- what should become entities
+- what can be ignored
+- how sections should be organized
+- which relations are useful
+- what future search tasks the resulting IdeaMark should support
+
+Different projections should legitimately produce different IdeaMark YAML documents from the same source document.
+
+## Output constraints
+
+- Output valid IdeaMark v1.1.1 YAML only.
+- Do not output explanatory prose.
+- Do not create a top-level `registry:` wrapper.
+- Place `entities`, `occurrences`, `sections`, `relations`, `perspectives`, and `structure` directly at the document root.
+- Record the Projection in `perspectives`.
+- Ensure all local references resolve.
+- Do not invent external URLs, citations, facts, or source claims.
+- Use `payload.body` for extracted knowledge.
+- Use `payload.ref.uri` only for explicit source-backed references.
+- Prefer compact but meaningful entities over broad summary entities.
+- The output should be suitable for later search/reuse experiments.
+
+## Projection
+
+```yaml
+projection_version: "0.1.0"
+projection_id: "PERS-VOLCANO-RESEARCHER"
+name: "Volcano Monitoring Researcher"
+lang: "en-US"
+role:
+  label: "Researcher"
+  description: "A researcher studying submarine volcano monitoring, observation methods, eruption precursors, and evidence gaps."
+domain: "volcano_monitoring_research"
+reuse_goal: "Reuse the source as structured scientific knowledge for hypotheses, mechanisms, observations, limitations, and future research design."
+search_tasks:
+  - "What hypotheses or mechanisms emerge?"
+  - "What evidence supports monitoring recommendations?"
+  - "What observation gaps or limitations remain?"
+  - "Which measurement methods reveal different aspects of submarine eruptions?"
+primary_interests:
+  - "hypothesis"
+  - "mechanism"
+  - "evidence"
+  - "observation method"
+  - "measurement limitation"
+  - "research gap"
+preferred_entity_kinds:
+  - "hypothesis"
+  - "mechanism"
+  - "evidence"
+  - "metric"
+  - "observation"
+  - "constraint"
+preferred_occurrence_roles:
+  - "supports"
+  - "contrasts"
+  - "cause"
+  - "effect"
+  - "precondition"
+ignore_unless_relevant:
+  - "procurement details"
+  - "budget framing"
+  - "operational procedures without scientific implication"
+extraction_policy:
+  granularity: "research_knowledge_unit"
+  summarization: "avoid"
+  evidence_required: true
+  allow_inference: "limited"
+```
+
+## Required describe output: prompt-authoring
+
+```json
+{
+  "contract": {
+    "name": "doc-cli-contract",
+    "version": "1.1.1"
+  },
+  "tool": {
+    "name": "ideamark-cli",
+    "version": "0.2.0"
+  },
+  "document": {
+    "name": "ideamark",
+    "version": "1.1.1",
+    "representation": "yaml-based"
+  },
+  "prompt_authoring": {
+    "overview": "Generate external LLM prompts that preserve IdeaMark v1.1.1 YAML validity, structural reference integrity, and projection-driven interpretation for reusable knowledge capture.",
+    "required_inputs": [
+      "source_materials",
+      "projection",
+      "output_path",
+      "target_spec_version",
+      "audience"
+    ],
+    "projection_requirements": {
+      "policy": "interpret_before_extract",
+      "required": [
+        "projection.role",
+        "projection.reuse_goal",
+        "projection.primary_interests"
+      ],
+      "recommended": [
+        "projection.projection_id",
+        "projection.domain",
+        "projection.preferred_entity_kinds",
+        "projection.preferred_occurrence_roles",
+        "projection.ignore_unless_relevant"
+      ],
+      "rules": [
+        "Never summarize the source text as a neutral document unless the projection explicitly asks for summarization.",
+        "Interpret the source text from the specified projection before extracting entities, occurrences, sections, relations, or perspectives.",
+        "Extract reusable knowledge components that would be useful for the projection's future search, decision, or action context.",
+        "The same source text may produce different valid IdeaMark documents under different projections.",
+        "Represent the interpretation stance in the output `perspectives` namespace whenever the output depends on that stance."
+      ]
+    },
+    "output_contract": {
+      "required_yaml_units": [
+        "header",
+        "top-level entities",
+        "top-level occurrences",
+        "top-level sections"
+      ],
+      "recommended_yaml_units": [
+        "top-level perspectives that record the projection used for extraction"
+      ],
+      "ordering_requirements": [
+        "Keep the document structurally coherent so section occurrence references are easy to trace.",
+        "If `structure.sections` is emitted, keep it aligned with the actual section IDs.",
+        "Do not emit references to entities, occurrences, or sections that are not defined."
+      ],
+      "payload_requirements": [
+        "Every entity must contain `payload`.",
+        "Each payload must include at least one of `body`, `ref`, or `cache`.",
+        "If `payload.ref` exists, include `payload.ref.uri`."
+      ],
+      "prohibitions": [
+        "neutral source summarization when a projection is supplied",
+        "unresolved local references",
+        "duplicate IDs",
+        "empty entity payloads"
+      ]
+    },
+    "generation_flow": [
+      "collect(source_materials + projection)",
+      "describe(prompt-authoring + ai-authoring + params + checklist + vocab)",
+      "prompt_assembly",
+      "interpret_source_from_projection",
+      "generate",
+      "validate(working)",
+      "repair_loop",
+      "validate(strict)"
+    ],
+    "prompt_template_hints": {
+      "system": [
+        "You are generating IdeaMark v1.1.1 documents.",
+        "YAML validity and resolvable local references are mandatory.",
+        "Projection-driven interpretation is mandatory when a projection is supplied."
+      ],
+      "task": [
+        "Read the projection before reading the source text.",
+        "Produce a valid header and top-level namespaces.",
+        "Represent the projection in `perspectives`.",
+        "Ensure each entity has payload content.",
+        "Ensure each occurrence points to an existing entity.",
+        "Ensure each section lists existing occurrences.",
+        "Do not create a top-level registry wrapper.",
+        "Do not produce a generic summary unless explicitly requested by the projection."
+      ],
+      "quality_gate": [
+        "Must pass ideamark validate --mode strict.",
+        "Must not contain unresolved local references.",
+        "Must reflect the supplied projection in extraction choices."
+      ]
+    }
+  }
+}
+```
+
+## Required describe output: ai-authoring
+
+```json
+{
+  "contract": {
+    "name": "doc-cli-contract",
+    "version": "1.1.1"
+  },
+  "tool": {
+    "name": "ideamark-cli",
+    "version": "0.2.0"
+  },
+  "document": {
+    "name": "ideamark",
+    "version": "1.1.1",
+    "representation": "yaml-based"
+  },
+  "guidance": {
+    "overview": "Generate valid IdeaMark v1.1.1 documents for structural validation, routing-aware discovery, and projection-driven reusable knowledge capture.",
+    "principles": [
+      "Produce YAML-based IdeaMark documents that parse cleanly.",
+      "Interpret source materials through the specified projection before extracting entities, occurrences, sections, relations, or perspectives.",
+      "Do not produce a neutral summary unless the projection explicitly asks for summarization.",
+      "Capture reusable knowledge units for the projection's future search, decision, or action context.",
+      "The same source may yield different valid IdeaMark documents under different projections.",
+      "Keep IDs stable and unique within a document.",
+      "Use concise, factual language and avoid inventing unsupported claims or references.",
+      "Treat entities, occurrences, and sections as the minimum structural units.",
+      "Use validation early in working loops and strict validation before handoff."
+    ],
+    "do": [
+      "Read and apply the supplied projection before reading the source material.",
+      "Record the projection or interpretation stance in the top-level `perspectives` namespace when the output depends on that stance.",
+      "Include a valid header with the target `ideamark_version`.",
+      "Create at least one entity, one occurrence, and one section.",
+      "Give every entity a `payload` with `body`, `ref`, or `cache`.",
+      "Make every occurrence point to an existing entity and declare a `role`.",
+      "Make every section list at least one occurrence.",
+      "Prefer entity kinds and occurrence roles that fit the projection's reuse goal.",
+      "Use `relations` and `perspectives` only when you can keep references resolvable.",
+      "Use `payload.format.media_type` when payload format matters for routing or downstream processing."
+    ],
+    "dont": [
+      "Convert the source into a generic summary when a projection is supplied.",
+      "Ignore the specified projection, role, reuse goal, or primary interests.",
+      "Extract facts merely because they are prominent in the source; extract them because they matter under the projection.",
+      "Invent IDs that collide with existing ones.",
+      "Emit empty entity payloads.",
+      "Point `payload.ref` at a missing `uri`.",
+      "Reference entities, occurrences, or sections that do not exist.",
+      "Treat optional metadata such as `anchorage` as a substitute for required structure.",
+      "Invent external references, URLs, or citations that are not present in source materials."
+    ],
+    "checklist": [
+      "Projection has been read and reflected in extraction choices.",
+      "Header matches IdeaMark `1.1.1`.",
+      "Registry includes `entities`, `occurrences`, and `sections`.",
+      "Every entity has non-empty payload content.",
+      "Every occurrence has `entity` and `role`.",
+      "Every section has a non-empty `occurrences` array.",
+      "All local references resolve.",
+      "If a projection is supplied, `perspectives` records the interpretation stance.",
+      "Run `validate` in working mode during drafting and strict mode before handoff."
+    ]
+  }
+}
+```
+
+## Required describe output: params
+
+```json
+{
+  "contract": {
+    "name": "doc-cli-contract",
+    "version": "1.1.1"
+  },
+  "tool": {
+    "name": "ideamark-cli",
+    "version": "0.2.0"
+  },
+  "document": {
+    "name": "ideamark",
+    "version": "1.1.1",
+    "representation": "yaml-based"
+  },
+  "header": {
+    "required": [
+      "ideamark_version",
+      "doc_type"
+    ],
+    "strict_mode_required": [
+      "doc_id",
+      "status.state",
+      "created_at",
+      "updated_at",
+      "lang"
+    ],
+    "optional": [
+      "title",
+      "summary",
+      "authors",
+      "template",
+      "tags",
+      "source",
+      "lineage"
+    ],
+    "notes": [
+      "`ideamark_version` should match the target document line (`1.1.1`).",
+      "`doc_type` should use the published vocab (`source`, `derived`, `evolving`, `pattern`).",
+      "`status.state` should use the published vocab (`in_progress`, `paused`, `completed`, `published`)."
+    ]
+  },
+  "registry": {
+    "required_namespaces": [
+      "entities",
+      "occurrences",
+      "sections"
+    ],
+    "optional_namespaces": [
+      "relations",
+      "perspectives",
+      "structure"
+    ],
+    "entity": {
+      "required": [
+        "payload"
+      ],
+      "optional": [
+        "kind",
+        "atomicity_basis",
+        "perspectives",
+        "relations",
+        "status"
+      ],
+      "payload_rule": "At least one of `payload.body`, `payload.ref`, or `payload.cache` must exist.",
+      "payload_ref_rule": "If `payload.ref` is present, `payload.ref.uri` is required."
+    },
+    "occurrence": {
+      "required": [
+        "entity",
+        "role"
+      ],
+      "optional": [
+        "section",
+        "evidence",
+        "supporting_evidence",
+        "target",
+        "status"
+      ]
+    },
+    "section": {
+      "required": [
+        "occurrences"
+      ],
+      "optional": [
+        "title",
+        "summary",
+        "perspectives",
+        "relations",
+        "anchorage"
+      ],
+      "notes": [
+        "`occurrences` must be a non-empty array.",
+        "`anchorage` is optional metadata in v1.1.1, not a structural requirement."
+      ]
+    }
+  },
+  "references": {
+    "supported_forms": [
+      "entity ref (`IE-*`)",
+      "occurrence ref (`OCC-*`)",
+      "section ref (`SEC-*`)"
+    ],
+    "relation_targets": [
+      "entity_ref",
+      "section_ref"
+    ],
+    "notes": [
+      "`occurrence.entity` must refer to an existing entity.",
+      "`section.occurrences[]` must refer to existing occurrences.",
+      "`relations.*.from` and `relations.*.to` may target entities or sections."
+    ]
+  },
+  "validation": {
+    "working_mode_required": [
+      "yaml_parseable",
+      "entity_required",
+      "occurrence_required",
+      "section_required",
+      "entity_payload_required",
+      "entity_payload_content_required",
+      "occurrence_entity_required",
+      "occurrence_role_required",
+      "section_occurrences_required",
+      "relation_ref_valid"
+    ],
+    "strict_mode_highlights": [
+      "header fields are enforced more strictly",
+      "payload.ref.uri is required when payload.ref exists",
+      "unknown local references should fail validation"
+    ],
+    "warnings": [
+      "unreferenced entities",
+      "unused occurrences"
+    ]
+  }
+}
+```
+
+## Required describe output: checklist
+
+```md
+# strict checklist
+
+- header_required
+- header_singleton
+- yaml_parseable
+- entity_required
+- id_unique_within_doc
+- occurrence_required
+- section_required
+- entity_payload_required
+- entity_payload_content_required
+- entity_payload_ref_uri_required
+- occurrence_entity_required
+- occurrence_role_required
+- entity_ref_valid
+- occurrence_ref_valid
+- section_occurrences_required
+- relation_ref_valid
+```
+
+## Required describe output: vocab
+
+```md
+# vocab
+
+atomicity_basis:
+- interpretive
+- lexical
+- structural
+
+doc_type:
+- source
+- derived
+- evolving
+- pattern
+
+status.state:
+- in_progress
+- paused
+- completed
+- published
+
+occurrence.role examples:
+- claim
+- evidence
+- observation
+- assumption
+- constraint
+- objective
+
+relation ref targets:
+- entity_ref
+- section_ref
+```
+
+## Required shape example
+
+Use this shape as a structural example, but adapt IDs and contents to the Projection and source.
+
+```yaml
+ideamark_version: "1.1.1"
+doc_id: "DOC-PERS-VOLCANO-RESEARCHER-MARINE-ERUPTIONS"
+doc_type: "derived"
+status:
+  state: "in_progress"
+created_at: "2026-07-02T00:00:00Z"
+updated_at: "2026-07-02T00:00:00Z"
+lang: "en-US"
+title: "Monitoring Marine Eruptions interpreted for Volcano Monitoring Researcher"
+summary: "Projection-driven IdeaMark generated from Monitoring Marine Eruptions."
+perspectives:
+  PERS-VOLCANO-RESEARCHER:
+    role: "Volcano Monitoring Researcher"
+    reuse_goal: "See Projection section in the prompt."
+entities:
+  IE-001:
+    kind: "risk"
+    atomicity_basis: "interpretive"
+    perspectives:
+      - "PERS-VOLCANO-RESEARCHER"
+    payload:
+      body: "..."
+occurrences:
+  OCC-001:
+    entity: "IE-001"
+    role: "claim"
+sections:
+  SEC-001:
+    title: "..."
+    perspectives:
+      - "PERS-VOLCANO-RESEARCHER"
+    occurrences:
+      - "OCC-001"
+relations: {}
+structure:
+  sections:
+    - "SEC-001"
+```
+
+## Final instruction
+
+Read the attached source text, apply the Projection first, then produce the IdeaMark YAML.
+
+Return only one YAML document.

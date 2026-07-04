@@ -1,0 +1,229 @@
+perspectives:
+  - id: PERS-FIELD-SEARCH
+    projection_version: "0.3.0"
+    title: "Field Operation Knowledge Retrieval"
+    search_tasks:
+      - "What monitoring equipment should be deployed first?"
+      - "What operational constraints affect deployment?"
+      - "What evidence supports each recommendation?"
+    entity_model:
+      recommendation: one_action
+      evidence: one_independent_case
+      instrument: one_physical_capability
+      constraint: one_constraint
+    primary_interests:
+      - deployment
+      - constraints
+      - evidence
+
+entities:
+
+  - id: INS-HYDROPHONE-ARRAY
+    type: instrument
+    title: Small-aperture hydrophone array
+    capability: Regional hydroacoustic detection and bearing estimation
+
+  - id: INS-TPHASE-SEISMIC
+    type: instrument
+    title: T-phase optimized land seismic station
+    capability: Detection of submarine volcanic seismic phases and T-phases
+
+  - id: INS-SATELLITE
+    type: instrument
+    title: Satellite monitoring
+    capability: Detection of surface manifestations of submarine eruptions
+
+  - id: REC-L12-TPHASE
+    type: recommendation
+    action: Deploy one to three T-phase optimized land seismic stations
+
+  - id: REC-L12-HYDROPHONE
+    type: recommendation
+    action: Conduct short-term deployments of two to three non-real-time hydrophones in higher-risk regions
+
+  - id: REC-L12-SATELLITE
+    type: recommendation
+    action: Perform weekly to daily regional satellite monitoring according to regional risk
+
+  - id: REC-L34-CABLED
+    type: recommendation
+    action: Deploy one to two cabled four-mooring hydrophone arrays for continuous monitoring
+
+  - id: REC-L34-SUPPLEMENT
+    type: recommendation
+    action: Expand monitoring using additional T-phase stations, temporary hydrophones, satellites, and other methods as activity requires
+
+  - id: CON-COST
+    type: constraint
+    description: Real-time marine monitoring is expensive because telemetry infrastructure is required
+
+  - id: CON-TELEMETRY
+    type: constraint
+    description: Marine stations generally require cables or equivalent telemetry for real-time operation
+
+  - id: CON-DISTANCE
+    type: constraint
+    description: Land seismic monitoring is most effective when stations are within roughly 30 km of submarine activity
+
+  - id: EVD-DOD
+    type: evidence
+    title: Department of Defense hydrophone arrays detected numerous submarine eruptions beginning in the 1950s
+
+  - id: EVD-IMS
+    type: evidence
+    title: IMS hydrophone arrays provide real-time regional monitoring and have supported volcano monitoring studies
+
+  - id: EVD-RSP
+    type: evidence
+    title: Polynesian Seismic Network successfully detected submarine volcanic activity across the Pacific
+
+  - id: EVD-SOUTHSARIGAN
+    type: evidence
+    title: Northern Mariana seismic network detected precursory seismicity and eruption activity at South Sarigan Seamount
+
+  - id: EVD-TPHASE-RANGE
+    type: evidence
+    title: T-phases propagate over extremely long distances through the SOFAR channel
+
+occurrences:
+
+  - id: OCC-001
+    entity: EVD-TPHASE-RANGE
+    section: regional_monitoring
+    role: supporting_evidence
+
+  - id: OCC-002
+    entity: EVD-DOD
+    section: regional_monitoring
+    role: historical_evidence
+
+  - id: OCC-003
+    entity: EVD-IMS
+    section: regional_monitoring
+    role: operational_evidence
+
+  - id: OCC-004
+    entity: EVD-RSP
+    section: regional_monitoring
+    role: operational_evidence
+
+  - id: OCC-005
+    entity: EVD-SOUTHSARIGAN
+    section: regional_monitoring
+    role: case_evidence
+
+  - id: OCC-006
+    entity: REC-L12-TPHASE
+    section: recommendations_levels_1_2
+    role: deployment
+
+  - id: OCC-007
+    entity: REC-L12-HYDROPHONE
+    section: recommendations_levels_1_2
+    role: deployment
+
+  - id: OCC-008
+    entity: REC-L12-SATELLITE
+    section: recommendations_levels_1_2
+    role: deployment
+
+  - id: OCC-009
+    entity: REC-L34-CABLED
+    section: recommendations_levels_3_4
+    role: deployment
+
+  - id: OCC-010
+    entity: REC-L34-SUPPLEMENT
+    section: recommendations_levels_3_4
+    role: deployment
+
+  - id: OCC-011
+    entity: CON-COST
+    section: instrumentation
+    role: operational_constraint
+
+  - id: OCC-012
+    entity: CON-TELEMETRY
+    section: instrumentation
+    role: operational_constraint
+
+  - id: OCC-013
+    entity: CON-DISTANCE
+    section: regional_monitoring
+    role: operational_constraint
+
+sections:
+
+  - id: regional_monitoring
+    title: Regional-scale monitoring principles
+    occurrences:
+      - OCC-001
+      - OCC-002
+      - OCC-003
+      - OCC-004
+      - OCC-005
+      - OCC-013
+
+  - id: instrumentation
+    title: Deployable monitoring capabilities
+    entities:
+      - INS-HYDROPHONE-ARRAY
+      - INS-TPHASE-SEISMIC
+      - INS-SATELLITE
+    occurrences:
+      - OCC-011
+      - OCC-012
+
+  - id: recommendations_levels_1_2
+    title: Deployment recommendations for Levels 1–2
+    occurrences:
+      - OCC-006
+      - OCC-007
+      - OCC-008
+
+  - id: recommendations_levels_3_4
+    title: Deployment recommendations for Levels 3–4
+    occurrences:
+      - OCC-009
+      - OCC-010
+
+relations:
+
+  - from: REC-L12-TPHASE
+    to: INS-TPHASE-SEISMIC
+    type: deploys
+
+  - from: REC-L12-HYDROPHONE
+    to: INS-HYDROPHONE-ARRAY
+    type: deploys
+
+  - from: REC-L12-SATELLITE
+    to: INS-SATELLITE
+    type: deploys
+
+  - from: REC-L34-CABLED
+    to: INS-HYDROPHONE-ARRAY
+    type: deploys
+
+  - from: REC-L12-TPHASE
+    to: EVD-RSP
+    type: supported_by
+
+  - from: REC-L12-HYDROPHONE
+    to: EVD-DOD
+    type: supported_by
+
+  - from: REC-L34-CABLED
+    to: EVD-IMS
+    type: supported_by
+
+  - from: REC-L12-TPHASE
+    to: CON-DISTANCE
+    type: constrained_by
+
+structure:
+  root_sections:
+    - regional_monitoring
+    - instrumentation
+    - recommendations_levels_1_2
+    - recommendations_levels_3_4

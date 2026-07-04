@@ -1,0 +1,117 @@
+# IdeaMark v1.1.1 Projection Evaluation Prompt
+
+You are generating an IdeaMark v1.1.1 YAML document.
+
+## Purpose
+
+This is NOT a full-document conversion.
+
+This experiment evaluates whether different Projection (Knowledge Reuse Strategy) definitions produce different IdeaMark structures from the same source text.
+
+Coverage is NOT the objective.
+Knowledge reuse is the objective.
+
+## Source
+
+Attach the following source text:
+
+- sir20245062i.raw.txt
+- Monitoring Marine Eruptions
+- Use ONLY the section:
+  "Regional-Scale Monitoring of Submarine Eruptions"
+
+Ignore the remainder of the report.
+
+## Core Rules
+
+- Do NOT summarize the document.
+- Read the Projection FIRST.
+- The Projection defines:
+  - what knowledge is reusable
+  - what becomes an Entity
+  - what can be ignored
+  - how Sections should be organized
+  - what future search should be supported
+- Different projections SHOULD produce different IdeaMark YAML.
+
+## IdeaMark Requirements
+
+Generate valid IdeaMark v1.1.1 YAML.
+
+Output YAML only.
+
+Top-level namespaces:
+
+- entities
+- occurrences
+- sections
+
+Optional:
+
+- relations
+- perspectives
+- structure
+
+Record the Projection in perspectives.
+
+Every Entity must contain payload.
+
+Every Occurrence must reference an existing Entity.
+
+Every Section must reference existing Occurrences.
+
+Target size:
+
+- Entities: 8–15
+- Occurrences: 6–12
+- Sections: 3–5
+- Relations: up to 5
+
+Prefer atomic reusable knowledge instead of summary entities.
+
+
+## Projection
+
+```yaml
+
+projection_version: "0.2.0"
+projection_id: "PERS-FIELD-SEARCH"
+
+title: "Field Operation Knowledge Retrieval"
+
+search_tasks:
+  - "What monitoring equipment should be deployed first?"
+  - "What operational constraints affect deployment?"
+  - "What evidence supports those recommendations?"
+
+primary_interests:
+  - monitoring capability
+  - deployment
+  - operational constraint
+  - logistics
+  - recommendation
+  - evidence
+
+preferred_entity_kinds:
+  - capability
+  - instrument
+  - constraint
+  - recommendation
+  - evidence
+
+ignore_unless_relevant:
+  - historical background
+  - citation details
+
+```
+
+## Final instruction
+
+Interpret the source through the Projection above.
+
+Build an IdeaMark that best supports the listed search_tasks.
+
+Do not maximize coverage.
+Maximize future retrieval quality for those search tasks.
+
+Return only one valid IdeaMark v1.1.1 YAML document.
