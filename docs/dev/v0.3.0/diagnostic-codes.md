@@ -110,6 +110,9 @@ Note: Occurrence `role` and Entity `kind` intentionally have **no** unknown-valu
 
 ## 9. Command-scoped codes (non-validate)
 
+Command-scoped codes are not produced by checklist rules; their envelope `rule` field
+is the literal `CLI`.
+
 ### migrate
 
 | Code | Severity | Meaning |

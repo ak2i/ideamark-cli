@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const { loadDocument } = require('../../src/core/load');
-const { validateDocument } = require('../../src/core/validate');
+const { validateDocument, STRICT_PROMOTED } = require('../../src/core/validate');
 
 const FIXTURES = path.join(__dirname, '..', 'fixtures', 'v1.2.0');
 
@@ -137,6 +137,45 @@ test('--allow-unsupported-spec downgrades spec_version_unsupported (D7)', () => 
   assert.strictEqual(allowed.ok, true);
   const diag = allowed.diagnostics.find((d) => d.code === 'spec_version_unsupported');
   assert.strictEqual(diag.severity, 'warning');
+});
+
+test('strict corpus: every warning fixture behaves per the D8 promotion table', () => {
+  for (const name of listFixtures('warnings')) {
+    const code = expectedCode(name);
+    const result = validateFile(path.join(FIXTURES, 'warnings', name), { mode: 'strict' });
+    if (STRICT_PROMOTED.has(code)) {
+      const errorCodes = result.diagnostics.filter((d) => d.severity === 'error').map((d) => d.code);
+      assert.ok(errorCodes.includes(code), `${name}: ${code} should be promoted to error in strict mode, got ${JSON.stringify(errorCodes)}`);
+      assert.strictEqual(result.ok, false, `${name}: strict ok should be false`);
+    } else {
+      const warningCodes = result.diagnostics.filter((d) => d.severity === 'warning').map((d) => d.code);
+      assert.ok(warningCodes.includes(code), `${name}: ${code} should stay a warning in strict mode`);
+      assert.strictEqual(result.ok, true, `${name}: strict ok should be true (hygiene warning only)`);
+    }
+  }
+});
+
+test('custom YAML tags are reported as restricted features (LOAD-04)', () => {
+  const text = [
+    'meta:',
+    '  spec_version: ideamark-core-v1.2.0',
+    '  document_id: fx-custom-tag',
+    '  status: draft',
+    '  note: !custom tagged-value',
+    'sources: []',
+    'sections: []',
+    'occurrences: []',
+    'entities: []',
+    '',
+  ].join('\n');
+  const core = validateDocument(loadDocument(text), { mode: 'core' });
+  const diag = core.diagnostics.find((d) => d.code === 'yaml_restricted_feature');
+  assert.ok(diag, 'expected yaml_restricted_feature for custom tag');
+  assert.strictEqual(diag.severity, 'warning');
+  assert.strictEqual(core.ok, true);
+
+  const strict = validateDocument(loadDocument(text), { mode: 'strict' });
+  assert.strictEqual(strict.ok, false, 'strict mode should reject custom tags');
 });
 
 test('legacy v1.1.x input produces an actionable migrate error', () => {

@@ -30,11 +30,12 @@ function loadDocument(text) {
     docs = YAML.parseAllDocuments(text);
   } catch (e) {
     diagnostics.push(diag('error', 'yaml_parse_error', 'LOAD-01', `YAML parse error: ${e.message}`));
-    return { data: null, fatal: true, diagnostics };
+    return { data: null, fatal: true, documentCount: 0, diagnostics };
   }
+  const documentCount = docs.length;
   if (!docs.length) {
     diagnostics.push(diag('error', 'top_level_not_mapping', 'LOAD-02', 'document is empty'));
-    return { data: null, fatal: true, diagnostics };
+    return { data: null, fatal: true, documentCount, diagnostics };
   }
 
   const first = docs[0];
@@ -51,7 +52,7 @@ function loadDocument(text) {
       'LOAD-05',
       'input looks like an IdeaMark v1.1.x .ideamark.md document; convert it with `ideamark migrate`'
     ));
-    return { data: null, fatal: true, diagnostics };
+    return { data: null, fatal: true, documentCount, diagnostics };
   }
 
   const parseErrors = docs.flatMap((d) => d.errors);
@@ -59,7 +60,7 @@ function loadDocument(text) {
     for (const e of parseErrors.slice(0, 10)) {
       diagnostics.push(diag('error', 'yaml_parse_error', 'LOAD-01', `YAML parse error: ${e.message}`));
     }
-    return { data: null, fatal: true, diagnostics };
+    return { data: null, fatal: true, documentCount, diagnostics };
   }
 
   if (docs.length > 1) {
@@ -82,10 +83,10 @@ function loadDocument(text) {
 
   if (!isMapping(firstData)) {
     diagnostics.push(diag('error', 'top_level_not_mapping', 'LOAD-02', 'top level of the document is not a mapping'));
-    return { data: null, fatal: true, diagnostics };
+    return { data: null, fatal: true, documentCount, diagnostics };
   }
 
-  return { data: firstData, fatal: false, diagnostics };
+  return { data: firstData, fatal: false, documentCount, diagnostics };
 }
 
 module.exports = { loadDocument };
