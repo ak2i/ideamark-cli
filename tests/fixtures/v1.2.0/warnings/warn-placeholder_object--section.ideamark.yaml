@@ -1,0 +1,23 @@
+meta:
+  spec_version: ideamark-core-v1.2.0
+  document_id: fx-ph-section
+  status: draft
+sources:
+  - id: src-001
+    type: document
+    title: Fixture source
+sections:
+  - id: sec-001
+    title: Fixture section
+    occurrences:
+      - occ-001
+  - id: sec-002
+    title: Placeholder section
+    occurrences: []
+occurrences:
+  - id: occ-001
+    entity: ent-001
+    role: evidence
+entities:
+  - id: ent-001
+    content: Reusable material.

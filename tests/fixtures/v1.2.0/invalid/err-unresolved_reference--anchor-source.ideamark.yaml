@@ -1,0 +1,26 @@
+meta:
+  spec_version: ideamark-core-v1.2.0
+  document_id: fx-unresolved-anchor
+  status: draft
+sources:
+  - id: src-001
+    type: document
+    title: Fixture source
+sections:
+  - id: sec-001
+    title: Fixture section
+    anchors:
+      - source: src-999
+        type: line_range
+        ranges:
+          - start: 1
+            end: 5
+    occurrences:
+      - occ-001
+occurrences:
+  - id: occ-001
+    entity: ent-001
+    role: evidence
+entities:
+  - id: ent-001
+    content: Reusable material.

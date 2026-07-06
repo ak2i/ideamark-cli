@@ -69,6 +69,7 @@ Conventions:
 | SRC-05 | §5.5 | SHOULD | `type` in recommended vocabulary (`document web_page code_file repository dataset image audio video stream generated_artifact composite other`) | warn | error | `unknown_source_type` |
 | SRC-06 | §5.14, §13.10 | SHOULD | At least one of `title` / `uri` / `description` present. Classified as placeholder family (§13.10: "Source without identifying metadata beyond id") | warn | error | `source_metadata_missing` |
 | SRC-07 | §5.14 | SHOULD | Source referenced by at least one anchor. **[dev]** Part 4 conditions this on "appears to claim source traceability", which is undecidable → info. See F4 | info | info | `source_unreferenced` |
+| SRC-08 | §3.7 | SHOULD | `status`, when present, in recommended object-status vocabulary | warn | error | `unknown_status` |
 
 ## 5. SEC — sections
 

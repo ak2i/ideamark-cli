@@ -1,0 +1,20 @@
+meta:
+  spec_version: ideamark-core-v1.2.0
+  document_id: fx-xid-reuse
+  status: draft
+sources:
+  - id: shared-001
+    type: document
+    title: Fixture source
+sections:
+  - id: sec-001
+    title: Fixture section
+    occurrences:
+      - occ-001
+occurrences:
+  - id: occ-001
+    entity: shared-001
+    role: evidence
+entities:
+  - id: shared-001
+    content: Reusable material.

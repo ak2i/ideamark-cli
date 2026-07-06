@@ -1,0 +1,14 @@
+---
+ideamark_version: 1
+doc_id: legacy-doc
+status: in_progress
+---
+
+# Legacy markdown body
+
+```yaml
+entities:
+  ent-001:
+    payload:
+      body: legacy
+```
