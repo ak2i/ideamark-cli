@@ -548,4 +548,4 @@ function validateStructureNamespace(structure, sectionIds, push) {
   }
 }
 
-module.exports = { validateDocument, SPEC_VERSION, STRICT_PROMOTED };
+module.exports = { validateDocument, SPEC_VERSION, STRICT_PROMOTED, KNOWN_FIELDS };
