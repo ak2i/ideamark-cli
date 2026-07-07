@@ -1,7 +1,19 @@
 # ideamark-cli
 
-Command-line tools for working with IdeaMark documents on the `v0.2.0` track.  
-The current implementation is being aligned to IdeaMark Core `v1.1.1`.
+Command-line tools for validating and working with IdeaMark YAML documents on the `v0.3.0` track.  
+The current implementation targets IdeaMark Core `v1.1.1` and Doc CLI Contract `v1.1.1`.
+
+## Installation
+
+```bash
+npm install -g ideamark-cli
+ideamark --version
+ideamark --help
+```
+
+For npm package registration and release steps, see:
+
+- [docs/dev/v0.3.0/npm-publishing.md](docs/dev/v0.3.0/npm-publishing.md)
 
 ## Commands
 
@@ -158,8 +170,8 @@ See `tests/README.md`.
 
 公開サンプルは `docs/samples/` に置いています。小さめの YAML-first サンプルとして次があります。
 
-- [docs/samples/04-rfc3986-uri-overview/README.md](/home/akki/work/projects/ideamark-cli/docs/samples/04-rfc3986-uri-overview/README.md)
-- [docs/samples/04-rfc3986-uri-overview/rfc3986-uri-overview-sample.ideamark.yaml](/home/akki/work/projects/ideamark-cli/docs/samples/04-rfc3986-uri-overview/rfc3986-uri-overview-sample.ideamark.yaml)
+- [docs/samples/04-rfc3986-uri-overview/README.md](docs/samples/04-rfc3986-uri-overview/README.md)
+- [docs/samples/04-rfc3986-uri-overview/rfc3986-uri-overview-sample.ideamark.yaml](docs/samples/04-rfc3986-uri-overview/rfc3986-uri-overview-sample.ideamark.yaml)
 
 ## ChatGPT workflow
 
@@ -175,8 +187,8 @@ ideamark describe vocab --format md --audience ai --model large --lang ja-JP
 
 実際に ChatGPT へ貼るための雛形は次を参照してください。
 
-- [docs/samples/00-chatgpt-conversion-template/README.md](/home/akki/work/projects/ideamark-cli/docs/samples/00-chatgpt-conversion-template/README.md)
-- [docs/samples/00-chatgpt-conversion-template/chatgpt-conversion-prompt-template.md](/home/akki/work/projects/ideamark-cli/docs/samples/00-chatgpt-conversion-template/chatgpt-conversion-prompt-template.md)
+- [docs/samples/00-chatgpt-conversion-template/README.md](docs/samples/00-chatgpt-conversion-template/README.md)
+- [docs/samples/00-chatgpt-conversion-template/chatgpt-conversion-prompt-template.md](docs/samples/00-chatgpt-conversion-template/chatgpt-conversion-prompt-template.md)
 
 補助スクリプトで prompt を自動生成することもできます。
 
@@ -192,4 +204,4 @@ npm run build:chatgpt-prompt -- \
 注意:
 - 現行の生成指示は `entities`, `occurrences`, `sections` を top-level に置く前提です。
 - `registry:` で包むと `validate` が期待どおりに解釈しません。
-- Markdown 埋め込み型の旧 `*.ideamark.md` は現行の生成対象ではありません。`v0.2.0` では `*.ideamark.yaml` の YAML-first 形式を使ってください。
+- Markdown 埋め込み型の旧 `*.ideamark.md` は現行の生成対象ではありません。`v0.3.0` では `*.ideamark.yaml` の YAML-first 形式を使ってください。
