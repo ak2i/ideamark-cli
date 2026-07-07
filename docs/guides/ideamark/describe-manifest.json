@@ -1,0 +1,43 @@
+{
+  "tool": "ideamark-cli",
+  "package_version_source": "package.json",
+  "doc_cli_contract_version": "1.1.1",
+  "document_spec_version": "1.1.1",
+  "document_representation": "yaml-based",
+  "runtime_constants": {
+    "file": "src/describe.js",
+    "contract": "CONTRACT_VERSION",
+    "document_spec": "DOCUMENT_SPEC_VERSION"
+  },
+  "json_guides": [
+    {
+      "topic": "ai-authoring",
+      "file": "docs/guides/ideamark/ai-authoring.json"
+    },
+    {
+      "topic": "params",
+      "file": "docs/guides/ideamark/params.json"
+    },
+    {
+      "topic": "prompt-authoring",
+      "file": "docs/guides/ideamark/prompt-authoring.json"
+    }
+  ],
+  "describe_topics": [
+    "ai-authoring",
+    "params",
+    "prompt-authoring",
+    "capabilities",
+    "checklist",
+    "vocab",
+    "ls",
+    "routing"
+  ],
+  "release_gate": {
+    "required_scripts": [
+      "check:describe",
+      "release"
+    ],
+    "must_run_before_publish": true
+  }
+}
