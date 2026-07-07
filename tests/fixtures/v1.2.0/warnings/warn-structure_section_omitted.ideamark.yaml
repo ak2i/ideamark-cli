@@ -1,0 +1,30 @@
+meta:
+  spec_version: ideamark-core-v1.2.0
+  document_id: fx-str-omitted
+  status: draft
+sources:
+  - id: src-001
+    type: document
+    title: Fixture source
+sections:
+  - id: sec-001
+    title: First section
+    occurrences:
+      - occ-001
+  - id: sec-002
+    title: Second section
+    occurrences:
+      - occ-002
+occurrences:
+  - id: occ-001
+    entity: ent-001
+    role: evidence
+  - id: occ-002
+    entity: ent-001
+    role: context
+entities:
+  - id: ent-001
+    content: Reusable material.
+structure:
+  sections:
+    - sec-001

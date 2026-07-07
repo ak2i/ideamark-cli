@@ -1,0 +1,37 @@
+# Expected validate diagnostics for the v1.2.0 conformance corpus.
+#
+# Contract: docs/dev/v0.3.0/cli-contract-v1.2.0.md
+# Rules:    docs/dev/v0.3.0/validation-checklist.md
+# Codes:    docs/dev/v0.3.0/diagnostic-codes.md
+#
+# Semantics:
+# - errors / warnings: exact expected code lists (order-insensitive). Empty = none.
+# - info: expected code SETS (counts intentionally not pinned, to keep fixtures
+#   robust against info-level refinements). Info is only emitted with --info.
+# - Every file must also pass round-trip: `format` output re-validates identically.
+#
+# Baseline evidence: Phase 0 machine scan of the Part 4 samples (2026-07-06),
+# recorded in docs/dev/v0.3.0/spec-feedback.md F5.
+
+corpus: tests/fixtures/v1.2.0/valid
+mode: core
+
+defaults:
+  errors: []
+  warnings: []
+  info:
+    - anchor_precision_note      # all samples use approximate/inferred anchors
+    - id_prefix_unconventional   # samples use SRC-/SEC-/OCC-/ENT- upper-case prefixes
+
+files:
+  heapq-api-design.ideamark.yaml: {}
+  heapq-performance.ideamark.yaml: {}
+  recipe-cooking-execution.ideamark.yaml: {}
+  recipe-ingredient-substitution.ideamark.yaml: {}
+  rust-rfc-design-prose.ideamark.yaml: {}
+  sqlite-pager-state-machine.ideamark.yaml: {}
+
+# Strict-mode expectation for this corpus: identical to core (no placeholder,
+# unknown-namespace, unknown-field, unknown-vocabulary, or extension findings
+# exist in the samples), therefore errors: [] in strict mode as well.
+strict_mode_note: same-as-core
