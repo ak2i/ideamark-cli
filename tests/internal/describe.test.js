@@ -5,9 +5,9 @@ const { describe } = require('../../src/describe');
 test('describe: capabilities json', () => {
   const res = describe('capabilities', 'json', {});
   const payload = JSON.parse(res.output);
-  assert.strictEqual(payload.contract.version, '1.1.1');
-  assert.strictEqual(payload.document.version, '1.1.1');
-  assert.strictEqual(payload.document.representation, 'yaml-based');
+  assert.strictEqual(payload.contract.version, '1.2.0');
+  assert.strictEqual(payload.document.version, 'ideamark-core-v1.2.0');
+  assert.strictEqual(payload.document.representation, 'single-yaml-mapping');
   assert.ok(payload.commands.describe.topics.includes('ls'));
   assert.ok(payload.commands.describe.topics.includes('routing'));
   assert.ok(payload.commands.describe.topics.includes('prompt-authoring'));
