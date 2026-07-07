@@ -7,8 +7,8 @@ const { diag, makeMeta, makeSummary } = require('./diagnostics');
 
 const pkg = require('../package.json');
 
-const CONTRACT_VERSION = '1.1.1';
-const DOCUMENT_SPEC_VERSION = '1.1.1';
+const CONTRACT_VERSION = '1.2.0';
+const DOCUMENT_SPEC_VERSION = 'ideamark-core-v1.2.0';
 
 const PROFILE_MAP = {
   'ai-small': { audience: 'ai', model: 'small', lang: 'en-US' },
@@ -156,7 +156,7 @@ function buildCapabilities() {
     document: {
       name: 'ideamark',
       version: DOCUMENT_SPEC_VERSION,
-      representation: 'yaml-based',
+      representation: 'single-yaml-mapping',
     },
     features: {
       evidence: {
@@ -167,7 +167,7 @@ function buildCapabilities() {
       routing: {
         supported: true,
         entrypoints: ['describe routing', 'describe ls'],
-        selectors: ['role', 'kind', 'payload.format.media_type'],
+        selectors: ['source.type', 'occurrence.role', 'entity.kind', 'anchor.type'],
         fallback_search: true,
       },
       languages: {
@@ -223,10 +223,10 @@ function buildCapabilities() {
           'Check whether a document conforms to IdeaMark rules and emit diagnostics.',
         options: {
           '--strict': {
-            description: 'Enable stricter validation checks.',
+            description: 'Enable strict IdeaMark Core v1.2.0 checks.',
           },
           '--mode': {
-            values: ['working', 'strict'],
+            values: ['core', 'strict'],
             description: 'Select validation mode.',
           },
           '--fail-on-warn': {
@@ -278,7 +278,7 @@ function buildCapabilities() {
       format: {
         formats: ['md'],
         stdin: true,
-        description: 'Normalize IdeaMark documents without changing meaning.',
+        description: 'Normalize IdeaMark Core v1.2.0 YAML documents without changing meaning.',
       },
       extract: {
         formats: ['md'],
@@ -501,7 +501,7 @@ function describeRouting(format, context) {
     topic: 'routing',
     audience: context.audience,
     language: loaded.guide.language,
-    selectors: ['role', 'kind', 'payload.format.media_type'],
+    selectors: ['source.type', 'occurrence.role', 'entity.kind', 'anchor.type'],
     ...narrative,
     source: {
       target: 'guides',
