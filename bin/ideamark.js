@@ -12,13 +12,15 @@ const { parseDocument } = require('../src/parser');
 const { validateDocument } = require('../src/validate');
 const { emitNdjson } = require('../src/diagnostics');
 const { stringifyNdjson } = require('../src/diagnostics');
-const { formatDocument } = require('../src/format');
-const { attachEvidence, buildEvidenceBlock } = require('../src/evidence');
+const { loadDocument: loadCoreDocument } = require('../src/core/load');
+const { validateDocument: validateCoreDocument, SPEC_VERSION: CORE_SPEC_VERSION } = require('../src/core/validate');
+const { formatDocument: formatCoreDocument } = require('../src/core/format');
+const { migrateDocument: migrateCoreDocument } = require('../src/core/migrate');
 const { extractDocument } = require('../src/extract');
 const { composeDocuments } = require('../src/compose');
 const { publishDocument } = require('../src/publish');
 const { describe } = require('../src/describe');
-const { listDocument } = require('../src/ls');
+const { listDocument: listCoreDocument } = require('../src/core/ls');
 const { lintDocument, lintToJson, lintToMarkdown, PROFILE_RULES } = require('../src/lint');
 const { computeDiff, toNdjson: diffToNdjson, toJson: diffToJson, toMarkdown: diffToMarkdown } = require('../src/diff');
 const pkg = require('../package.json');
@@ -33,8 +35,8 @@ const HELP = {
     '  ideamark <command> [options]',
     '',
     'Commands:',
-    '  validate   Validate an IdeaMark document',
-    '  format     Format an IdeaMark document',
+    '  validate   Validate an IdeaMark Core v1.2.0 YAML document',
+    '  format     Format an IdeaMark Core v1.2.0 YAML document',
     '  extract    Extract a section or occurrence',
     '  compose    Compose multiple documents',
     '  publish    Publish a working document',
@@ -67,12 +69,12 @@ const HELP = {
   ].join('\n'),
   ls: [
     'Usage:',
-    '  ideamark ls [<infile>|-] [--sections] [--occurrences] [--entities] [--vocab] [--format json|md]',
+    '  ideamark ls [<infile>|-] [--sources] [--sections] [--occurrences] [--entities] [--vocab] [--format json|md]',
     '',
   ].join('\n'),
   validate: [
     'Usage:',
-    '  ideamark validate [<infile>|-] [--strict|--mode <mode>] [--fail-on-warn]',
+    '  ideamark validate [<infile>|-] [--strict|--mode core|strict] [--fail-on-warn] [--allow-unsupported-spec]',
     '',
   ].join('\n'),
   lint: [
@@ -88,6 +90,11 @@ const HELP = {
   format: [
     'Usage:',
     '  ideamark format [<infile>|-] [-o <outfile>|-] [--canonical] [--diagnostics <stderr|stdout|file>]',
+    '',
+  ].join('\n'),
+  migrate: [
+    'Usage:',
+    '  ideamark migrate <infile>|- [-o <outfile>|-] [--from v1.1.1] [--strict] [--info] [--diagnostics <stderr|stdout|file>]',
     '',
   ].join('\n'),
   extract: [
@@ -148,8 +155,8 @@ function main() {
     if (format === 'json') {
       const payload = {
         tool: { version: VERSION },
-        contract: { version: '1.1.1' },
-        document_spec: { version: '1.1.1' },
+        contract: { version: '1.2.0' },
+        document_spec: { version: CORE_SPEC_VERSION },
       };
       writeStdout(`${JSON.stringify(payload)}\n`);
       process.exit(0);
@@ -167,75 +174,44 @@ function main() {
 
   if (cmd === 'validate') {
     let infile = null;
-    let mode = 'working';
+    let mode = 'core';
     let failOnWarn = false;
-    let emitEvidence = null;
-    let evidenceScope = 'document';
-    let evidenceTarget = null;
-    let attachOut = null;
-    let artifactOut = null;
+    let allowUnsupportedSpec = false;
     while (args.length) {
       const a = args.shift();
       if (a === '--strict') mode = 'strict';
       else if (a === '--mode') mode = args.shift() || usageExit();
       else if (a === '--fail-on-warn') failOnWarn = true;
-      else if (a === '--emit-evidence') emitEvidence = args.shift() || usageExit();
-      else if (a === '--evidence-scope') evidenceScope = args.shift() || usageExit();
-      else if (a === '--evidence-target') evidenceTarget = args.shift() || usageExit();
-      else if (a === '--attach') attachOut = args.shift() || usageExit();
-      else if (a === '--artifact-out') artifactOut = args.shift() || usageExit();
+      else if (a === '--allow-unsupported-spec') allowUnsupportedSpec = true;
       else if (!infile) infile = a;
       else usageExit();
     }
-    if (emitEvidence && !['yaml', 'ndjson'].includes(emitEvidence)) usageExit();
-    if (evidenceScope && !['document', 'section', 'entity', 'occurrence'].includes(evidenceScope)) usageExit();
+    if (!['core', 'strict'].includes(mode)) usageExit();
     const text = readInput(infile);
-    const doc = parseDocument(text);
-    const result = validateDocument(doc, { mode });
-    const diagnosticsPayload = [result.meta, ...result.diagnostics, result.summary];
-    const hasEvidence = !!emitEvidence || !!attachOut;
-    if (!hasEvidence) {
-      emitNdjson(diagnosticsPayload, 'stdout');
+    const loaded = loadCoreDocument(text);
+    if (loaded.fatal && loaded.diagnostics.some((d) => d.code === 'legacy_document_detected')) {
+      const legacyMode = mode === 'strict' ? 'strict' : 'working';
+      const legacyDoc = parseDocument(text);
+      const legacyResult = validateDocument(legacyDoc, { mode: legacyMode });
+      emitNdjson([legacyResult.meta, ...legacyResult.diagnostics, legacyResult.summary], 'stdout');
+      const hasLegacyWarn = legacyResult.diagnostics.some((d) => d.severity === 'warning');
+      process.exit(legacyResult.ok && !(failOnWarn && hasLegacyWarn) ? 0 : 1);
     }
+    const result = validateCoreDocument(loaded, { mode, allowUnsupportedSpec });
+    const records = [
+      { type: 'meta', tool: 'ideamark-cli', version: VERSION, mode, document_spec: CORE_SPEC_VERSION },
+      ...result.diagnostics.map((d) => ({ type: 'diagnostic', mode, ...d })),
+      {
+        type: 'summary',
+        ok: result.summary.ok,
+        error_count: result.summary.errors,
+        warning_count: result.summary.warnings,
+        info_count: result.summary.infos,
+      },
+    ];
+    emitNdjson(records, 'stdout');
     const hasWarn = result.diagnostics.some((d) => d.severity === 'warning');
-    const ok = result.ok && !(failOnWarn && hasWarn);
-    if (hasEvidence) {
-      const target = {};
-      if (evidenceScope === 'section') target.section_id = evidenceTarget || null;
-      if (evidenceScope === 'entity') target.entity_id = evidenceTarget || null;
-      if (evidenceScope === 'occurrence') target.occurrence_id = evidenceTarget || null;
-      const evidenceRecord = {
-        kind: 'lint-report',
-        scope: evidenceScope,
-        target,
-        produced_by: {
-          tool: 'ideamark-cli',
-          command: 'validate',
-          tool_version: VERSION,
-        },
-        produced_at: new Date().toISOString(),
-        summary: result.summary,
-      };
-      let evidenceForAttach = evidenceRecord;
-      if (artifactOut && emitEvidence === 'ndjson') {
-        writeFileUtf8(artifactOut, `${JSON.stringify(evidenceRecord)}\n`);
-        evidenceForAttach = {
-          ...evidenceRecord,
-          artifact_ref: { uri: artifactOut },
-        };
-      }
-
-      if (attachOut) {
-        const attached = attachEvidence(text, evidenceForAttach, { scope: evidenceScope, targetId: evidenceTarget });
-        writeOutput(attachOut, attached.output);
-      } else if (emitEvidence === 'yaml') {
-        writeStdout(buildEvidenceBlock(evidenceRecord));
-      } else if (emitEvidence === 'ndjson') {
-        writeStdout(`${JSON.stringify(evidenceRecord)}\n`);
-      }
-      if (diagnosticsPayload.length) writeStderr(stringifyNdjson(diagnosticsPayload));
-    }
-    process.exit(ok ? 0 : 1);
+    process.exit(result.ok && !(failOnWarn && hasWarn) ? 0 : 1);
   }
 
   if (cmd === 'format') {
@@ -252,10 +228,40 @@ function main() {
       else usageExit();
     }
     const text = readInput(infile);
-    const result = formatDocument(text, { canonical });
+    const result = formatCoreDocument(text, { canonical });
+    if (!result.ok) {
+      writeDiagnostics(result.diagnostics.map((d) => ({ type: 'diagnostic', ...d })), diagnosticsTarget);
+      process.exit(1);
+    }
     writeOutput(outfile, result.output);
-    writeDiagnostics(result.diagnostics, diagnosticsTarget);
+    writeDiagnostics(result.diagnostics.map((d) => ({ type: 'diagnostic', ...d })), diagnosticsTarget);
     process.exit(0);
+  }
+
+
+  if (cmd === 'migrate') {
+    let infile = null;
+    let outfile = null;
+    let from = null;
+    let strict = false;
+    let info = false;
+    let diagnosticsTarget = 'stderr';
+    while (args.length) {
+      const a = args.shift();
+      if (a === '-o') outfile = args.shift() || usageExit();
+      else if (a === '--from') from = args.shift() || usageExit();
+      else if (a === '--strict') strict = true;
+      else if (a === '--info') info = true;
+      else if (a === '--diagnostics') diagnosticsTarget = args.shift() || usageExit();
+      else if (!infile) infile = a;
+      else usageExit();
+    }
+    if (!infile || (from && from !== 'v1.1.1')) usageExit();
+    const text = readInput(infile);
+    const result = migrateCoreDocument(text, { from, strict, info });
+    if (result.output) writeOutput(outfile, result.output);
+    writeDiagnostics(result.diagnostics.map((d) => ({ type: 'diagnostic', ...d })), diagnosticsTarget);
+    process.exit(result.ok ? 0 : 1);
   }
 
   if (cmd === 'extract') {
@@ -477,25 +483,30 @@ function main() {
   if (cmd === 'ls') {
     let infile = null;
     let format = 'json';
-    const include = { sections: false, occurrences: false, entities: false, vocab: false };
+    const include = { sources: false, sections: false, occurrences: false, entities: false, vocab: false };
     while (args.length) {
       const a = args.shift();
       if (a === '--format') {
         format = args.shift() || usageExit();
         if (!['json', 'md'].includes(format)) usageExit();
-      } else if (a === '--sections') include.sections = true;
+      } else if (a === '--sources') include.sources = true;
+      else if (a === '--sections') include.sections = true;
       else if (a === '--occurrences') include.occurrences = true;
       else if (a === '--entities') include.entities = true;
       else if (a === '--vocab') include.vocab = true;
       else if (!infile) infile = a;
       else usageExit();
     }
-    if (!include.sections && !include.occurrences && !include.entities && !include.vocab) {
-      include.sections = include.occurrences = include.entities = include.vocab = true;
+    if (!include.sources && !include.sections && !include.occurrences && !include.entities && !include.vocab) {
+      include.sources = include.sections = include.occurrences = include.entities = include.vocab = true;
     }
     const text = readInput(infile);
-    const doc = parseDocument(text);
-    const result = listDocument(doc, { format, include });
+    const loaded = loadCoreDocument(text);
+    if (loaded.fatal) {
+      writeStderr(stringifyNdjson(loaded.diagnostics.map((d) => ({ type: 'diagnostic', ...d }))));
+      process.exit(1);
+    }
+    const result = listCoreDocument(loaded.data, { format, include });
     if (!result.ok) {
       if (result.diagnostics) writeStderr(stringifyNdjson(result.diagnostics));
       process.exit(1);

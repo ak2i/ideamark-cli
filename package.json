@@ -1,6 +1,6 @@
 {
   "name": "ideamark-cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "IdeaMark CLI",
   "private": false,
   "keywords": [
@@ -30,6 +30,7 @@
     "scripts/",
     "docs/guides/ideamark/",
     "docs/dev/v0.2.0/",
+    "docs/dev/v0.3.0/",
     "docs/specs/doc-cli/v1.1.1/",
     "docs/samples/00-chatgpt-conversion-template/",
     "docs/samples/04-rfc3986-uri-overview/",
@@ -43,6 +44,7 @@
     "test": "node --test",
     "build:chatgpt-prompt": "node scripts/build-chatgpt-conversion-prompt.js",
     "smoke:v0.1.3": "node tests/run-smoke-v0.1.3.js",
+    "smoke:v0.3.0": "node tests/run-smoke-v0.3.0.js",
     "llm-metrics:v0.1.3": "node tests/run-llm-metrics-v0.1.3.js"
   },
   "dependencies": {
