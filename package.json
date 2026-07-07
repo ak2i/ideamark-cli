@@ -1,7 +1,7 @@
 {
   "name": "ideamark-cli",
   "version": "0.3.0",
-  "description": "IdeaMark CLI",
+  "description": "Command-line tools for validating and working with IdeaMark YAML documents.",
   "private": false,
   "keywords": [
     "ideamark",
@@ -43,6 +43,10 @@
   "scripts": {
     "test": "node --test",
     "build:chatgpt-prompt": "node scripts/build-chatgpt-conversion-prompt.js",
+    "check:describe": "node scripts/check-describe-sync.js",
+    "pack:dry-run": "npm pack --dry-run",
+    "release": "npm run check:describe && node scripts/release.js",
+    "prepublishOnly": "npm run check:describe && npm test",
     "smoke:v0.1.3": "node tests/run-smoke-v0.1.3.js",
     "smoke:v0.3.0": "node tests/run-smoke-v0.3.0.js",
     "llm-metrics:v0.1.3": "node tests/run-llm-metrics-v0.1.3.js"
