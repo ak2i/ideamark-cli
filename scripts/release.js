@@ -35,6 +35,7 @@ function usage() {
     '  3. npm pack',
     '',
     'Publishing is opt-in. Add --publish to run npm publish after the preflight.',
+    'Scoped packages are published with --access public.',
   ].join('\n'));
 }
 
@@ -93,5 +94,9 @@ if (!publish) {
 }
 
 run('npm', ['whoami'], { cwd: root });
-run('npm', ['publish', '--tag', tag], { cwd: root });
+const publishArgs = ['publish', '--tag', tag];
+if (pkg.name && pkg.name.startsWith('@')) {
+  publishArgs.push('--access', 'public');
+}
+run('npm', publishArgs, { cwd: root });
 console.log(`\nrelease: published ${pkg.name}@${pkg.version} with dist-tag ${tag}`);
