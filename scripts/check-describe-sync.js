@@ -84,6 +84,9 @@ const capabilitiesText = runIdeamark(['describe', 'capabilities', '--format', 'j
 if (capabilitiesText) {
   try {
     const capabilities = JSON.parse(capabilitiesText);
+    assertEqual('describe capabilities tool.name', checkRequiredPath(capabilities, 'tool.name', 'capabilities'), manifest.tool);
+    assertEqual('describe capabilities tool.package', checkRequiredPath(capabilities, 'tool.package', 'capabilities'), manifest.package || pkg.name);
+    assertEqual('describe capabilities tool.command', checkRequiredPath(capabilities, 'tool.command', 'capabilities'), manifest.command || 'ideamark');
     assertEqual('describe capabilities tool.version', checkRequiredPath(capabilities, 'tool.version', 'capabilities'), pkg.version);
     assertEqual('describe capabilities contract.version', checkRequiredPath(capabilities, 'contract.version', 'capabilities'), manifest.doc_cli_contract_version);
     assertEqual('describe capabilities document.version', checkRequiredPath(capabilities, 'document.version', 'capabilities'), manifest.document_spec_version);
