@@ -1,5 +1,7 @@
 {
   "tool": "ideamark-cli",
+  "package": "@ideamark/core-cli",
+  "command": "ideamark",
   "package_version_source": "package.json",
   "doc_cli_contract_version": "1.2.0-draft.2",
   "document_spec_version": "ideamark-core-v1.2.0",
