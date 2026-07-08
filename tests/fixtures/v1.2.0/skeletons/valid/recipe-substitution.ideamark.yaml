@@ -1,0 +1,35 @@
+meta:
+  spec_version: ideamark-core-v1.2.0
+  document_id: doc-recipe
+  status: draft
+sources:
+  - id: src-1
+    type: document
+    title: Recipe note
+sections:
+  - id: sec-1
+    title: Substitution
+    occurrences: [occ-1]
+occurrences:
+  - id: occ-1
+    entity: ent-1
+    role: claim
+entities:
+  - id: ent-1
+    kind: guidance
+    content: Yogurt can replace sour cream in some dips.
+skeletons:
+  - id: skel-recipe
+    role: retrieval
+    projection: projection://example/recipe-substitution/v1
+    nodes:
+      - id: n-problem
+        slot: problem
+        ref: { kind: entity, id: ent-1 }
+      - id: n-substitute
+        slot: substitution
+    links:
+      - id: l-1
+        type: supports
+        from: n-problem
+        to: n-substitute

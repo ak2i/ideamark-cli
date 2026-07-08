@@ -4,7 +4,7 @@
 
 const REQUIRED_ARRAY_NAMESPACES = ['sources', 'sections', 'occurrences', 'entities'];
 const REQUIRED_NAMESPACES = ['meta', ...REQUIRED_ARRAY_NAMESPACES];
-const OPTIONAL_NAMESPACES = ['structure', 'relations', 'perspectives', 'provenance', 'extensions'];
+const OPTIONAL_NAMESPACES = ['structure', 'relations', 'perspectives', 'provenance', 'skeletons', 'extensions'];
 
 function isMapping(v) {
   return v !== null && typeof v === 'object' && !Array.isArray(v);
@@ -33,8 +33,41 @@ function collectNamespace(data, ns) {
   return out;
 }
 
+function collectSkeletons(data) {
+  const value = data.skeletons;
+  const out = { present: value !== undefined, valid: Array.isArray(value), entries: [], idSet: new Set(), duplicates: [] };
+  if (!out.valid) return out;
+  value.forEach((obj, index) => {
+    const entry = { obj, index, id: null, idValid: false, mapping: isMapping(obj), nodesById: new Set(), linksById: new Set(), duplicateNodes: [], duplicateLinks: [] };
+    if (entry.mapping && isNonEmptyString(obj.id)) {
+      entry.id = obj.id;
+      entry.idValid = true;
+      if (out.idSet.has(obj.id)) out.duplicates.push(entry);
+      else out.idSet.add(obj.id);
+    }
+    if (entry.mapping && Array.isArray(obj.nodes)) {
+      obj.nodes.forEach((node, nodeIndex) => {
+        if (isMapping(node) && isNonEmptyString(node.id)) {
+          if (entry.nodesById.has(node.id)) entry.duplicateNodes.push({ node, index: nodeIndex, id: node.id });
+          else entry.nodesById.add(node.id);
+        }
+      });
+    }
+    if (entry.mapping && Array.isArray(obj.links)) {
+      obj.links.forEach((link, linkIndex) => {
+        if (isMapping(link) && isNonEmptyString(link.id)) {
+          if (entry.linksById.has(link.id)) entry.duplicateLinks.push({ link, index: linkIndex, id: link.id });
+          else entry.linksById.add(link.id);
+        }
+      });
+    }
+    out.entries.push(entry);
+  });
+  return out;
+}
+
 function buildModel(data) {
-  const model = { namespaces: {} };
+  const model = { namespaces: {}, skeletons: collectSkeletons(data) };
   for (const ns of REQUIRED_ARRAY_NAMESPACES) {
     model.namespaces[ns] = collectNamespace(data, ns);
   }
@@ -47,5 +80,6 @@ module.exports = {
   OPTIONAL_NAMESPACES,
   isMapping,
   isNonEmptyString,
+  collectSkeletons,
   buildModel,
 };

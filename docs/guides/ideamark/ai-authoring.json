@@ -1,19 +1,19 @@
 {
   "contract": {
     "name": "doc-cli-contract",
-    "version": "1.1.1"
+    "version": "1.2.0-draft.2"
   },
   "tool": {
     "name": "ideamark-cli",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "document": {
     "name": "ideamark",
-    "version": "1.1.1",
-    "representation": "yaml-based"
+    "version": "ideamark-core-v1.2.0",
+    "representation": "single-yaml-mapping"
   },
   "guidance": {
-    "overview": "Generate valid IdeaMark v1.1.1 documents for structural validation, routing-aware discovery, and projection-driven reusable knowledge capture.",
+    "overview": "Generate valid IdeaMark Core v1.2.0 documents for structural validation, routing-aware discovery, and projection-driven reusable knowledge capture.",
     "principles": [
       "Produce YAML-based IdeaMark documents that parse cleanly.",
       "Interpret source materials through the specified projection before extracting entities, occurrences, sections, relations, or perspectives.",
@@ -23,7 +23,8 @@
       "Keep IDs stable and unique within a document.",
       "Use concise, factual language and avoid inventing unsupported claims or references.",
       "Treat entities, occurrences, and sections as the minimum structural units.",
-      "Use validation early in working loops and strict validation before handoff."
+      "Use validation early in working loops and strict validation before handoff.",
+      "When retrieval or reconstruction quality matters, model the intended slots and links in optional `skeletons` and keep missing slots visible."
     ],
     "do": [
       "Read and apply the supplied projection before reading the source material.",
@@ -50,7 +51,7 @@
     ],
     "checklist": [
       "Projection has been read and reflected in extraction choices.",
-      "Header matches IdeaMark `1.1.1`.",
+      "Core `meta.spec_version` is `ideamark-core-v1.2.0`.",
       "Registry includes `entities`, `occurrences`, and `sections`.",
       "Every entity has non-empty payload content.",
       "Every occurrence has `entity` and `role`.",

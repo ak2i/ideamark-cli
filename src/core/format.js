@@ -8,7 +8,7 @@ const { loadDocument } = require('./load');
 // indentation are normalized. Canonical mode additionally reorders top-level
 // namespaces and normalizes scalar quoting styles; it never deletes data.
 
-const CANONICAL_ORDER = ['meta', 'sources', 'sections', 'occurrences', 'entities', 'structure', 'extensions'];
+const CANONICAL_ORDER = ['meta', 'sources', 'sections', 'occurrences', 'entities', 'structure', 'skeletons', 'extensions'];
 
 // Long scalars are never re-wrapped: re-flowing content lines would make
 // round-trip output depend on lineWidth, which Part 4 §15.9 discourages.

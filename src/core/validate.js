@@ -24,6 +24,7 @@ const SOURCE_TYPES = ['document', 'web_page', 'code_file', 'repository', 'datase
 const ANCHOR_TYPES = ['line_range', 'character_range', 'paragraph', 'heading_path', 'page_range', 'media_time_range', 'image_region', 'dataset_rows', 'dataset_columns', 'dataset_cells', 'dataset_query', 'repository_path', 'code_symbol', 'composite_fragment', 'other'];
 const PRECISION_VALUES = ['exact', 'approximate', 'inferred', 'unknown'];
 const PROJECTION_ROLES = ['generation', 'reconstruction_reference', 'comparison', 'compatibility_hint', 'inline_note'];
+const SKELETON_LINK_TYPES = ['depends_on', 'supports', 'contrasts', 'replaces', 'requires', 'enables', 'part_of', 'example_of', 'same_as'];
 
 const ID_PREFIX = { sources: 'src-', sections: 'sec-', occurrences: 'occ-', entities: 'ent-' };
 
@@ -221,6 +222,7 @@ function validateStructure(data, push) {
   }
 
   if ('structure' in data) validateStructureNamespace(data.structure, ids.sections, push);
+  if ('skeletons' in data) validateSkeletonsNamespace(data, model.skeletons, ids, push);
   if ('extensions' in data && data.extensions !== undefined) {
     if (!isMapping(data.extensions)) {
       push('warning', 'field_wrong_type', 'EXT-03', '`extensions` should be a mapping', 'extensions');
@@ -498,6 +500,70 @@ function validateAnchors(obj, ownerPath, ownerId, ctx) {
       }
     }
   });
+}
+
+function validateSkeletonsNamespace(data, info, ids, push) {
+  const coreIds = {
+    source: ids.sources,
+    sources: ids.sources,
+    section: ids.sections,
+    sections: ids.sections,
+    occurrence: ids.occurrences,
+    occurrences: ids.occurrences,
+    entity: ids.entities,
+    entities: ids.entities,
+  };
+  if (!info.valid) {
+    push('warning', 'skeletons_wrong_type', 'SKEL-01', '`skeletons` should be an array of Skeleton Graph objects', 'skeletons');
+    return;
+  }
+  for (const entry of info.entries) {
+    const path = `skeletons[${entry.index}]`;
+    if (!entry.mapping) {
+      push('warning', 'skeleton_object_invalid', 'SKEL-02', 'skeleton graph should be a mapping object', path);
+      continue;
+    }
+    const graph = entry.obj;
+    if (!entry.idValid) push('warning', 'skeleton_id_invalid', 'SKEL-03', 'skeleton graph has a missing, empty, or non-string `id`', path, null, 'id');
+    if (graph.nodes !== undefined && !Array.isArray(graph.nodes)) push('warning', 'skeleton_nodes_wrong_type', 'SKEL-05', '`nodes` should be an array', `${path}.nodes`, entry.id, 'nodes');
+    if (graph.links !== undefined && !Array.isArray(graph.links)) push('warning', 'skeleton_links_wrong_type', 'SKEL-06', '`links` should be an array', `${path}.links`, entry.id, 'links');
+
+    if (Array.isArray(graph.nodes)) graph.nodes.forEach((node, i) => {
+      const nPath = `${path}.nodes[${i}]`;
+      if (!isMapping(node) || !isNonEmptyString(node.id)) {
+        push('warning', 'skeleton_node_id_invalid', 'SKEL-07', 'skeleton node should be a mapping with a non-empty string `id`', nPath, entry.id, 'id');
+        return;
+      }
+      if (node.ref !== undefined) validateSkeletonRef(node.ref, `${nPath}.ref`, node.id, coreIds, push);
+    });
+    for (const dup of entry.duplicateNodes) push('warning', 'skeleton_duplicate_id', 'SKEL-04', `duplicate skeleton node id \`${dup.id}\``, `${path}.nodes[${dup.index}]`, entry.id, 'id');
+
+    if (Array.isArray(graph.links)) graph.links.forEach((link, i) => {
+      const lPath = `${path}.links[${i}]`;
+      if (!isMapping(link) || !isNonEmptyString(link.id)) push('warning', 'skeleton_link_id_invalid', 'SKEL-08', 'skeleton link should be a mapping with a non-empty string `id`', lPath, entry.id, 'id');
+      if (isMapping(link)) {
+        for (const endpoint of ['from', 'to']) {
+          if (!isNonEmptyString(link[endpoint]) || !entry.nodesById.has(link[endpoint])) push('warning', 'skeleton_link_endpoint_unresolved', 'SKEL-09', `skeleton link \`${endpoint}\` does not resolve to a node in the same graph`, `${lPath}.${endpoint}`, entry.id, endpoint);
+        }
+        if (isNonEmptyString(link.type) && !SKELETON_LINK_TYPES.includes(link.type)) push('warning', 'skeleton_unknown_link_type', 'SKEL-11', `unknown skeleton link type \`${link.type}\``, lPath, entry.id, 'type');
+      }
+    });
+    for (const dup of entry.duplicateLinks) push('warning', 'skeleton_duplicate_id', 'SKEL-04', `duplicate skeleton link id \`${dup.id}\``, `${path}.links[${dup.index}]`, entry.id, 'id');
+  }
+  for (const dup of info.duplicates) push('warning', 'skeleton_duplicate_id', 'SKEL-04', `duplicate skeleton graph id \`${dup.id}\``, `skeletons[${dup.index}]`, dup.id, 'id');
+}
+
+function validateSkeletonRef(ref, path, nodeId, coreIds, push) {
+  if (!isMapping(ref)) {
+    push('warning', 'skeleton_ref_unresolved', 'SKEL-10', 'skeleton node `ref` should be a mapping with `kind` and `id`', path, nodeId, 'ref');
+    return;
+  }
+  if (!isNonEmptyString(ref.kind) || !isNonEmptyString(ref.id)) {
+    push('warning', 'skeleton_ref_unresolved', 'SKEL-10', 'skeleton node `ref` should include non-empty string `kind` and `id`', path, nodeId, 'ref');
+    return;
+  }
+  const set = coreIds[ref.kind];
+  if (set && !set.has(ref.id)) push('warning', 'skeleton_ref_unresolved', 'SKEL-10', `skeleton node ref ${ref.kind}:${ref.id} does not resolve in this document`, path, nodeId, 'ref');
 }
 
 function validateStructureNamespace(structure, sectionIds, push) {

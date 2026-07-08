@@ -1,19 +1,19 @@
 {
   "contract": {
     "name": "doc-cli-contract",
-    "version": "1.1.1"
+    "version": "1.2.0-draft.2"
   },
   "tool": {
     "name": "ideamark-cli",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "document": {
     "name": "ideamark",
-    "version": "1.1.1",
-    "representation": "yaml-based"
+    "version": "ideamark-core-v1.2.0",
+    "representation": "single-yaml-mapping"
   },
   "prompt_authoring": {
-    "overview": "Generate external LLM prompts that preserve IdeaMark v1.1.1 YAML validity, structural reference integrity, and projection-driven interpretation for reusable knowledge capture.",
+    "overview": "Generate external LLM prompts that preserve IdeaMark Core v1.2.0 YAML validity, structural reference integrity, and projection-driven interpretation for reusable knowledge capture.",
     "ownership": {
       "inside_cli": [
         "describe guidance distribution",
@@ -126,7 +126,7 @@
     ],
     "prompt_template_hints": {
       "system": [
-        "You are generating IdeaMark v1.1.1 documents.",
+        "You are generating IdeaMark Core v1.2.0 documents.",
         "YAML validity and resolvable local references are mandatory.",
         "Projection-driven interpretation is mandatory when a projection is supplied."
       ],

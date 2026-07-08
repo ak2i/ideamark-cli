@@ -1,16 +1,16 @@
 {
   "contract": {
     "name": "doc-cli-contract",
-    "version": "1.1.1"
+    "version": "1.2.0-draft.2"
   },
   "tool": {
     "name": "ideamark-cli",
-    "version": "0.3.0"
+    "version": "0.3.1"
   },
   "document": {
     "name": "ideamark",
-    "version": "1.1.1",
-    "representation": "yaml-based"
+    "version": "ideamark-core-v1.2.0",
+    "representation": "single-yaml-mapping"
   },
   "header": {
     "required": [
@@ -34,7 +34,7 @@
       "lineage"
     ],
     "notes": [
-      "`ideamark_version` should match the target document line (`1.1.1`).",
+      "`meta.spec_version` should match `ideamark-core-v1.2.0`.",
       "`doc_type` should use the published vocab (`source`, `derived`, `evolving`, `pattern`).",
       "`status.state` should use the published vocab (`in_progress`, `paused`, `completed`, `published`)."
     ]
@@ -48,7 +48,8 @@
     "optional_namespaces": [
       "relations",
       "perspectives",
-      "structure"
+      "structure",
+      "skeletons"
     ],
     "entity": {
       "required": [
@@ -90,7 +91,7 @@
       ],
       "notes": [
         "`occurrences` must be a non-empty array.",
-        "`anchorage` is optional metadata in v1.1.1, not a structural requirement."
+        "`anchorage` is optional metadata in Core v1.2.0 unless a profile requires it."
       ]
     }
   },

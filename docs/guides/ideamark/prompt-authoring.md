@@ -1,6 +1,6 @@
 # IdeaMark Prompt Authoring Guide
 
-Use this topic to build external LLM prompts that stay aligned with IdeaMark v1.1.1. The baseline representation is YAML-based.
+Use this topic to build external LLM prompts that stay aligned with IdeaMark Core v1.2.0. The baseline representation is YAML-based.
 
 ## Overview
 
@@ -12,7 +12,7 @@ Use this topic to build external LLM prompts that stay aligned with IdeaMark v1.
 
 - source material path or text
 - target output path
-- target spec version `1.1.1`
+- target spec version `ideamark-core-v1.2.0`
 - desired audience
 
 ## Output Contract
@@ -61,7 +61,7 @@ Template extension policy:
 
 ## Prompt Snippets
 
-- "Generate IdeaMark v1.1.1 YAML with valid header, entities, occurrences, and sections."
+- "Generate IdeaMark Core v1.2.0 YAML with valid header, entities, occurrences, and sections."
 - "Do not create a top-level `registry:` wrapper."
 - "Every occurrence must point to an existing entity."
 - "Every section must list existing occurrences."

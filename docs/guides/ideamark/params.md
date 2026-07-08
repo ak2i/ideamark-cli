@@ -1,6 +1,6 @@
 # IdeaMark Params
 
-This guide describes the minimal structural inputs for IdeaMark v1.1.1. The baseline representation is YAML-based.
+This guide describes the minimal structural inputs for IdeaMark Core v1.2.0. The baseline representation is YAML-based.
 
 ## Header
 
@@ -16,7 +16,7 @@ Strict mode additionally requires:
 - `lang`
 
 Notes:
-- `ideamark_version` should be `1.1.1`.
+- `meta.spec_version` should be `ideamark-core-v1.2.0`.
 - `doc_type` should use the published vocab: `source`, `derived`, `evolving`, `pattern`.
 - `status.state` should use the published vocab: `in_progress`, `paused`, `completed`, `published`.
 
@@ -46,7 +46,7 @@ Occurrence rules:
 Section rules:
 - Every section must have a non-empty `occurrences` array.
 - Each `occurrences[]` entry must resolve to an existing occurrence ID.
-- `anchorage` is optional metadata in v1.1.1.
+- Core v1.2.0 anchors and optional namespaces are metadata unless required by a profile.
 
 ## References
 

@@ -1,7 +1,7 @@
 # ideamark-cli
 
-Command-line tools for working with IdeaMark documents on the `v0.2.0` track.  
-The current implementation is being aligned to IdeaMark Core `v1.1.1`.
+Command-line tools for working with IdeaMark Core `v1.2.0` documents.
+The current package version is `0.3.1` with additive Skeleton Graph discovery/basic validation (`skeletons`) and retrieval fixture support.
 
 ## Commands
 
@@ -95,39 +95,32 @@ Topics:
 ### ls
 
 ```bash
-ideamark ls [<infile>|-] [--sections] [--occurrences] [--entities] [--vocab] [--format json|md]
+ideamark ls [<infile>|-] [--sources] [--sections] [--occurrences] [--entities] [--skeletons] [--vocab] [--format json|md]
 ```
 
-## Minimal v1.1.1 example
+## Minimal v1.2.0 example
 
 ```yaml
-ideamark_version: "1.1.1"
-doc_id: "DOC-EXAMPLE-1"
-doc_type: "derived"
-status:
-  state: "in_progress"
-created_at: "2026-06-19T00:00:00Z"
-updated_at: "2026-06-19T00:00:00Z"
-lang: "en-US"
-entities:
-  IE-EXAMPLE:
-    kind: "observation"
-    payload:
-      body: "Example content"
-      format:
-        media_type: "text/plain"
-    atomicity_basis: "interpretive"
-occurrences:
-  OCC-EXAMPLE:
-    entity: "IE-EXAMPLE"
-    role: "observation"
+meta:
+  spec_version: ideamark-core-v1.2.0
+  document_id: doc-example-1
+  status: draft
+sources:
+  - id: src-1
+    type: document
+    title: Example source
 sections:
-  SEC-EXAMPLE:
-    occurrences: ["OCC-EXAMPLE"]
-relations: {}
-perspectives: {}
-structure:
-  sections: ["SEC-EXAMPLE"]
+  - id: sec-1
+    title: Example
+    occurrences: [occ-1]
+occurrences:
+  - id: occ-1
+    entity: ent-1
+    role: observation
+entities:
+  - id: ent-1
+    kind: observation
+    content: Example content
 ```
 
 Validate it:
@@ -152,7 +145,7 @@ ideamark validate --strict example.ideamark.yaml
 
 ## Tests
 
-See `tests/README.md`.
+See `tests/README.md`. v0.3.1 also includes `npm run retrieval:v0.3.1` for structural Skeleton Graph fixture matching; it is not a retrieval engine or reconstruction-quality evaluator.
 
 ## Public samples
 
