@@ -5,12 +5,13 @@ const { describe } = require('../../src/describe');
 test('describe: capabilities json', () => {
   const res = describe('capabilities', 'json', {});
   const payload = JSON.parse(res.output);
-  assert.strictEqual(payload.contract.version, '1.2.0-draft.2');
+  assert.strictEqual(payload.contract.version, '1.1.2');
   assert.strictEqual(payload.document.version, 'ideamark-core-v1.2.0');
   assert.strictEqual(payload.document.representation, 'single-yaml-mapping');
   assert.ok(payload.commands.describe.topics.includes('ls'));
   assert.ok(payload.commands.describe.topics.includes('routing'));
   assert.ok(payload.commands.describe.topics.includes('prompt-authoring'));
+  assert.strictEqual(payload.features.discovery.supported, true);
   assert.strictEqual(payload.features.routing.supported, true);
   assert.strictEqual(payload.features.skeletons.basic_validation, true);
   assert.ok(payload.commands.lint);
@@ -42,6 +43,7 @@ test('describe: routing json', () => {
   const res = describe('routing', 'json', {});
   const payload = JSON.parse(res.output);
   assert.strictEqual(payload.topic, 'routing');
+  assert.strictEqual(payload.contract.version, '1.1.2');
   assert.ok(Array.isArray(payload.source.section_ids));
   assert.ok(payload.source.section_ids.length > 0);
 });
@@ -50,6 +52,7 @@ test('describe: ls guides with sections', () => {
   const res = describe('ls', 'json', { target: 'guides', sections: true, lang: 'en-US' });
   const payload = JSON.parse(res.output);
   assert.strictEqual(payload.target, 'guides');
+  assert.strictEqual(payload.contract.version, '1.1.2');
   assert.ok(Array.isArray(payload.guides[0].sections));
   assert.ok(payload.guides[0].sections.some((s) => String(s.id).includes('SEC-IMK-SCOPE-BACKGROUND')));
 });
