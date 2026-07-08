@@ -1,7 +1,7 @@
 {
   "contract": {
     "name": "doc-cli-contract",
-    "version": "1.2.0-draft.2"
+    "version": "1.1.2"
   },
   "tool": {
     "name": "ideamark-cli",
