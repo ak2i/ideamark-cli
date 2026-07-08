@@ -5,6 +5,7 @@ const { readFileUtf8 } = require('./utils');
 const { diag, makeMeta, makeSummary } = require('./diagnostics');
 
 const pkg = require('../package.json');
+const discoveryCatalog = require('../docs/guides/ideamark/discovery.json');
 
 const CONTRACT_VERSION = '1.1.2';
 const DOCUMENT_SPEC_VERSION = 'ideamark-core-v1.2.0';
@@ -72,129 +73,17 @@ const VOCAB = {
   skeleton_link_type_examples: ['depends_on', 'supports', 'contrasts', 'replaces', 'requires', 'enables'],
 };
 
-const DISCOVERY_SELECTORS = [
-  'source.type',
-  'occurrence.role',
-  'entity.kind',
-  'anchor.type',
-  'skeleton.role',
-  'skeleton.slot',
-];
+function getDiscovery() {
+  return discoveryCatalog.discovery || {};
+}
 
-const BUILTIN_GUIDES = [
-  {
-    id: 'ideamark.guides.routing',
-    topic: 'routing',
-    title: 'IdeaMark routing guide',
-    description: 'Discovery metadata for deciding when IdeaMark applies in a v1.2.0 tool chain.',
-    formats: ['md', 'json', 'yaml'],
-    languages: ['ja-JP', 'en-US'],
-    domains: ['routing', 'scope', 'discovery'],
-    views: ['background', 'decision'],
-    sections: [
-      {
-        id: 'SEC-IMK-SCOPE-BACKGROUND',
-        title: 'IdeaMark scope background',
-        view: 'background',
-        domains: ['routing', 'scope'],
-        selectors: ['source.type', 'occurrence.role', 'entity.kind', 'anchor.type'],
-        summary: 'Use IdeaMark when the problem centers on stable, reusable knowledge structure with durable IDs and resolvable local references.',
-      },
-      {
-        id: 'SEC-IMK-SCOPE-NON-GOALS',
-        title: 'IdeaMark non-goals',
-        view: 'decision',
-        domains: ['routing', 'boundary'],
-        selectors: ['source.type'],
-        summary: 'IdeaMark does not perform retrieval ranking, source dereferencing, storage orchestration, or task-loop execution by itself.',
-      },
-      {
-        id: 'SEC-IMK-SCOPE-COMPLEMENTARY-TOOLS',
-        title: 'Complementary tools',
-        view: 'decision',
-        domains: ['routing', 'interoperability'],
-        selectors: ['source.type'],
-        summary: 'Route iterative task execution to FlowMark first; route stable structural knowledge capture, validation, and projection-driven authoring to IdeaMark.',
-      },
-    ],
-  },
-  {
-    id: 'ideamark.guides.ai-authoring',
-    topic: 'ai-authoring',
-    title: 'IdeaMark AI authoring guide',
-    description: 'Guidance for generating valid IdeaMark Core v1.2.0 YAML documents.',
-    formats: ['md', 'json'],
-    languages: ['ja-JP', 'en-US'],
-    domains: ['authoring', 'validation', 'projection'],
-    views: ['background', 'procedure'],
-    sections: [
-      {
-        id: 'SEC-IMK-AUTHORING-PROJECTION-FIRST',
-        title: 'Projection-first extraction',
-        view: 'procedure',
-        domains: ['authoring', 'projection'],
-        selectors: ['entity.kind', 'occurrence.role'],
-        summary: 'Read the projection before the source and let it determine reusable entities, occurrences, sections, relations, and perspectives.',
-      },
-      {
-        id: 'SEC-IMK-AUTHORING-REFERENCE-INTEGRITY',
-        title: 'Reference integrity',
-        view: 'procedure',
-        domains: ['authoring', 'validation'],
-        selectors: ['entity.kind', 'occurrence.role'],
-        summary: 'Every occurrence must resolve to an entity, every section occurrence must resolve, and local references must remain stable.',
-      },
-    ],
-  },
-  {
-    id: 'ideamark.guides.prompt-authoring',
-    topic: 'prompt-authoring',
-    title: 'IdeaMark prompt authoring guide',
-    description: 'Guidance for building external LLM prompts that preserve v1.2.0 structure and reference validity.',
-    formats: ['md', 'json'],
-    languages: ['ja-JP', 'en-US'],
-    domains: ['prompting', 'authoring', 'projection'],
-    views: ['procedure'],
-    sections: [
-      {
-        id: 'SEC-IMK-PROMPT-REFERENCE-MAPPING',
-        title: 'Reference mapping rules',
-        view: 'procedure',
-        domains: ['prompting', 'validation'],
-        selectors: ['entity.kind', 'occurrence.role'],
-        summary: 'Prompts should explicitly require entity, occurrence, section, and relation references to resolve locally.',
-      },
-      {
-        id: 'SEC-IMK-PROMPT-GENERATION-FLOW',
-        title: 'Generation flow',
-        view: 'procedure',
-        domains: ['prompting', 'workflow'],
-        selectors: ['source.type', 'entity.kind'],
-        summary: 'Collect source materials and projection, describe relevant guidance, assemble prompts, generate, validate, repair, and validate strictly.',
-      },
-    ],
-  },
-  {
-    id: 'ideamark.guides.params',
-    topic: 'params',
-    title: 'IdeaMark parameter guide',
-    description: 'Machine-readable and human-readable parameter inventory for v1.2.0 document generation.',
-    formats: ['md', 'json'],
-    languages: ['ja-JP', 'en-US'],
-    domains: ['params', 'schema', 'validation'],
-    views: ['reference'],
-    sections: [
-      {
-        id: 'SEC-IMK-PARAMS-CORE-UNITS',
-        title: 'Core units',
-        view: 'reference',
-        domains: ['params', 'schema'],
-        selectors: ['source.type', 'entity.kind', 'occurrence.role'],
-        summary: 'The core authoring units are meta, sources, sections, occurrences, entities, relations, perspectives, and optional skeletons.',
-      },
-    ],
-  },
-];
+function discoverySelectors() {
+  return getDiscovery().selectors || [];
+}
+
+function builtinGuides() {
+  return getDiscovery().guides || [];
+}
 
 function normalizeLang(value) {
   if (!value) return null;
@@ -221,6 +110,7 @@ function buildDescribeContext(format, options) {
 }
 
 function buildCapabilities() {
+  const selectors = discoverySelectors();
   return {
     contract: { name: 'doc-cli-contract', version: CONTRACT_VERSION },
     tool: { name: TOOL_NAME, package: pkg.name, command: TOOL_COMMAND, version: pkg.version },
@@ -229,7 +119,7 @@ function buildCapabilities() {
       discovery: { supported: true, entrypoints: ['describe ls', 'describe routing'], targets: ['guides'], logical_ids: true },
       evidence: { emit: ['yaml', 'ndjson'], attach: true, artifact_out: true },
       skeletons: { basic_validation: true, core_required: false, projection_profile: 'discovery_only', retrieval_engine: false },
-      routing: { supported: true, entrypoints: ['describe routing', 'describe ls'], selectors: DISCOVERY_SELECTORS, fallback_search: true },
+      routing: { supported: true, entrypoints: ['describe routing', 'describe ls'], selectors, fallback_search: true },
       languages: { available: ['ja-JP', 'en-US'], default: { human: 'ja-JP', automation: 'en-US' } },
     },
     commands: {
@@ -277,25 +167,27 @@ function guideSummary(guide, includeSections) {
     description: guide.description,
     formats: guide.formats,
     languages: guide.languages,
-    sections_count: guide.sections.length,
-    section_ids: guide.sections.map((section) => section.id),
-    views: guide.views,
-    domains: guide.domains,
+    sections_count: Array.isArray(guide.sections) ? guide.sections.length : 0,
+    section_ids: (guide.sections || []).map((section) => section.id),
+    views: guide.views || [],
+    domains: guide.domains || [],
   };
-  if (includeSections) out.sections = guide.sections.map((section) => ({ ...section }));
+  if (includeSections) out.sections = (guide.sections || []).map((section) => ({ ...section }));
   return out;
 }
 
 function describeLs(format, context, options = {}) {
+  const discovery = getDiscovery();
   const target = options.target || 'guides';
-  if (target !== 'guides') return { ok: false, error: 'unsupported_target' };
+  const availableTargets = discovery.available_targets || ['guides'];
+  if (!availableTargets.includes(target)) return { ok: false, error: 'unsupported_target' };
   const includeSections = Boolean(options.sections);
   const payload = {
     ...baseDiscoveryEnvelope('ls', context),
     target,
-    available_targets: ['guides'],
-    available_languages: ['ja-JP', 'en-US'],
-    guides: BUILTIN_GUIDES.map((guide) => guideSummary(guide, includeSections)),
+    available_targets: availableTargets,
+    available_languages: discovery.available_languages || ['ja-JP', 'en-US'],
+    guides: builtinGuides().map((guide) => guideSummary(guide, includeSections)),
   };
   if (options.vocab) payload.vocab = VOCAB;
   if (format === 'json') return { ok: true, output: JSON.stringify(payload) };
@@ -303,50 +195,38 @@ function describeLs(format, context, options = {}) {
   return { ok: true, output: discoveryLsMarkdown(payload) };
 }
 
+function routingGuide() {
+  const routing = getDiscovery().routing || {};
+  return builtinGuides().find((guide) => guide.id === routing.source_guide_id) || builtinGuides().find((guide) => guide.topic === 'routing');
+}
+
 function routingSource() {
-  const routingGuide = BUILTIN_GUIDES.find((guide) => guide.topic === 'routing');
+  const guide = routingGuide();
   return {
     type: 'builtin_guidance',
-    guide_id: routingGuide.id,
-    topic: routingGuide.topic,
-    section_ids: routingGuide.sections.map((section) => section.id),
+    guide_id: guide.id,
+    topic: guide.topic,
+    section_ids: (guide.sections || []).map((section) => section.id),
   };
 }
 
 function describeRouting(format, context) {
-  const source = routingSource();
+  const routing = getDiscovery().routing || {};
+  const selectors = discoverySelectors();
   const payload = {
     ...baseDiscoveryEnvelope('routing', context),
     routing: {
-      supported: true,
-      entrypoints: ['describe routing', 'describe ls --target guides --sections'],
-      selectors: DISCOVERY_SELECTORS,
-      fallback_search: true,
+      supported: routing.supported !== false,
+      entrypoints: routing.entrypoints || ['describe routing', 'describe ls --target guides --sections'],
+      selectors,
+      fallback_search: routing.fallback_search !== false,
     },
-    selectors: DISCOVERY_SELECTORS,
-    source,
-    applies_to: [
-      'Stabilizing structural knowledge with durable IDs.',
-      'Projection-driven reusable knowledge capture from source materials.',
-      'Validation, linting, and discovery over local IdeaMark Core v1.2.0 YAML structures.',
-      'Skeleton Graph basic-shape discovery when optional skeletons are present.',
-    ],
-    non_goals: [
-      'Task-loop orchestration as the primary workflow.',
-      'External source dereferencing or truth verification.',
-      'Retrieval ranking, storage management, or projection compatibility scoring.',
-    ],
-    complementary_tools: ['flowmark'],
-    decision_rules: [
-      {
-        when: 'The task asks for stable entities, occurrences, sections, local reference validation, or projection-driven extraction.',
-        route: 'ideamark',
-      },
-      {
-        when: 'The task asks for iterative task execution or process orchestration before durable knowledge capture.',
-        route: 'flowmark_then_ideamark',
-      },
-    ],
+    selectors,
+    source: routingSource(),
+    applies_to: routing.applies_to || [],
+    non_goals: routing.non_goals || [],
+    complementary_tools: routing.complementary_tools || [],
+    decision_rules: routing.decision_rules || [],
   };
   if (format === 'json') return { ok: true, output: JSON.stringify(payload) };
   if (format === 'yaml') return { ok: true, output: YAML.stringify(payload).trimEnd() };
