@@ -7,7 +7,7 @@
 ## 0. How this contract stays small
 
 IdeaMark Core v1.2.0 (Part 4) is a long specification. This contract deliberately does
-NOT restate it. Responsibilities are split across three documents, each with stable
+NOT restate it. Responsibilities are split across documents, each with stable
 identifiers, so the contract itself only defines the command surface:
 
 | Concern | Document | Stable identifier |
@@ -15,18 +15,18 @@ identifiers, so the contract itself only defines the command surface:
 | What is checked, at which severity, in which mode | [`validation-checklist.md`](./validation-checklist.md) | Rule IDs (`LOAD-01` … `NUL-01`) |
 | How findings are named and reported | [`diagnostic-codes.md`](./diagnostic-codes.md) | Diagnostic codes (`snake_case`) |
 | How commands are invoked and what they emit | this document | Command + flag names, envelope schema |
+| Built-in guide and routing discovery | [`discovery-contract-v1.2.0.md`](./discovery-contract-v1.2.0.md) | Guide IDs, section IDs, selector names |
 | Document format semantics | Part 4 (`docs/specs/V1.2.0/part4-core-specification/`) | Chapter numbers (§) |
 
 Rule of thumb: if a question is "is this document valid?" the answer lives in the
-checklist; if it is "what does the tool print / return?" the answer lives here.
-Diagnostics link the layers: every diagnostic record carries both its `code` and its
-checklist `rule`, and the checklist maps each rule to a Part 4 chapter. A consumer can
-therefore trace tool output back to the normative spec without this contract
-duplicating either.
+checklist; if it is "what does the tool print / return?" the answer lives here or in
+the discovery contract. Diagnostics link the layers: every diagnostic record carries
+both its `code` and its checklist `rule`, and the checklist maps each rule to a Part 4
+chapter. A consumer can therefore trace tool output back to the normative spec without
+this contract duplicating either.
 
-Anything not specified in these three documents (message wording, warning order,
-internal representation) is implementation detail and may change between patch
-releases.
+Anything not specified in these documents (message wording, warning order, internal
+representation) is implementation detail and may change between patch releases.
 
 ## 1. Scope
 
@@ -168,12 +168,16 @@ ideamark ls [<infile>|-] [--sources] [--sections] [--occurrences] [--entities]
 
 ```
 ideamark describe <topic> [--format json|yaml|md] [--audience human|ai] [--lang ...]
+ideamark describe ls --target guides [--sections] [--vocab] [--format json|yaml|md]
+ideamark describe routing [--format json|yaml|md]
 ```
 
 - Topics as in v0.2.0 (`capabilities`, `checklist`, `vocab`, `ai-authoring`,
   `prompt-authoring`, `params`, `ls`, `routing`), with content regenerated for
   v1.2.0: vocabulary lists mirror the checklist tables; `checklist` mirrors rule IDs;
   `capabilities` reports the v0.3.1 command surface and this contract version.
+- `describe ls --target guides` and `describe routing` emit built-in guide and routing
+  discovery payloads specified in [`discovery-contract-v1.2.0.md`](./discovery-contract-v1.2.0.md).
 
 ### 5.6 `ideamark --version`
 
@@ -210,3 +214,4 @@ semantics for v1.2.0 (deferred to v0.3.1+).
 - `skeletons` is a known optional top-level namespace. Core validation preserves Core behavior and reports Skeleton Graph basic-shape issues as warnings.
 - `ideamark ls --skeletons` lists graph id, role, projection, node/link counts, unresolved Core refs, and unresolved graph-local link endpoints.
 - Projection Profile support remains discovery-only; external projection resolution, compatibility scoring, and retrieval ranking are out of scope.
+- Built-in guide and routing discovery are fixed by `discovery-contract-v1.2.0.md`.

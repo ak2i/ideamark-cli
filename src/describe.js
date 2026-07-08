@@ -2,12 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const YAML = require('yaml');
 const { readFileUtf8 } = require('./utils');
-const { parseDocument } = require('./parser');
 const { diag, makeMeta, makeSummary } = require('./diagnostics');
 
 const pkg = require('../package.json');
+const discoveryCatalog = require('../docs/guides/ideamark/discovery.json');
 
-const CONTRACT_VERSION = '1.2.0-draft.2';
+const CONTRACT_VERSION = '1.1.2';
 const DOCUMENT_SPEC_VERSION = 'ideamark-core-v1.2.0';
 const TOOL_NAME = 'ideamark-cli';
 const TOOL_COMMAND = 'ideamark';
@@ -73,6 +73,18 @@ const VOCAB = {
   skeleton_link_type_examples: ['depends_on', 'supports', 'contrasts', 'replaces', 'requires', 'enables'],
 };
 
+function getDiscovery() {
+  return discoveryCatalog.discovery || {};
+}
+
+function discoverySelectors() {
+  return getDiscovery().selectors || [];
+}
+
+function builtinGuides() {
+  return getDiscovery().guides || [];
+}
+
 function normalizeLang(value) {
   if (!value) return null;
   const v = String(value).toLowerCase();
@@ -98,14 +110,16 @@ function buildDescribeContext(format, options) {
 }
 
 function buildCapabilities() {
+  const selectors = discoverySelectors();
   return {
     contract: { name: 'doc-cli-contract', version: CONTRACT_VERSION },
     tool: { name: TOOL_NAME, package: pkg.name, command: TOOL_COMMAND, version: pkg.version },
     document: { name: 'ideamark', version: DOCUMENT_SPEC_VERSION, representation: 'single-yaml-mapping' },
     features: {
+      discovery: { supported: true, entrypoints: ['describe ls', 'describe routing'], targets: ['guides'], logical_ids: true },
       evidence: { emit: ['yaml', 'ndjson'], attach: true, artifact_out: true },
       skeletons: { basic_validation: true, core_required: false, projection_profile: 'discovery_only', retrieval_engine: false },
-      routing: { supported: true, entrypoints: ['describe routing', 'describe ls'], selectors: ['source.type', 'occurrence.role', 'entity.kind', 'anchor.type'], fallback_search: true },
+      routing: { supported: true, entrypoints: ['describe routing', 'describe ls'], selectors, fallback_search: true },
       languages: { available: ['ja-JP', 'en-US'], default: { human: 'ja-JP', automation: 'en-US' } },
     },
     commands: {
@@ -134,18 +148,89 @@ function resolveTemplate(topic, format) {
   return null;
 }
 
-function describeLs(format, context) {
-  const payload = { target: 'guides', audience: context.audience, language: context.lang, available_languages: ['ja-JP', 'en-US'], guides: [{ id: 'ideamark.guides.builtin', sections_count: 0, views: [], domains: [] }] };
+function baseDiscoveryEnvelope(topic, context) {
+  return {
+    contract: { name: 'doc-cli-contract', version: CONTRACT_VERSION },
+    tool: { name: TOOL_NAME, package: pkg.name, command: TOOL_COMMAND, version: pkg.version },
+    document: { name: 'ideamark', version: DOCUMENT_SPEC_VERSION, representation: 'single-yaml-mapping' },
+    topic,
+    audience: context.audience,
+    language: context.lang,
+  };
+}
+
+function guideSummary(guide, includeSections) {
+  const out = {
+    id: guide.id,
+    topic: guide.topic,
+    title: guide.title,
+    description: guide.description,
+    formats: guide.formats,
+    languages: guide.languages,
+    sections_count: Array.isArray(guide.sections) ? guide.sections.length : 0,
+    section_ids: (guide.sections || []).map((section) => section.id),
+    views: guide.views || [],
+    domains: guide.domains || [],
+  };
+  if (includeSections) out.sections = (guide.sections || []).map((section) => ({ ...section }));
+  return out;
+}
+
+function describeLs(format, context, options = {}) {
+  const discovery = getDiscovery();
+  const target = options.target || 'guides';
+  const availableTargets = discovery.available_targets || ['guides'];
+  if (!availableTargets.includes(target)) return { ok: false, error: 'unsupported_target' };
+  const includeSections = Boolean(options.sections);
+  const payload = {
+    ...baseDiscoveryEnvelope('ls', context),
+    target,
+    available_targets: availableTargets,
+    available_languages: discovery.available_languages || ['ja-JP', 'en-US'],
+    guides: builtinGuides().map((guide) => guideSummary(guide, includeSections)),
+  };
+  if (options.vocab) payload.vocab = VOCAB;
   if (format === 'json') return { ok: true, output: JSON.stringify(payload) };
   if (format === 'yaml') return { ok: true, output: YAML.stringify(payload).trimEnd() };
-  return { ok: true, output: '# Built-in Guides Catalog\n\n- target: guides\n' };
+  return { ok: true, output: discoveryLsMarkdown(payload) };
+}
+
+function routingGuide() {
+  const routing = getDiscovery().routing || {};
+  return builtinGuides().find((guide) => guide.id === routing.source_guide_id) || builtinGuides().find((guide) => guide.topic === 'routing');
+}
+
+function routingSource() {
+  const guide = routingGuide();
+  return {
+    type: 'builtin_guidance',
+    guide_id: guide.id,
+    topic: guide.topic,
+    section_ids: (guide.sections || []).map((section) => section.id),
+  };
 }
 
 function describeRouting(format, context) {
-  const payload = { topic: 'routing', audience: context.audience, language: context.lang, selectors: ['source.type', 'occurrence.role', 'entity.kind', 'anchor.type'], applies_to: ['Stabilizing structural knowledge with durable IDs.'], non_goals: ['Task-loop orchestration as the primary workflow.'], complementary_tools: ['flowmark'] };
+  const routing = getDiscovery().routing || {};
+  const selectors = discoverySelectors();
+  const payload = {
+    ...baseDiscoveryEnvelope('routing', context),
+    routing: {
+      supported: routing.supported !== false,
+      entrypoints: routing.entrypoints || ['describe routing', 'describe ls --target guides --sections'],
+      selectors,
+      fallback_search: routing.fallback_search !== false,
+    },
+    selectors,
+    source: routingSource(),
+    applies_to: routing.applies_to || [],
+    non_goals: routing.non_goals || [],
+    complementary_tools: routing.complementary_tools || [],
+    decision_rules: routing.decision_rules || [],
+  };
   if (format === 'json') return { ok: true, output: JSON.stringify(payload) };
   if (format === 'yaml') return { ok: true, output: YAML.stringify(payload).trimEnd() };
-  return { ok: true, output: '# Routing Guide\n\n- Use IdeaMark for structural knowledge stabilization.\n' };
+  return { ok: true, output: routingMarkdown(payload) };
 }
 
 function describe(topic, format, options) {
@@ -170,6 +255,48 @@ function describe(topic, format, options) {
   if (format === 'json') return { ok: true, output: JSON.stringify(data) };
   if (format === 'yaml') return { ok: true, output: YAML.stringify(data).trimEnd() };
   return { ok: true, output: toMarkdown(topic, data, context) };
+}
+
+function discoveryLsMarkdown(payload) {
+  const lines = [
+    '# Built-in Guides Catalog',
+    '',
+    `- target: ${payload.target}`,
+    `- language: ${payload.language}`,
+    '',
+    '## Guides',
+  ];
+  for (const guide of payload.guides) {
+    lines.push(`- ${guide.id} (${guide.topic}) — ${guide.title}`);
+    lines.push(`  - sections: ${guide.section_ids.join(', ')}`);
+  }
+  if (payload.vocab) {
+    lines.push('', '## Vocab');
+    for (const [key, values] of Object.entries(payload.vocab)) lines.push(`- ${key}: ${values.join(', ')}`);
+  }
+  lines.push('');
+  return lines.join('\n');
+}
+
+function routingMarkdown(payload) {
+  const lines = [
+    '# Routing Guide',
+    '',
+    `- language: ${payload.language}`,
+    `- source guide: ${payload.source.guide_id}`,
+    `- source sections: ${payload.source.section_ids.join(', ')}`,
+    '',
+    '## Applies to',
+    ...payload.applies_to.map((item) => `- ${item}`),
+    '',
+    '## Non-goals',
+    ...payload.non_goals.map((item) => `- ${item}`),
+    '',
+    '## Complementary tools',
+    ...payload.complementary_tools.map((item) => `- ${item}`),
+    '',
+  ];
+  return lines.join('\n');
 }
 
 function toMarkdown(topic, data, context) {

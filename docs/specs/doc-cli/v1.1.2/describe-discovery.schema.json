@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ideamark.dev/schemas/doc-cli/v1.1.2/describe-discovery.schema.json",
+  "title": "Doc CLI Describe Discovery Payload",
+  "description": "Generic schema for Doc CLI discovery catalogs and describe ls/routing payloads. Tool-specific catalogs may add fields, but common discovery consumers should rely only on this shape.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["contract", "tool", "document", "discovery"],
+  "properties": {
+    "contract": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "const": "doc-cli-contract" },
+        "version": { "type": "string", "pattern": "^1\\.1\\.[0-9]+$" }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "package": { "type": "string" },
+        "command": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "representation": { "type": "string" }
+      }
+    },
+    "topic": {
+      "type": "string",
+      "description": "Optional when the same schema is used for actual describe ls/routing output."
+    },
+    "audience": {
+      "type": "string",
+      "enum": ["human", "ai"]
+    },
+    "language": {
+      "type": "string",
+      "description": "BCP 47 language tag."
+    },
+    "discovery": {
+      "$ref": "#/$defs/discoveryCatalog"
+    }
+  },
+  "$defs": {
+    "discoveryCatalog": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["available_targets", "available_languages", "selectors", "guides"],
+      "properties": {
+        "available_targets": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "available_languages": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "selectors": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "guides": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/guide" },
+          "minItems": 1
+        },
+        "routing": {
+          "$ref": "#/$defs/routing"
+        }
+      }
+    },
+    "guide": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "topic", "title", "sections"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "topic": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "formats": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["md", "json", "yaml", "ndjson", "text"] },
+          "uniqueItems": true
+        },
+        "languages": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "domains": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "views": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "sections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/guideSection" },
+          "minItems": 1
+        }
+      }
+    },
+    "guideSection": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "title"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "view": { "type": "string" },
+        "domains": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "selectors": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "summary": { "type": "string" }
+      }
+    },
+    "routing": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "source_guide_id": { "type": "string" },
+        "supported": { "type": "boolean" },
+        "entrypoints": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "fallback_search": { "type": "boolean" },
+        "applies_to": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "non_goals": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "complementary_tools": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "decision_rules": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/decisionRule" }
+        }
+      }
+    },
+    "decisionRule": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["when", "route"],
+      "properties": {
+        "when": { "type": "string", "minLength": 1 },
+        "route": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

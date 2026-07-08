@@ -1,7 +1,7 @@
 {
   "contract": {
     "name": "doc-cli-contract",
-    "version": "1.2.0-draft.2"
+    "version": "1.1.2"
   },
   "tool": {
     "name": "ideamark-cli",
@@ -46,13 +46,6 @@
         "projection.preferred_entity_kinds",
         "projection.preferred_occurrence_roles",
         "projection.ignore_unless_relevant"
-      ],
-      "rules": [
-        "Never summarize the source text as a neutral document unless the projection explicitly asks for summarization.",
-        "Interpret the source text from the specified projection before extracting entities, occurrences, sections, relations, or perspectives.",
-        "Extract reusable knowledge components that would be useful for the projection's future search, decision, or action context.",
-        "The same source text may produce different valid IdeaMark documents under different projections.",
-        "Represent the interpretation stance in the output `perspectives` namespace whenever the output depends on that stance."
       ]
     },
     "output_contract": {
@@ -65,45 +58,34 @@
       "recommended_yaml_units": [
         "top-level perspectives that record the projection used for extraction"
       ],
-      "ordering_requirements": [
-        "Keep the document structurally coherent so section occurrence references are easy to trace.",
-        "If `structure.sections` is emitted, keep it aligned with the actual section IDs.",
-        "Do not emit references to entities, occurrences, or sections that are not defined."
-      ],
       "payload_requirements": [
-        "Every entity must contain `payload`.",
-        "Each payload must include at least one of `body`, `ref`, or `cache`.",
-        "If `payload.ref` exists, include `payload.ref.uri`."
-      ],
-      "prohibitions": [
-        "neutral source summarization when a projection is supplied",
-        "unresolved local references",
-        "duplicate IDs",
-        "empty entity payloads"
+        "Every entity must contain payload.",
+        "Each payload must include body, ref, or cache.",
+        "If payload.ref exists, include payload.ref.uri."
       ]
     },
     "reference_mapping_rules": {
       "local_reference_baseline": {
         "required": [
-          "Occurrence `entity` must resolve to an entity ID.",
-          "Section `occurrences[]` must resolve to occurrence IDs.",
+          "Occurrence entity values must resolve to entity IDs.",
+          "Section occurrences must resolve to occurrence IDs.",
           "Relation endpoints may target entity or section refs."
         ]
       },
       "external_reference_baseline": {
         "policy": "carry only source-backed references",
         "required": [
-          "Use `payload.ref.uri` for explicit external references.",
-          "Do not invent URLs, citation identifiers, or bibliographic entries.",
-          "Use payload/body/cache according to available source fidelity."
+          "Use payload.ref.uri for explicit external references.",
+          "Keep citation and bibliography data source-backed.",
+          "Use payload body, ref, or cache according to available source fidelity."
         ]
       },
       "projection_mapping_rules": {
         "policy": "projection_to_perspectives",
         "required": [
-          "When a projection is supplied, record it under top-level `perspectives` using a stable perspective ID.",
+          "When a projection is supplied, record it under top-level perspectives using a stable perspective ID.",
           "Use the projection to decide which source details become reusable entities and which details are ignored.",
-          "If a section or entity is strongly projection-dependent, attach the perspective ID through the supported `perspectives` field when practical."
+          "If a section or entity is strongly projection-dependent, attach the perspective ID through the supported perspectives field when practical."
         ]
       },
       "template_extensions": {
@@ -133,12 +115,10 @@
       "task": [
         "Read the projection before reading the source text.",
         "Produce a valid header and top-level namespaces.",
-        "Represent the projection in `perspectives`.",
+        "Represent the projection in perspectives.",
         "Ensure each entity has payload content.",
         "Ensure each occurrence points to an existing entity.",
-        "Ensure each section lists existing occurrences.",
-        "Do not create a top-level registry wrapper.",
-        "Do not produce a generic summary unless explicitly requested by the projection."
+        "Ensure each section lists existing occurrences."
       ],
       "quality_gate": [
         "Must pass ideamark validate --mode strict.",
