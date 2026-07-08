@@ -6,7 +6,7 @@ const { diag, makeMeta, makeSummary } = require('./diagnostics');
 
 const pkg = require('../package.json');
 
-const CONTRACT_VERSION = '1.2.0-draft.2';
+const CONTRACT_VERSION = '1.1.2';
 const DOCUMENT_SPEC_VERSION = 'ideamark-core-v1.2.0';
 const TOOL_NAME = 'ideamark-cli';
 const TOOL_COMMAND = 'ideamark';
@@ -226,6 +226,7 @@ function buildCapabilities() {
     tool: { name: TOOL_NAME, package: pkg.name, command: TOOL_COMMAND, version: pkg.version },
     document: { name: 'ideamark', version: DOCUMENT_SPEC_VERSION, representation: 'single-yaml-mapping' },
     features: {
+      discovery: { supported: true, entrypoints: ['describe ls', 'describe routing'], targets: ['guides'], logical_ids: true },
       evidence: { emit: ['yaml', 'ndjson'], attach: true, artifact_out: true },
       skeletons: { basic_validation: true, core_required: false, projection_profile: 'discovery_only', retrieval_engine: false },
       routing: { supported: true, entrypoints: ['describe routing', 'describe ls'], selectors: DISCOVERY_SELECTORS, fallback_search: true },
