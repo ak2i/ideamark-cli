@@ -26,7 +26,21 @@ Discovery は対象文書を読む操作ではない。対象文書内の ID を
 
 ---
 
-## 2. Common envelope
+## 2. Generic schema and tool-specific instances
+
+Doc CLI Contract が標準化するのは、Discovery の protocol と common JSON shape である。
+
+- Generic schema: `describe-discovery.schema.json`
+- Generic example: `examples/discovery.example.json`
+- Tool-specific instance example: each project MAY provide a file such as `docs/guides/<tool>/discovery.json`
+
+`docs/specs/doc-cli/v1.1.2/` 配下の schema / example は、IdeaMark 以外の FlowMark / TPCG / HecatonAccess / PrepZen 等でもそのまま再利用できることを目的とする。
+
+Tool-specific discovery catalog は、tool 固有の guide IDs、section IDs、routing rules、document profile 名を持ってよい。ただし common fields は schema に従い、unknown fields は無視可能でなければならない。
+
+---
+
+## 3. Common envelope
 
 JSON / YAML output は少なくとも次の envelope を持つことが望ましい。
 
@@ -53,11 +67,13 @@ JSON / YAML output は少なくとも次の envelope を持つことが望まし
 
 追加フィールドは許容する。Consumers MUST ignore unknown fields.
 
+Tool-specific catalog files SHOULD also include a `discovery` object containing the reusable guide/routing catalog described by `describe-discovery.schema.json`.
+
 ---
 
-## 3. `describe ls --target guides`
+## 4. `describe ls --target guides`
 
-### 3.1 Scope
+### 4.1 Scope
 
 `describe ls --target guides` は built-in guidance assets を列挙する。
 
@@ -69,7 +85,7 @@ JSON / YAML output は少なくとも次の envelope を持つことが望まし
 - target が未指定の場合、tool は既定 target を選んでよい
 - 未対応 target は usage error または structured error として扱う
 
-### 3.2 JSON structure
+### 4.2 JSON structure
 
 ```json
 {
@@ -111,9 +127,9 @@ When `--sections` is supplied, each guide SHOULD include `sections`.
 }
 ```
 
-When `--vocab` is supplied, the payload SHOULD include reusable vocabulary data. The vocabulary shape is tool-specific, but selector names SHOULD align with section 5.
+When `--vocab` is supplied, the payload SHOULD include reusable vocabulary data. The vocabulary shape is tool-specific, but selector names SHOULD align with section 6.
 
-### 3.3 Field requirements
+### 4.3 Field requirements
 
 - `guides[].id` MUST be stable within the package version
 - `guides[].section_ids` SHOULD be stable logical identifiers
@@ -124,9 +140,9 @@ When `--vocab` is supplied, the payload SHOULD include reusable vocabulary data.
 
 ---
 
-## 4. `describe routing`
+## 5. `describe routing`
 
-### 4.1 Scope
+### 5.1 Scope
 
 `describe routing` exposes machine-readable guidance for deciding whether a tool applies to a problem context.
 
@@ -141,7 +157,7 @@ It SHOULD include:
 
 It MUST NOT claim capabilities that belong to complementary systems unless the tool actually implements them.
 
-### 4.2 JSON structure
+### 5.2 JSON structure
 
 ```json
 {
@@ -171,7 +187,7 @@ It MUST NOT claim capabilities that belong to complementary systems unless the t
 }
 ```
 
-### 4.3 Field requirements
+### 5.3 Field requirements
 
 - `routing.supported` MUST be boolean
 - `routing.entrypoints` SHOULD include `describe routing`
@@ -184,7 +200,7 @@ It MUST NOT claim capabilities that belong to complementary systems unless the t
 
 ---
 
-## 5. Selector vocabulary
+## 6. Selector vocabulary
 
 The base selector vocabulary is additive.
 
@@ -203,7 +219,7 @@ Tools MAY add tool-specific selectors. Consumers MUST ignore unknown selectors.
 
 ---
 
-## 6. Markdown output
+## 7. Markdown output
 
 Markdown output is human-facing and MAY omit fields, but SHOULD include:
 
@@ -217,7 +233,7 @@ Markdown output is human-facing and MAY omit fields, but SHOULD include:
 
 ---
 
-## 7. Compatibility rules
+## 8. Compatibility rules
 
 - This contract is additive over v1.1.1
 - Unknown fields MUST be ignored
