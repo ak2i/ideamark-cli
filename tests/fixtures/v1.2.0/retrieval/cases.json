@@ -1,0 +1,14 @@
+[
+  {
+    "name": "complete structural match",
+    "document": "../skeletons/valid/recipe-substitution.ideamark.yaml",
+    "required_skeleton": { "slots": ["problem", "substitution"], "links": [{ "from_slot": "problem", "to_slot": "substitution", "type": "supports" }] },
+    "expected": { "matched": true, "missing_slots": [], "missing_links": [] }
+  },
+  {
+    "name": "partial match exposes missing slot",
+    "document": "../skeletons/valid/recipe-substitution.ideamark.yaml",
+    "required_skeleton": { "slots": ["problem", "constraint"], "links": [] },
+    "expected": { "matched": false, "missing_slots": ["constraint"], "missing_links": [] }
+  }
+]

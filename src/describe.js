@@ -7,7 +7,7 @@ const { diag, makeMeta, makeSummary } = require('./diagnostics');
 
 const pkg = require('../package.json');
 
-const CONTRACT_VERSION = '1.2.0';
+const CONTRACT_VERSION = '1.2.0-draft.2';
 const DOCUMENT_SPEC_VERSION = 'ideamark-core-v1.2.0';
 
 const PROFILE_MAP = {
@@ -57,6 +57,14 @@ const CHECKLIST = {
     'section_occurrences_required',
     'relation_ref_valid',
   ],
+  skeleton_basic_shape: [
+    'SKEL-01 skeletons array shape',
+    'SKEL-03 graph id validity',
+    'SKEL-05/SKEL-06 nodes and links arrays',
+    'SKEL-07/SKEL-08 node and link ids',
+    'SKEL-09 link endpoints resolve inside the graph',
+    'SKEL-10 node refs resolve to Core objects when local',
+  ],
 };
 
 const VOCAB = {
@@ -69,6 +77,10 @@ const VOCAB = {
   status_state: ['in_progress', 'paused', 'completed', 'published'],
   occurrence_role_examples: ['claim', 'evidence', 'observation', 'assumption', 'constraint', 'objective'],
   relation_ref_targets: ['entity_ref', 'section_ref'],
+  skeleton_role_examples: ['retrieval', 'projection', 'authoring', 'comparison'],
+  skeleton_status_examples: ['draft', 'active', 'deprecated'],
+  skeleton_slot_examples: ['problem', 'constraint', 'evidence', 'substitution', 'outcome'],
+  skeleton_link_type_examples: ['depends_on', 'supports', 'contrasts', 'replaces', 'requires', 'enables'],
 };
 
 const TEMPLATE_DIR = path.join(__dirname, '..', 'docs', 'guides', 'ideamark');
@@ -164,6 +176,7 @@ function buildCapabilities() {
         attach: true,
         artifact_out: true,
       },
+      skeletons: { basic_validation: true, core_required: false, projection_profile: 'discovery_only', retrieval_engine: false },
       routing: {
         supported: true,
         entrypoints: ['describe routing', 'describe ls'],
@@ -303,7 +316,8 @@ function buildCapabilities() {
       ls: {
         formats: ['json', 'md'],
         stdin: true,
-        description: 'List IDs and vocab present in a document.',
+        description: 'List IDs, vocab, and optional Skeleton Graph summaries present in a document.',
+        options: { '--skeletons': { description: 'List Skeleton Graph id, role, projection, node/link counts, and missing references.' } },
       },
     },
   };
@@ -594,7 +608,7 @@ function toMarkdown(topic, data, context) {
       `**Document Spec:** ${data.document.version} (${data.document.representation})`,
       '',
       '## Summary',
-      'IdeaMark CLI for v1.1.1 structural validation, transformation, and guidance discovery.',
+      'IdeaMark CLI for v1.2.0 Core validation plus additive Skeleton Graph discovery and basic validation.',
       '',
       '## Commands',
       '### describe',
@@ -624,6 +638,7 @@ function toMarkdown(topic, data, context) {
       '- Modify input files.',
       '- Resolve external references.',
       '- Validate payload meaning or external profile semantics.',
+      '- Treat optional `skeletons` as required Core content; Skeleton Graph shape diagnostics are additive warnings in Core mode.',
       `**Formats:** \`${data.commands.validate.formats.join('`, `')}\``,
       '**Input:** file path, `-` (stdin)',
       '',
@@ -700,7 +715,7 @@ function toMarkdown(topic, data, context) {
   }
 
   if (topic === 'checklist') {
-    return ['# strict checklist', '', ...data.strict_requirements.map((c) => `- ${c}`), ''].join('\n');
+    return ['# strict checklist', '', ...data.strict_requirements.map((c) => `- ${c}`), '', '# skeleton basic-shape checks', '', ...data.skeleton_basic_shape.map((c) => `- ${c}`), ''].join('\n');
   }
 
   return [
@@ -720,6 +735,18 @@ function toMarkdown(topic, data, context) {
     '',
     'relation ref targets:',
     ...data.relation_ref_targets.map((c) => `- ${c}`),
+    '',
+    'skeleton roles:',
+    ...data.skeleton_role_examples.map((c) => `- ${c}`),
+    '',
+    'skeleton statuses:',
+    ...data.skeleton_status_examples.map((c) => `- ${c}`),
+    '',
+    'skeleton slots:',
+    ...data.skeleton_slot_examples.map((c) => `- ${c}`),
+    '',
+    'skeleton link types:',
+    ...data.skeleton_link_type_examples.map((c) => `- ${c}`),
     '',
   ].join('\n');
 }

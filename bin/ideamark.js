@@ -69,7 +69,7 @@ const HELP = {
   ].join('\n'),
   ls: [
     'Usage:',
-    '  ideamark ls [<infile>|-] [--sources] [--sections] [--occurrences] [--entities] [--vocab] [--format json|md]',
+    '  ideamark ls [<infile>|-] [--sources] [--sections] [--occurrences] [--entities] [--skeletons] [--vocab] [--format json|md]',
     '',
   ].join('\n'),
   validate: [
@@ -483,7 +483,7 @@ function main() {
   if (cmd === 'ls') {
     let infile = null;
     let format = 'json';
-    const include = { sources: false, sections: false, occurrences: false, entities: false, vocab: false };
+    const include = { sources: false, sections: false, occurrences: false, entities: false, skeletons: false, vocab: false };
     while (args.length) {
       const a = args.shift();
       if (a === '--format') {
@@ -493,12 +493,13 @@ function main() {
       else if (a === '--sections') include.sections = true;
       else if (a === '--occurrences') include.occurrences = true;
       else if (a === '--entities') include.entities = true;
+      else if (a === '--skeletons') include.skeletons = true;
       else if (a === '--vocab') include.vocab = true;
       else if (!infile) infile = a;
       else usageExit();
     }
-    if (!include.sources && !include.sections && !include.occurrences && !include.entities && !include.vocab) {
-      include.sources = include.sections = include.occurrences = include.entities = include.vocab = true;
+    if (!include.sources && !include.sections && !include.occurrences && !include.entities && !include.skeletons && !include.vocab) {
+      include.sources = include.sections = include.occurrences = include.entities = include.skeletons = include.vocab = true;
     }
     const text = readInput(infile);
     const loaded = loadCoreDocument(text);

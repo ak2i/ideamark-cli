@@ -1,6 +1,6 @@
 # IdeaMark AI Authoring Guide
 
-Use this guide when generating IdeaMark v1.1.1 documents. The baseline representation is YAML-based.
+Use this guide when generating IdeaMark Core v1.2.0 documents. The baseline representation is YAML-based.
 
 ## Principles
 
@@ -34,7 +34,7 @@ When a projection is supplied, record it in the output `perspectives` namespace 
 ## Do
 
 - Read the projection before reading the source material.
-- Include a valid header with `ideamark_version: "1.1.1"`.
+- Include valid Core `meta` fields with `spec_version: ideamark-core-v1.2.0`.
 - Record the projection in top-level `perspectives` when the output depends on it.
 - Create at least one entity, one occurrence, and one section.
 - Give every entity a `payload` with `body`, `ref`, or `cache`.
@@ -59,7 +59,7 @@ When a projection is supplied, record it in the output `perspectives` namespace 
 ## Checklist
 
 - Projection has been read and reflected in extraction choices.
-- Header matches IdeaMark `1.1.1`.
+- Core `meta.spec_version` is `ideamark-core-v1.2.0`.
 - Registry includes `entities`, `occurrences`, and `sections`.
 - Every entity has non-empty payload content.
 - Every occurrence has `entity` and `role`.

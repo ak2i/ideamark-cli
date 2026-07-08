@@ -5,13 +5,14 @@ const { describe } = require('../../src/describe');
 test('describe: capabilities json', () => {
   const res = describe('capabilities', 'json', {});
   const payload = JSON.parse(res.output);
-  assert.strictEqual(payload.contract.version, '1.2.0');
+  assert.strictEqual(payload.contract.version, '1.2.0-draft.2');
   assert.strictEqual(payload.document.version, 'ideamark-core-v1.2.0');
   assert.strictEqual(payload.document.representation, 'single-yaml-mapping');
   assert.ok(payload.commands.describe.topics.includes('ls'));
   assert.ok(payload.commands.describe.topics.includes('routing'));
   assert.ok(payload.commands.describe.topics.includes('prompt-authoring'));
   assert.strictEqual(payload.features.routing.supported, true);
+  assert.strictEqual(payload.features.skeletons.basic_validation, true);
   assert.ok(payload.commands.lint);
   assert.ok(payload.commands.diff);
 });

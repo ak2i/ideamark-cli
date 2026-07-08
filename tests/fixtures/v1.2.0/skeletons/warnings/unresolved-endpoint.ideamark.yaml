@@ -1,0 +1,15 @@
+meta: { spec_version: ideamark-core-v1.2.0, document_id: doc-warn, status: draft }
+sources: [{ id: src-1, type: document, title: Warn }]
+sections: [{ id: sec-1, occurrences: [occ-1] }]
+occurrences: [{ id: occ-1, entity: ent-1, role: claim }]
+entities: [{ id: ent-1, content: Claim }]
+skeletons:
+  - id: skel-warn
+    nodes:
+      - id: n-1
+        ref: { kind: entity, id: ent-missing }
+    links:
+      - id: l-1
+        type: made_up
+        from: n-1
+        to: n-missing
