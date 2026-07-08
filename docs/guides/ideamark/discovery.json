@@ -1,0 +1,168 @@
+{
+  "contract": {
+    "name": "doc-cli-contract",
+    "version": "1.1.2"
+  },
+  "tool": {
+    "name": "ideamark-cli"
+  },
+  "document": {
+    "name": "ideamark",
+    "version": "ideamark-core-v1.2.0",
+    "representation": "single-yaml-mapping"
+  },
+  "discovery": {
+    "available_targets": ["guides"],
+    "available_languages": ["ja-JP", "en-US"],
+    "selectors": [
+      "source.type",
+      "occurrence.role",
+      "entity.kind",
+      "anchor.type",
+      "skeleton.role",
+      "skeleton.slot"
+    ],
+    "guides": [
+      {
+        "id": "ideamark.guides.routing",
+        "topic": "routing",
+        "title": "IdeaMark routing guide",
+        "description": "Discovery metadata for deciding when IdeaMark applies in a v1.2.0 tool chain.",
+        "formats": ["md", "json", "yaml"],
+        "languages": ["ja-JP", "en-US"],
+        "domains": ["routing", "scope", "discovery"],
+        "views": ["background", "decision"],
+        "sections": [
+          {
+            "id": "SEC-IMK-SCOPE-BACKGROUND",
+            "title": "IdeaMark scope background",
+            "view": "background",
+            "domains": ["routing", "scope"],
+            "selectors": ["source.type", "occurrence.role", "entity.kind", "anchor.type"],
+            "summary": "Use IdeaMark when the problem centers on stable, reusable knowledge structure with durable IDs and resolvable local references."
+          },
+          {
+            "id": "SEC-IMK-SCOPE-NON-GOALS",
+            "title": "IdeaMark non-goals",
+            "view": "decision",
+            "domains": ["routing", "boundary"],
+            "selectors": ["source.type"],
+            "summary": "IdeaMark does not perform retrieval ranking, source dereferencing, storage orchestration, or task-loop execution by itself."
+          },
+          {
+            "id": "SEC-IMK-SCOPE-COMPLEMENTARY-TOOLS",
+            "title": "Complementary tools",
+            "view": "decision",
+            "domains": ["routing", "interoperability"],
+            "selectors": ["source.type"],
+            "summary": "Route iterative task execution to FlowMark first; route stable structural knowledge capture, validation, and projection-driven authoring to IdeaMark."
+          }
+        ]
+      },
+      {
+        "id": "ideamark.guides.ai-authoring",
+        "topic": "ai-authoring",
+        "title": "IdeaMark AI authoring guide",
+        "description": "Guidance for generating valid IdeaMark Core v1.2.0 YAML documents.",
+        "formats": ["md", "json"],
+        "languages": ["ja-JP", "en-US"],
+        "domains": ["authoring", "validation", "projection"],
+        "views": ["background", "procedure"],
+        "sections": [
+          {
+            "id": "SEC-IMK-AUTHORING-PROJECTION-FIRST",
+            "title": "Projection-first extraction",
+            "view": "procedure",
+            "domains": ["authoring", "projection"],
+            "selectors": ["entity.kind", "occurrence.role"],
+            "summary": "Read the projection before the source and let it determine reusable entities, occurrences, sections, relations, and perspectives."
+          },
+          {
+            "id": "SEC-IMK-AUTHORING-REFERENCE-INTEGRITY",
+            "title": "Reference integrity",
+            "view": "procedure",
+            "domains": ["authoring", "validation"],
+            "selectors": ["entity.kind", "occurrence.role"],
+            "summary": "Every occurrence must resolve to an entity, every section occurrence must resolve, and local references must remain stable."
+          }
+        ]
+      },
+      {
+        "id": "ideamark.guides.prompt-authoring",
+        "topic": "prompt-authoring",
+        "title": "IdeaMark prompt authoring guide",
+        "description": "Guidance for building external LLM prompts that preserve v1.2.0 structure and reference validity.",
+        "formats": ["md", "json"],
+        "languages": ["ja-JP", "en-US"],
+        "domains": ["prompting", "authoring", "projection"],
+        "views": ["procedure"],
+        "sections": [
+          {
+            "id": "SEC-IMK-PROMPT-REFERENCE-MAPPING",
+            "title": "Reference mapping rules",
+            "view": "procedure",
+            "domains": ["prompting", "validation"],
+            "selectors": ["entity.kind", "occurrence.role"],
+            "summary": "Prompts should explicitly require entity, occurrence, section, and relation references to resolve locally."
+          },
+          {
+            "id": "SEC-IMK-PROMPT-GENERATION-FLOW",
+            "title": "Generation flow",
+            "view": "procedure",
+            "domains": ["prompting", "workflow"],
+            "selectors": ["source.type", "entity.kind"],
+            "summary": "Collect source materials and projection, describe relevant guidance, assemble prompts, generate, validate, repair, and validate strictly."
+          }
+        ]
+      },
+      {
+        "id": "ideamark.guides.params",
+        "topic": "params",
+        "title": "IdeaMark parameter guide",
+        "description": "Machine-readable and human-readable parameter inventory for v1.2.0 document generation.",
+        "formats": ["md", "json"],
+        "languages": ["ja-JP", "en-US"],
+        "domains": ["params", "schema", "validation"],
+        "views": ["reference"],
+        "sections": [
+          {
+            "id": "SEC-IMK-PARAMS-CORE-UNITS",
+            "title": "Core units",
+            "view": "reference",
+            "domains": ["params", "schema"],
+            "selectors": ["source.type", "entity.kind", "occurrence.role"],
+            "summary": "The core authoring units are meta, sources, sections, occurrences, entities, relations, perspectives, and optional skeletons."
+          }
+        ]
+      }
+    ],
+    "routing": {
+      "source_guide_id": "ideamark.guides.routing",
+      "supported": true,
+      "entrypoints": ["describe routing", "describe ls --target guides --sections"],
+      "fallback_search": true,
+      "applies_to": [
+        "Stabilizing structural knowledge with durable IDs.",
+        "Projection-driven reusable knowledge capture from source materials.",
+        "Validation, linting, and discovery over local IdeaMark Core v1.2.0 YAML structures.",
+        "Skeleton Graph basic-shape discovery when optional skeletons are present."
+      ],
+      "non_goals": [
+        "Task-loop orchestration as the primary workflow.",
+        "External source dereferencing or truth verification.",
+        "Retrieval ranking, storage management, or projection compatibility scoring."
+      ],
+      "complementary_tools": ["flowmark"],
+      "decision_rules": [
+        {
+          "when": "The task asks for stable entities, occurrences, sections, local reference validation, or projection-driven extraction.",
+          "route": "ideamark"
+        },
+        {
+          "when": "The task asks for iterative task execution or process orchestration before durable knowledge capture.",
+          "route": "flowmark_then_ideamark"
+        }
+      ]
+    }
+  }
+}
