@@ -1,0 +1,87 @@
+{
+  "contract": {
+    "name": "doc-cli-contract",
+    "version": "1.1.2"
+  },
+  "tool": {
+    "name": "example-cli",
+    "package": "@example/doc-cli",
+    "command": "example",
+    "version": "0.1.0"
+  },
+  "document": {
+    "name": "example-doc",
+    "version": "example-doc-v1",
+    "representation": "yaml-based"
+  },
+  "discovery": {
+    "available_targets": ["guides"],
+    "available_languages": ["en-US"],
+    "selectors": [
+      "source.type",
+      "section.domain",
+      "entity.kind"
+    ],
+    "guides": [
+      {
+        "id": "example.guides.routing",
+        "topic": "routing",
+        "title": "Example routing guide",
+        "description": "Discovery metadata for deciding when this tool applies.",
+        "formats": ["md", "json"],
+        "languages": ["en-US"],
+        "domains": ["routing", "scope"],
+        "views": ["decision"],
+        "sections": [
+          {
+            "id": "SEC-EXAMPLE-SCOPE",
+            "title": "Example tool scope",
+            "view": "decision",
+            "domains": ["routing", "scope"],
+            "selectors": ["source.type", "section.domain"],
+            "summary": "Use this tool when the task requires structured document operations supported by the tool."
+          }
+        ]
+      },
+      {
+        "id": "example.guides.ai-authoring",
+        "topic": "ai-authoring",
+        "title": "Example AI authoring guide",
+        "description": "Guidance for humans and LLMs creating this document type.",
+        "formats": ["md", "json"],
+        "languages": ["en-US"],
+        "domains": ["authoring"],
+        "views": ["procedure"],
+        "sections": [
+          {
+            "id": "SEC-EXAMPLE-AUTHORING-BASICS",
+            "title": "Authoring basics",
+            "view": "procedure",
+            "domains": ["authoring"],
+            "selectors": ["entity.kind"],
+            "summary": "Create stable IDs, preserve references, and validate before publishing."
+          }
+        ]
+      }
+    ],
+    "routing": {
+      "source_guide_id": "example.guides.routing",
+      "supported": true,
+      "entrypoints": ["describe routing", "describe ls --target guides --sections"],
+      "fallback_search": true,
+      "applies_to": [
+        "Structured document validation and authoring guidance."
+      ],
+      "non_goals": [
+        "General task execution outside the document operation boundary."
+      ],
+      "complementary_tools": ["example-workflow-cli"],
+      "decision_rules": [
+        {
+          "when": "The task asks for structured document operations supported by this CLI.",
+          "route": "example"
+        }
+      ]
+    }
+  }
+}
