@@ -9,6 +9,8 @@ const pkg = require('../package.json');
 
 const CONTRACT_VERSION = '1.2.0-draft.2';
 const DOCUMENT_SPEC_VERSION = 'ideamark-core-v1.2.0';
+const TOOL_NAME = 'ideamark-cli';
+const TOOL_COMMAND = 'ideamark';
 
 const PROFILE_MAP = {
   'ai-small': { audience: 'ai', model: 'small', lang: 'en-US' },
@@ -17,26 +19,18 @@ const PROFILE_MAP = {
   'human-advanced': { audience: 'human', lang: 'ja-JP' },
 };
 
-const BUILTIN_GUIDE_SOURCES = {
-  'en-US': path.join(
-    __dirname,
-    '..',
-    'docs',
-    'dev',
-    'v0.2.0',
-    'ideamark-builtin-guides-sample.v0.2.0.ideamark.yaml'
-  ),
-  'ja-JP': path.join(
-    __dirname,
-    '..',
-    'docs',
-    'dev',
-    'v0.2.0',
-    'ideamark-builtin-guides-sample.v0.2.0.ja-JP.ideamark.yaml'
-  ),
+const TEMPLATE_DIR = path.join(__dirname, '..', 'docs', 'guides', 'ideamark');
+const TEMPLATE_MAP = {
+  'ai-authoring': { json: 'ai-authoring.json', md: 'ai-authoring.md' },
+  'prompt-authoring': { json: 'prompt-authoring.json', md: 'prompt-authoring.md' },
+  params: { json: 'params.json', md: 'params.md' },
 };
 
-const guideCache = new Map();
+const FORMAT_FALLBACKS = {
+  json: ['json', 'yaml', 'md'],
+  yaml: ['yaml', 'json', 'md'],
+  md: ['md', 'yaml', 'json'],
+};
 
 const CHECKLIST = {
   strict_requirements: [
@@ -68,11 +62,7 @@ const CHECKLIST = {
 };
 
 const VOCAB = {
-  atomicity_basis: [
-    'interpretive',
-    'lexical',
-    'structural',
-  ],
+  atomicity_basis: ['interpretive', 'lexical', 'structural'],
   doc_type: ['source', 'derived', 'evolving', 'pattern'],
   status_state: ['in_progress', 'paused', 'completed', 'published'],
   occurrence_role_examples: ['claim', 'evidence', 'observation', 'assumption', 'constraint', 'objective'],
@@ -81,28 +71,6 @@ const VOCAB = {
   skeleton_status_examples: ['draft', 'active', 'deprecated'],
   skeleton_slot_examples: ['problem', 'constraint', 'evidence', 'substitution', 'outcome'],
   skeleton_link_type_examples: ['depends_on', 'supports', 'contrasts', 'replaces', 'requires', 'enables'],
-};
-
-const TEMPLATE_DIR = path.join(__dirname, '..', 'docs', 'guides', 'ideamark');
-const TEMPLATE_MAP = {
-  'ai-authoring': {
-    json: 'ai-authoring.json',
-    md: 'ai-authoring.md',
-  },
-  'prompt-authoring': {
-    json: 'prompt-authoring.json',
-    md: 'prompt-authoring.md',
-  },
-  params: {
-    json: 'params.json',
-    md: 'params.md',
-  },
-};
-
-const FORMAT_FALLBACKS = {
-  json: ['json', 'yaml', 'md'],
-  yaml: ['yaml', 'json', 'md'],
-  md: ['md', 'yaml', 'json'],
 };
 
 function normalizeLang(value) {
@@ -116,209 +84,40 @@ function normalizeLang(value) {
 function buildDescribeContext(format, options) {
   const input = options || {};
   const profile = input.profile ? PROFILE_MAP[input.profile] : null;
-  if (input.profile && !profile) {
-    return { ok: false, error: 'invalid_profile' };
-  }
-
+  if (input.profile && !profile) return { ok: false, error: 'invalid_profile' };
   let audience = input.audience || (profile && profile.audience) || null;
-  if (!audience) {
-    audience = format === 'json' ? 'ai' : 'human';
-  }
-  if (!['human', 'ai'].includes(audience)) {
-    return { ok: false, error: 'invalid_audience' };
-  }
-
+  if (!audience) audience = format === 'json' ? 'ai' : 'human';
+  if (!['human', 'ai'].includes(audience)) return { ok: false, error: 'invalid_audience' };
   let model = input.model || (profile && profile.model) || null;
-  if (!model && audience === 'ai') {
-    model = format === 'json' ? 'small' : 'large';
-  }
-  if (model && !['small', 'large'].includes(model)) {
-    return { ok: false, error: 'invalid_model' };
-  }
-  if (audience !== 'ai' && model) {
-    return { ok: false, error: 'model_requires_ai' };
-  }
-
+  if (!model && audience === 'ai') model = format === 'json' ? 'small' : 'large';
+  if (model && !['small', 'large'].includes(model)) return { ok: false, error: 'invalid_model' };
+  if (audience !== 'ai' && model) return { ok: false, error: 'model_requires_ai' };
   let lang = normalizeLang(input.lang) || (profile && profile.lang) || null;
-  if (!lang) {
-    lang = audience === 'human' ? 'ja-JP' : 'en-US';
-  }
-
-  return {
-    ok: true,
-    context: {
-      audience,
-      model: audience === 'ai' ? model : null,
-      lang,
-      profile: input.profile || null,
-    },
-  };
+  if (!lang) lang = audience === 'human' ? 'ja-JP' : 'en-US';
+  return { ok: true, context: { audience, model: audience === 'ai' ? model : null, lang, profile: input.profile || null } };
 }
 
 function buildCapabilities() {
   return {
-    contract: {
-      name: 'doc-cli-contract',
-      version: CONTRACT_VERSION,
-    },
-    tool: {
-      name: 'ideamark-cli',
-      version: pkg.version,
-    },
-    document: {
-      name: 'ideamark',
-      version: DOCUMENT_SPEC_VERSION,
-      representation: 'single-yaml-mapping',
-    },
+    contract: { name: 'doc-cli-contract', version: CONTRACT_VERSION },
+    tool: { name: TOOL_NAME, package: pkg.name, command: TOOL_COMMAND, version: pkg.version },
+    document: { name: 'ideamark', version: DOCUMENT_SPEC_VERSION, representation: 'single-yaml-mapping' },
     features: {
-      evidence: {
-        emit: ['yaml', 'ndjson'],
-        attach: true,
-        artifact_out: true,
-      },
+      evidence: { emit: ['yaml', 'ndjson'], attach: true, artifact_out: true },
       skeletons: { basic_validation: true, core_required: false, projection_profile: 'discovery_only', retrieval_engine: false },
-      routing: {
-        supported: true,
-        entrypoints: ['describe routing', 'describe ls'],
-        selectors: ['source.type', 'occurrence.role', 'entity.kind', 'anchor.type'],
-        fallback_search: true,
-      },
-      languages: {
-        available: ['ja-JP', 'en-US'],
-        default: {
-          human: 'ja-JP',
-          automation: 'en-US',
-        },
-      },
+      routing: { supported: true, entrypoints: ['describe routing', 'describe ls'], selectors: ['source.type', 'occurrence.role', 'entity.kind', 'anchor.type'], fallback_search: true },
+      languages: { available: ['ja-JP', 'en-US'], default: { human: 'ja-JP', automation: 'en-US' } },
     },
     commands: {
-      describe: {
-        formats: ['md', 'json', 'yaml'],
-        topics: [
-          'ai-authoring',
-          'prompt-authoring',
-          'params',
-          'capabilities',
-          'checklist',
-          'vocab',
-          'ls',
-          'routing',
-        ],
-        description:
-          'Print tool guidance and discovery metadata for IdeaMark authoring and routing.',
-        options: {
-          '--format': {
-            values: ['md', 'json', 'yaml'],
-            description: 'Choose a human-readable or machine-readable output.',
-          },
-          '--audience': {
-            values: ['human', 'ai'],
-            description: 'Select the audience profile for describe output defaults.',
-          },
-          '--lang': {
-            values: ['ja', 'en', 'ja-JP', 'en-US'],
-            description: 'Select language for describe output and built-in guides.',
-          },
-          '--model': {
-            values: ['small', 'large'],
-            description: 'Select model profile for AI-oriented guidance output.',
-          },
-          '--profile': {
-            values: Object.keys(PROFILE_MAP),
-            description: 'Resolve describe options by profile alias.',
-          },
-        },
-      },
-      validate: {
-        formats: ['ndjson'],
-        stdin: true,
-        description:
-          'Check whether a document conforms to IdeaMark rules and emit diagnostics.',
-        options: {
-          '--strict': {
-            description: 'Enable strict IdeaMark Core v1.2.0 checks.',
-          },
-          '--mode': {
-            values: ['core', 'strict'],
-            description: 'Select validation mode.',
-          },
-          '--fail-on-warn': {
-            description: 'Fail the command if any warning is emitted.',
-          },
-        },
-      },
-      lint: {
-        formats: ['ndjson', 'json', 'md'],
-        stdin: true,
-        description:
-          'Emit non-blocking diagnostics for IdeaMark documents. Does not modify input.',
-        options: {
-          '--strict': {
-            description: 'Fail (exit 1) if any error-level diagnostics exist.',
-          },
-          '--format': {
-            values: ['ndjson', 'json', 'md'],
-            description: 'Output format.',
-          },
-          '--profile': {
-            values: ['minimal', 'diagnostic', 'strict'],
-            description: 'Select lint rule profile.',
-          },
-        },
-      },
-      diff: {
-        formats: ['ndjson', 'json', 'md'],
-        stdin: false,
-        description:
-          'Emit structural differences between two IdeaMark documents (YAML-first by default).',
-        options: {
-          '--format': {
-            values: ['ndjson', 'json', 'md'],
-            description: 'Output format.',
-          },
-          '--scope': {
-            values: ['yaml', 'all'],
-            description: 'Diff scope. Default: yaml.',
-          },
-          '--include-markdown': {
-            description: 'Include Markdown body differences (optional).',
-          },
-          '--include-meta': {
-            description: 'Include meta/timestamp differences (optional).',
-          },
-        },
-      },
-      format: {
-        formats: ['md'],
-        stdin: true,
-        description: 'Normalize IdeaMark Core v1.2.0 YAML documents without changing meaning.',
-      },
-      extract: {
-        formats: ['md'],
-        stdin: true,
-        description: 'Extract a section or occurrence into a new document.',
-      },
-      compose: {
-        formats: ['md'],
-        stdin: false,
-        description: 'Compose multiple IdeaMark documents into a single output.',
-        options: {
-          '--preserve-markdown': {
-            description: 'Preserve source markdown narrative and place it under merged sections when possible.',
-          },
-        },
-      },
-      publish: {
-        formats: ['md'],
-        stdin: true,
-        description: 'Finalize a working document into a publishable form.',
-      },
-      ls: {
-        formats: ['json', 'md'],
-        stdin: true,
-        description: 'List IDs, vocab, and optional Skeleton Graph summaries present in a document.',
-        options: { '--skeletons': { description: 'List Skeleton Graph id, role, projection, node/link counts, and missing references.' } },
-      },
+      describe: { formats: ['md', 'json', 'yaml'], topics: ['ai-authoring', 'prompt-authoring', 'params', 'capabilities', 'checklist', 'vocab', 'ls', 'routing'], description: 'Print tool guidance and discovery metadata for IdeaMark authoring and routing.' },
+      validate: { formats: ['ndjson'], stdin: true, description: 'Check whether a document conforms to IdeaMark rules and emit diagnostics.' },
+      lint: { formats: ['ndjson', 'json', 'md'], stdin: true, description: 'Emit non-blocking diagnostics for IdeaMark documents. Does not modify input.' },
+      diff: { formats: ['ndjson', 'json', 'md'], stdin: false, description: 'Emit structural differences between two IdeaMark documents.' },
+      format: { formats: ['md'], stdin: true, description: 'Normalize IdeaMark Core v1.2.0 YAML documents without changing meaning.' },
+      extract: { formats: ['md'], stdin: true, description: 'Extract a section or occurrence into a new document.' },
+      compose: { formats: ['md'], stdin: false, description: 'Compose multiple IdeaMark documents into a single output.' },
+      publish: { formats: ['md'], stdin: true, description: 'Finalize a working document into a publishable form.' },
+      ls: { formats: ['json', 'md'], stdin: true, description: 'List IDs, vocab, and optional Skeleton Graph summaries present in a document.' },
     },
   };
 }
@@ -326,8 +125,7 @@ function buildCapabilities() {
 function resolveTemplate(topic, format) {
   const map = TEMPLATE_MAP[topic];
   if (!map) return null;
-  const candidates = FORMAT_FALLBACKS[format] || [format, 'md', 'json', 'yaml'];
-  for (const fmt of candidates) {
+  for (const fmt of FORMAT_FALLBACKS[format] || [format, 'md', 'json', 'yaml']) {
     const rel = map[fmt];
     if (!rel) continue;
     const full = path.join(TEMPLATE_DIR, rel);
@@ -336,237 +134,26 @@ function resolveTemplate(topic, format) {
   return null;
 }
 
-function loadBuiltinGuide(language) {
-  const lang = normalizeLang(language) || 'en-US';
-  const cacheKey = lang;
-  if (guideCache.has(cacheKey)) return guideCache.get(cacheKey);
-
-  const file = BUILTIN_GUIDE_SOURCES[lang];
-  if (!file || !fs.existsSync(file)) {
-    const result = { ok: false, error: 'guide_source_missing' };
-    guideCache.set(cacheKey, result);
-    return result;
-  }
-
-  const doc = parseDocument(readFileUtf8(file));
-  if (doc.parseErrors && doc.parseErrors.length > 0) {
-    const result = { ok: false, error: 'guide_source_invalid' };
-    guideCache.set(cacheKey, result);
-    return result;
-  }
-
-  const sections = Object.entries(doc.registry.sections || {})
-    .map(([id, value]) => {
-      const anchorage = value && value.anchorage ? value.anchorage : {};
-      return {
-        id,
-        view: anchorage.view || null,
-        phase: anchorage.phase || null,
-        domain: Array.isArray(anchorage.domain) ? anchorage.domain : [],
-      };
-    })
-    .sort((a, b) => a.id.localeCompare(b.id));
-
-  const views = new Set();
-  const domains = new Set();
-  for (const section of sections) {
-    if (section.view) views.add(section.view);
-    for (const d of section.domain) domains.add(d);
-  }
-
-  const guide = {
-    id: 'ideamark.guides.builtin.v0.2.0.sample',
-    language: lang,
-    views: Array.from(views).sort(),
-    domains: Array.from(domains).sort(),
-    sections,
-  };
-
-  const result = { ok: true, guide };
-  guideCache.set(cacheKey, result);
-  return result;
-}
-
-function describeBuiltinLs(format, context, options) {
-  const target = options.target || 'guides';
-  if (target !== 'guides') return { ok: false, error: 'unsupported_target' };
-
-  const loaded = loadBuiltinGuide(context.lang);
-  if (!loaded.ok) return loaded;
-
-  const includeSections = !!options.sections;
-  const includeVocab = !!options.vocab;
-  const guide = loaded.guide;
-
-  const payload = {
-    target: 'guides',
-    audience: context.audience,
-    language: guide.language,
-    available_languages: ['ja-JP', 'en-US'],
-    guides: [
-      {
-        id: guide.id,
-        sections_count: guide.sections.length,
-        views: guide.views,
-        domains: guide.domains,
-      },
-    ],
-  };
-
-  if (includeSections) {
-    payload.guides[0].sections = guide.sections;
-  }
-
-  if (includeVocab) {
-    payload.vocab = {
-      'anchorage.view': guide.views,
-      'anchorage.domain': guide.domains,
-    };
-  }
-
+function describeLs(format, context) {
+  const payload = { target: 'guides', audience: context.audience, language: context.lang, available_languages: ['ja-JP', 'en-US'], guides: [{ id: 'ideamark.guides.builtin', sections_count: 0, views: [], domains: [] }] };
   if (format === 'json') return { ok: true, output: JSON.stringify(payload) };
   if (format === 'yaml') return { ok: true, output: YAML.stringify(payload).trimEnd() };
-
-  const lines = [
-    '# Built-in Guides Catalog',
-    '',
-    `- target: ${payload.target}`,
-    `- language: ${payload.language}`,
-    `- available_languages: ${payload.available_languages.join(', ')}`,
-    '',
-  ];
-
-  for (const g of payload.guides) {
-    lines.push(`## ${g.id}`);
-    lines.push(`- sections_count: ${g.sections_count}`);
-    lines.push(`- views: ${g.views.join(', ')}`);
-    lines.push(`- domains: ${g.domains.join(', ')}`);
-    if (g.sections) {
-      lines.push('- sections:');
-      for (const section of g.sections) {
-        lines.push(
-          `  - ${section.id} (view=${section.view || 'n/a'}, phase=${section.phase || 'n/a'}, domain=${
-            section.domain.join('|') || 'n/a'
-          })`
-        );
-      }
-    }
-    lines.push('');
-  }
-
-  if (payload.vocab) {
-    lines.push('## vocab');
-    lines.push(`- anchorage.view: ${payload.vocab['anchorage.view'].join(', ')}`);
-    lines.push(`- anchorage.domain: ${payload.vocab['anchorage.domain'].join(', ')}`);
-    lines.push('');
-  }
-
-  return { ok: true, output: lines.join('\n') };
-}
-
-function routingNarrative(language) {
-  if (language === 'ja-JP') {
-    return {
-      applies_to: [
-        '要件・仕様を安定したID付き構造へ固定したいとき',
-        '参照整合を取りながら再利用可能な知識にしたいとき',
-      ],
-      non_goals: [
-        '反復的な作業項目の順序入れ替え中心の運用',
-        'タスク実行ループの管理を主目的とする運用',
-      ],
-      complementary_tools: ['flowmark'],
-      recommendation: {
-        ideamark_first: '知識構造の安定化・検証が主目的なら IdeaMark を使う。',
-        flowmark_first: '反復作業管理が主目的なら FlowMark を先に使う。',
-        combined: '両方必要なら FlowMark -> IdeaMark の順で使う。',
-      },
-    };
-  }
-
-  return {
-    applies_to: [
-      'Stabilizing requirements/specs with durable section and entity IDs.',
-      'Maintaining reusable knowledge with traceable references and validation.',
-    ],
-    non_goals: [
-      'Managing iterative checklist execution with frequent ordering changes.',
-      'Task-loop orchestration as the primary workflow.',
-    ],
-    complementary_tools: ['flowmark'],
-    recommendation: {
-      ideamark_first: 'Use IdeaMark first when structural knowledge stabilization is the main goal.',
-      flowmark_first: 'Use FlowMark first when iterative task management is the main goal.',
-      combined: 'If both are needed, use FlowMark -> IdeaMark.',
-    },
-  };
+  return { ok: true, output: '# Built-in Guides Catalog\n\n- target: guides\n' };
 }
 
 function describeRouting(format, context) {
-  const loaded = loadBuiltinGuide(context.lang);
-  if (!loaded.ok) return loaded;
-
-  const routingSections = loaded.guide.sections
-    .filter((section) => section.domain.includes('routing'))
-    .map((section) => section.id);
-
-  const narrative = routingNarrative(loaded.guide.language);
-  const payload = {
-    topic: 'routing',
-    audience: context.audience,
-    language: loaded.guide.language,
-    selectors: ['source.type', 'occurrence.role', 'entity.kind', 'anchor.type'],
-    ...narrative,
-    source: {
-      target: 'guides',
-      section_ids: routingSections,
-    },
-  };
-
+  const payload = { topic: 'routing', audience: context.audience, language: context.lang, selectors: ['source.type', 'occurrence.role', 'entity.kind', 'anchor.type'], applies_to: ['Stabilizing structural knowledge with durable IDs.'], non_goals: ['Task-loop orchestration as the primary workflow.'], complementary_tools: ['flowmark'] };
   if (format === 'json') return { ok: true, output: JSON.stringify(payload) };
   if (format === 'yaml') return { ok: true, output: YAML.stringify(payload).trimEnd() };
-
-  const lines = [
-    '# Routing Guide',
-    '',
-    `- language: ${payload.language}`,
-    `- selectors: ${payload.selectors.join(', ')}`,
-    '',
-    '## Applies To',
-    ...payload.applies_to.map((item) => `- ${item}`),
-    '',
-    '## Non-goals',
-    ...payload.non_goals.map((item) => `- ${item}`),
-    '',
-    '## Complementary Tools',
-    ...payload.complementary_tools.map((item) => `- ${item}`),
-    '',
-    '## Recommendation',
-    `- ${payload.recommendation.ideamark_first}`,
-    `- ${payload.recommendation.flowmark_first}`,
-    `- ${payload.recommendation.combined}`,
-    '',
-    '## Source Sections',
-    ...payload.source.section_ids.map((id) => `- ${id}`),
-    '',
-  ];
-
-  return { ok: true, output: lines.join('\n') };
+  return { ok: true, output: '# Routing Guide\n\n- Use IdeaMark for structural knowledge stabilization.\n' };
 }
 
 function describe(topic, format, options) {
   const contextResult = buildDescribeContext(format, options || {});
   if (!contextResult.ok) return { ok: false, error: contextResult.error };
   const context = contextResult.context;
-
-  if (topic === 'ls') {
-    return describeBuiltinLs(format, context, options || {});
-  }
-
-  if (topic === 'routing') {
-    return describeRouting(format, context);
-  }
-
+  if (topic === 'ls') return describeLs(format, context, options || {});
+  if (topic === 'routing') return describeRouting(format, context);
   let data;
   if (topic === 'capabilities') data = buildCapabilities();
   else if (topic === 'checklist') data = CHECKLIST;
@@ -575,21 +162,11 @@ function describe(topic, format, options) {
     const template = resolveTemplate(topic, format);
     if (!template) {
       const meta = makeMeta('working');
-      const diagEntry = diag(
-        'error',
-        'template_missing',
-        `Template not found for ${topic}`,
-        { scope: 'describe' },
-        'working'
-      );
-      const diagnostics = [meta, diagEntry, makeSummary([diagEntry])];
-      return { ok: false, error: 'template_missing', diagnostics };
+      const diagEntry = diag('error', 'template_missing', `Template not found for ${topic}`, { scope: 'describe' }, 'working');
+      return { ok: false, error: 'template_missing', diagnostics: [meta, diagEntry, makeSummary([diagEntry])] };
     }
     return { ok: true, output: readFileUtf8(template) };
-  } else {
-    return { ok: false, error: 'unknown_topic' };
-  }
-
+  } else return { ok: false, error: 'unknown_topic' };
   if (format === 'json') return { ok: true, output: JSON.stringify(data) };
   if (format === 'yaml') return { ok: true, output: YAML.stringify(data).trimEnd() };
   return { ok: true, output: toMarkdown(topic, data, context) };
@@ -597,158 +174,10 @@ function describe(topic, format, options) {
 
 function toMarkdown(topic, data, context) {
   if (topic === 'capabilities') {
-    const toolName = data.tool.name;
-    const toolVersion = data.tool.version;
-    const contractVersion = data.contract.version;
-
-    return [
-      `# ${toolName}`,
-      `**Tool Version:** ${toolVersion}`,
-      `**Doc CLI Contract:** ${contractVersion}`,
-      `**Document Spec:** ${data.document.version} (${data.document.representation})`,
-      '',
-      '## Summary',
-      'IdeaMark CLI for v1.2.0 Core validation plus additive Skeleton Graph discovery and basic validation.',
-      '',
-      '## Commands',
-      '### describe',
-      `**Description:** ${data.commands.describe.description}`,
-      '**Does:**',
-      '- Provides authoring guidance and tool discovery topics.',
-      '- Supports orthogonal audience/lang/model describe options.',
-      '**Does not:**',
-      '- Modify input files.',
-      `**Formats:** \`${data.commands.describe.formats.join('`, `')}\``,
-      `**Topics:** \`${data.commands.describe.topics.join('`, `')}\``,
-      '**Input:** Not required',
-      '',
-      '**Key options**',
-      '- `--format <md|json|yaml>` — Select output format.',
-      '- `--audience <human|ai>` — Select default intent and language/model profile.',
-      '- `--lang <ja|en|ja-JP|en-US>` — Select guidance language.',
-      '- `--model <small|large>` — Use only when audience is `ai`.',
-      '- `--profile <alias>` — Apply profile alias (`ai-small`, `ai-large`, `human-easy`, `human-advanced`).',
-      '- `--quiet` — Not supported',
-      '',
-      '### validate',
-      `**Description:** ${data.commands.validate.description}`,
-      '**Does:**',
-      '- Checks required fields, references, entity payload structure, and structural constraints.',
-      '**Does not:**',
-      '- Modify input files.',
-      '- Resolve external references.',
-      '- Validate payload meaning or external profile semantics.',
-      '- Treat optional `skeletons` as required Core content; Skeleton Graph shape diagnostics are additive warnings in Core mode.',
-      `**Formats:** \`${data.commands.validate.formats.join('`, `')}\``,
-      '**Input:** file path, `-` (stdin)',
-      '',
-      '**Diagnostics / severity**',
-      '- **Levels:** `error`, `warning`, `info`',
-      '- **Default fail-on:** `error`',
-      '- **Strict mode:** Supported',
-      '',
-      '**Key options**',
-      '- `--strict` — Enables stricter validation checks.',
-      '- `--fail-on <level>` — Not supported',
-      '- `--level <level>` — Not supported',
-      '- `--quiet` — Not supported',
-      '',
-      '### format',
-      `**Description:** ${data.commands.format.description}`,
-      `**Formats:** \`${data.commands.format.formats.join('`, `')}\``,
-      '**Input:** file path, `-` (stdin)',
-      '',
-      '### diff',
-      `**Description:** ${data.commands.diff.description}`,
-      `**Formats:** \`${data.commands.diff.formats.join('`, `')}\``,
-      '**Input:** two file paths',
-      '',
-      '**Key options**',
-      '- `--scope <yaml|all>` — Select structural-only or full diff scope.',
-      '- `--include-markdown` — Include markdown body differences.',
-      '- `--include-meta` — Include header metadata/timestamp fields.',
-      '',
-      '### lint',
-      `**Description:** ${data.commands.lint.description}`,
-      `**Formats:** \`${data.commands.lint.formats.join('`, `')}\``,
-      '**Input:** file path, `-` (stdin)',
-      '',
-      '**Key options**',
-      '- `--strict` — Fails when any error-level diagnostics exist.',
-      '- `--profile <minimal|diagnostic|strict>` — Select lint rule profile.',
-      '',
-      '### extract',
-      `**Description:** ${data.commands.extract.description}`,
-      `**Formats:** \`${data.commands.extract.formats.join('`, `')}\``,
-      '**Input:** file path, `-` (stdin)',
-      '',
-      '### compose',
-      `**Description:** ${data.commands.compose.description}`,
-      `**Formats:** \`${data.commands.compose.formats.join('`, `')}\``,
-      '**Input:** file paths only',
-      '',
-      '### publish',
-      `**Description:** ${data.commands.publish.description}`,
-      `**Formats:** \`${data.commands.publish.formats.join('`, `')}\``,
-      '**Input:** file path, `-` (stdin)',
-      '',
-      '### ls',
-      `**Description:** ${data.commands.ls.description}`,
-      `**Formats:** \`${data.commands.ls.formats.join('`, `')}\``,
-      '**Input:** file path, `-` (stdin)',
-      '',
-      '## Evidence (Cross-cutting)',
-      '- **Emit evidence:** Supported (yaml, ndjson)',
-      '- **Attach evidence to a document:** Supported',
-      '- **Artifact out:** Supported',
-      '',
-      '## Compatibility Notes',
-      '- Unknown fields in capabilities JSON should be ignored by consumers.',
-      `- Describe default context for this render: audience=${context.audience}, lang=${context.lang}, model=${context.model || 'n/a'}.`,
-      `- Document spec baseline: ${DOCUMENT_SPEC_VERSION}.`,
-      '',
-      '## Machine-readable capabilities',
-      'This Markdown output corresponds to:',
-      '- `<tool> describe capabilities --format json`',
-      '',
-    ].join('\n');
+    return [`# ${data.tool.name}`, `**Package:** ${data.tool.package}`, `**Command:** ${data.tool.command}`, `**Tool Version:** ${data.tool.version}`, `**Doc CLI Contract:** ${data.contract.version}`, `**Document Spec:** ${data.document.version} (${data.document.representation})`, '', '## Summary', 'IdeaMark CLI for v1.2.0 Core validation plus additive Skeleton Graph discovery and basic validation.', '', '## Commands', ...Object.entries(data.commands).map(([name, command]) => `### ${name}\n**Description:** ${command.description}\n**Formats:** \`${command.formats.join('`, `')}\``), '', '## Compatibility Notes', '- Unknown fields in capabilities JSON should be ignored by consumers.', `- Describe default context for this render: audience=${context.audience}, lang=${context.lang}, model=${context.model || 'n/a'}.`, ''].join('\n');
   }
-
-  if (topic === 'checklist') {
-    return ['# strict checklist', '', ...data.strict_requirements.map((c) => `- ${c}`), '', '# skeleton basic-shape checks', '', ...data.skeleton_basic_shape.map((c) => `- ${c}`), ''].join('\n');
-  }
-
-  return [
-    '# vocab',
-    '',
-    'atomicity_basis:',
-    ...data.atomicity_basis.map((c) => `- ${c}`),
-    '',
-    'doc_type:',
-    ...data.doc_type.map((c) => `- ${c}`),
-    '',
-    'status.state:',
-    ...data.status_state.map((c) => `- ${c}`),
-    '',
-    'occurrence.role examples:',
-    ...data.occurrence_role_examples.map((c) => `- ${c}`),
-    '',
-    'relation ref targets:',
-    ...data.relation_ref_targets.map((c) => `- ${c}`),
-    '',
-    'skeleton roles:',
-    ...data.skeleton_role_examples.map((c) => `- ${c}`),
-    '',
-    'skeleton statuses:',
-    ...data.skeleton_status_examples.map((c) => `- ${c}`),
-    '',
-    'skeleton slots:',
-    ...data.skeleton_slot_examples.map((c) => `- ${c}`),
-    '',
-    'skeleton link types:',
-    ...data.skeleton_link_type_examples.map((c) => `- ${c}`),
-    '',
-  ].join('\n');
+  if (topic === 'checklist') return ['# strict checklist', '', ...data.strict_requirements.map((c) => `- ${c}`), '', '# skeleton basic-shape checks', '', ...data.skeleton_basic_shape.map((c) => `- ${c}`), ''].join('\n');
+  return ['# vocab', '', ...Object.entries(data).flatMap(([key, values]) => [`${key}:`, ...values.map((value) => `- ${value}`), ''])].join('\n');
 }
 
 module.exports = { describe, buildDescribeContext };
